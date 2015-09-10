@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+
+FileUtils.mkdir_p("forked-plugins")
+
+changed = {
+  "dart-vim-plugin" => "https://github.com/dart-lang",
+  "greplace.vim" => "https://github.com/vim-scripts",
+  "neomake" => "https://github.com/benekastah",
+  "rust.vim" => "https://github.com/wting",
+  "syntastic" => "https://github.com/scrooloose",
+  "vim-addon-local-vimrc" => "https://github.com/MarcWeber",
+}.map do |repo, upstream|
+  dir = "forked-plugins/#{repo}"
+
+  `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(dir)
+
+  Dir.chdir(dir) do
+    if /upstream/ !~ `git remote -v`
+      `git remote add upstream #{upstream}/#{repo}.git`
+      `git fetch upstream`
+    end
+    `git fresh upstream/master`
+    repo if %r{Your branch is up-to-date with 'origin/master'} !~ `git status`
+  end
+end.compact
+
+exit if changed.empty?
+
+puts "Changed: #{changed.join(', ')}"
