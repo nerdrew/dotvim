@@ -9,63 +9,60 @@ let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
 
 call plug#begin('~/.vim/plugged')
-Plug 'cespare/vim-toml'
-Plug 'chrisbra/csv.vim'
-Plug 'ciaranm/securemodelines'
-Plug 'cstrahan/vim-capnp'
-Plug 'ervandew/supertab'
-Plug 'evanmiller/nginx-vim-syntax'
-Plug 'fatih/vim-go'
+" :sort /\v.{-}\//
+Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
-Plug 'jnwhiteh/vim-golang'
-Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
-Plug 'majutsushi/tagbar'
-Plug 'michaeljsmith/vim-indent-object'
-Plug 'pangloss/vim-javascript'
-Plug 'phildawes/racer', { 'do': 'cargo build --release' }
+Plug 'chrisbra/csv.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
-Plug 'simnalamburt/vim-mundo'
+Plug 'evanmiller/nginx-vim-syntax'
+Plug 'phildawes/racer', { 'do': 'cargo build --release' }
+Plug 'ciaranm/securemodelines'
+Plug 'ervandew/supertab'
+Plug 'majutsushi/tagbar'
+Plug 'cstrahan/vim-capnp'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
+Plug 'fatih/vim-go'
+Plug 'jnwhiteh/vim-golang'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
+Plug 'simnalamburt/vim-mundo'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
 Plug 'vim-ruby/vim-ruby'
-Plug 'vim-scripts/YankRing.vim'
+Plug 'tpope/vim-surround'
+Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
+Plug 'cespare/vim-toml'
 
-" Forked plugins
-Plug '~/.vim/forked-plugins/dart-vim-plugin'
-Plug '~/.vim/forked-plugins/greplace.vim'
-Plug '~/.vim/forked-plugins/neomake'
-Plug '~/.vim/forked-plugins/rust.vim'
-Plug '~/.vim/forked-plugins/syntastic'
-Plug '~/.vim/forked-plugins/vim-addon-local-vimrc'
+for fork in split(globpath('~/.vim/forked-plugins', '*'))
+  Plug fork
+endfor
 call plug#end()
 
-set mouse=a
-set guifont=Menlo:h11
-set showmatch       " show matching parentheses
-set hidden          " handle multiple buffers better
-set wildmenu        " better tab completion for files
-set wildmode=list:longest
-set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
-set history=1000
-set ruler
 set backspace=indent,eol,start
 set copyindent
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+set csre
+set expandtab sw=2 ts=2 sts=2
+set hidden " handle multiple buffers better
+set history=1000
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
+set mouse=a
 set nolist
 set noswapfile
-set ssop-=options
-set ssop-=folds
-set csre
-set cscopequickfix=s-,c-,d-,i-,t-,e-
-set showcmd
-set numberwidth=3
 set number
+set numberwidth=3
+set ruler
+set showcmd
+set showmatch " show matching parentheses
+set ssop-=folds
+set ssop-=options
+set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
+set wildmenu " better tab completion for files
+set wildmode=list:longest
 
 set statusline=%f\ %m\ %r
 set statusline+=Line:%l/%L[%p%%]
@@ -74,71 +71,62 @@ set statusline+=Buf:#%n
 set statusline+=[%b][0x%B]
 set statusline+=%{SyntasticStatuslineFlag()}
 
+filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
+
 if has('autocmd')
   autocmd filetype python setlocal expandtab sw=4 ts=4 sts=4
-  autocmd filetype ruby,eruby,yaml setlocal expandtab sw=2 ts=2 sts=2
   autocmd filetype c setlocal sw=4 ts=8 nolist
   autocmd FileType go autocmd BufWritePre <buffer> GoFmt
 
   " Show trailing whitepace and spaces before a tab:
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
 
-  " eruby doesn't correctly indent javascript w/o this
-  "autocmd BufRead,BufNewFile *.html.erb set filetype=javascript
-  "autocmd BufRead,BufNewFile *.html.erb set filetype=eruby.html
-  "autocmd BufRead,BufNewFile *.js.erb set filetype=eruby.javascript
-
   autocmd BufRead,BufNewFile *.as set filetype=actionscript
 
   " Remove trailing whitespace on save
-  autocmd BufWritePre *.{java,proto,rb,erb,h,m,haml,js,html,coffee,json} StripTrailingWhitespace
+  autocmd BufWritePre *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json} StripTrailingWhitespace
+
+  " Remember last location in file, but not for commit messages.
+  " see :help last-position-jump
+  autocmd BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
+        \| exe "normal! g`\"" | endif
 endif
 
-"""""""""""""""""""""""""""""""""
-" Keyboard mappings
-"""""""""""""""""""""""""""""""""
-nnoremap / /\v
-vnoremap / /\v
-nnoremap Y y$
-nnoremap <C-e> 3<C-e>
-nnoremap <C-y> 3<C-y>
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-" alt-[
-noremap “ :tabp<CR>
-" alt-]
-noremap ‘ :tabn<CR>
-" alt-shift-[
-noremap ” :tabm -1<CR>
-" alt-shift-]
-noremap ’ :tabm +1<CR>
-
-" unmap stupid janus
-" unmap <leader>fc
-" unmap <leader>fef
-" unmap <leader>tw
-" unmap <leader>gb
-" unmap <leader>gs
-" unmap <leader>gd
-" unmap <leader>gl
-" unmap <leader>gc
-" unmap <leader>gp
-" unmap <leader>rt
-
-noremap <unique> <leader>w :set wrap! wrap?<CR>
-noremap <unique> <leader>g :GundoToggle<CR>
-noremap <unique> <leader>n :NERDTreeToggle<CR>
-noremap <unique> <leader>l :set list! list?<cr>
-noremap <unique> <leader>t :TagbarToggle<CR>
-noremap <unique> <leader>f :FZF<CR>
-nnoremap <unique> <leader>b :ToggleBufExplorer<CR>
-noremap <leader><space> :nohls<cr>
-vnoremap <unique> <leader>y "+y
-"noremap <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<CR>
+noremap / /\v
+noremap <C-e> 3<C-e>
+noremap <C-y> 3<C-y>
+noremap <C-h> <C-w>h
+noremap <C-j> <C-w>j
+noremap <C-k> <C-w>k
+noremap <C-l> <C-w>l
+noremap “ :tabp<cr> " alt-[
+noremap ‘ :tabn<cr> " alt-]
+noremap ” :tabm -1<cr> " alt-shift-[
+noremap ’ :tabm +1<cr> " alt-shift-]
 noremap <C-@> @@
-nmap <C-\> :call CscopeForTermUnderCursor()<CR>
+
+noremap <unique> <leader>w :set wrap! wrap?<cr>
+noremap <unique> <leader>l :set list! list?<cr>
+noremap <unique> <leader>md :!mkdir -p %:p:h<cr>
+noremap <unique> <leader><space> :nohls<cr>
+noremap <unique> <leader>ew :e <C-R>=expand('%:h').'/'<cr>
+noremap <unique> <leader>es :sp <C-R>=expand('%:h').'/'<cr>
+noremap <unique> <leader>ev :vsp <C-R>=expand('%:h').'/'<cr>
+noremap <unique> <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
+noremap <unique> <leader>b :ToggleBufExplorer<cr>
+vnoremap <unique> <leader>y "+y
+"noremap <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
+
+noremap <unique> <leader>t :TagbarToggle<cr>
+noremap <unique> <leader>g :GundoToggle<cr>
+noremap <unique> <leader>n :NERDTreeToggle<cr>
+noremap <unique> <leader>f :FZF<cr>
+nmap <C-\> :call CscopeForTermUnderCursor()<cr>
+
+" See yankring-custom-maps
+function! YRRunAfterMaps()
+  noremap Y :<C-U>YRYankCount 'y$'<CR>
+endfunction
 
 function! s:Ag(file_mode, args)
   let cmd = "ag --vimgrep --smart-case ".a:args
@@ -149,12 +137,11 @@ function! s:Ag(file_mode, args)
   let enabled_makers =  [custom_maker]
   call neomake#Make({'enabled_makers': enabled_makers, 'file_mode': a:file_mode}) | echo "running: " . cmd
 endfunction
-
 command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>1, <q-args>)
 
 " From http://vim.wikia.com/wiki/Capture_ex_command_output
 " Captures ex command and puts it in a new tab
-function! TabMessage(cmd)
+function! s:TabMessage(cmd)
   redir => message
   silent execute a:cmd
   redir END
@@ -162,43 +149,43 @@ function! TabMessage(cmd)
   silent put=message
   set nomodified
 endfunction
-command! -nargs=+ -complete=command TabMessage call TabMessage(<q-args>)
-
+command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
 
 " Linters
-function! XMLlint(line1, line2)
+function! s:XMLlint(line1, line2)
   execute a:line1.",".a:line2." !xmllint --format --recover -"
 endfunction
-command! -range=% -complete=command XMLlint call XMLlint(<line1>, <line2>)
+command! -range=% -complete=command XMLlint call s:XMLlint(<line1>, <line2>)
 
-function! JSONlint(line1, line2)
+function! s:JSONlint(line1, line2)
   execute a:line1.",".a:line2." !json_reformat"
 endfunction
-command! -range=% -complete=command JSONlint call JSONlint(<line1>, <line2>)
-
+command! -range=% -complete=command JSONlint call s:JSONlint(<line1>, <line2>)
 
 " Set ts sts sw = num
-function! Tabs(num)
+function! s:Tabs(num)
   let &tabstop = a:num
   let &shiftwidth = a:num
   let &softtabstop = a:num
   set ts? sw? sts?
 endfunction
-command! -nargs=1 -complete=command Tabs call Tabs(<args>)
+command! -nargs=1 -complete=command Tabs call s:Tabs(<args>)
 
-function! LargeFile()
+function! s:LargeFile()
   filetype off
   set filetype=text
   set noincsearch
+  set ft? incsearch?
 endfunction
-command! -complete=command LargeFile call LargeFile()
+command! -complete=command LargeFile call s:LargeFile()
 
-function! LargeFileOff()
+function! s:LargeFileOff()
   filetype on
   filetype detect
   set incsearch
+  set ft? incsearch?
 endfunction
-command! -complete=command LargeFileOff call LargeFileOff()
+command! -complete=command LargeFileOff call s:LargeFileOff()
 
 function! SynStack()
   let s:syn_stack = ''
@@ -209,48 +196,48 @@ function! SynStack()
   return s:syn_stack
 endfunction
 
-function! ShowSynStack()
+function! s:ShowSynStack()
   let g:old_statusline = &statusline
   let g:old_laststatus = &laststatus
   set statusline+=%{SynStack()}
   set laststatus=2
 endfunction
-command! -complete=command ShowSynStack call ShowSynStack()
+command! -complete=command ShowSynStack call s:ShowSynStack()
 
-function! HideSynStack()
+function! s:HideSynStack()
   let &statusline=g:old_statusline
   let &laststatus=g:old_laststatus
 endfunction
-command! -complete=command HideSynStack call HideSynStack()
+command! -complete=command HideSynStack call s:HideSynStack()
 
 " Send the range to specified shell command's standard input
-function! SendToCommand(UserCommand) range
+function! s:SendToCommand(UserCommand) range
   let SelectedLines = getline(a:firstline,a:lastline)
   " Convert to a single string suitable for passing to the command
   let ScriptInput = join(SelectedLines, "\n") . "\n"
   " Run the command
   echo system(a:UserCommand, ScriptInput)
 endfunction
-command! -complete=command -range -nargs=1 SendToCommand <line1>,<line2>call SendToCommand(<q-args>)
+command! -complete=command -range -nargs=1 SendToCommand <line1>,<line2>call s:SendToCommand(<q-args>)
 
 " Run the range as a shell command
-fu! RunCommand() range
+function! s:RunCommand() range
   let RunCommandCursorPos = getpos(".")
   let SelectedLines = getline(a:firstline,a:lastline)
   " Convert to a single string suitable for passing to the command
   let ScriptInput = join(SelectedLines, " ") . "\n"
   echo system(ScriptInput)
   call setpos(".", RunCommandCursorPos)
-endfu
-command! -complete=command -range RunCommand <line1>,<line2>call RunCommand()
-map <unique> <leader>! :RunCommand<CR>
+endfunction
+command! -complete=command -range RunCommand <line1>,<line2>call s:RunCommand()
+map <unique> <leader>! :RunCommand<cr>
 
-function! StripTrailingWhitespace(line1, line2)
+function! s:StripTrailingWhitespace(line1, line2)
   let _s=@/ | exe "normal! msHmt" | exe 'keepj '.a:line1.",".a:line2.'s/\s\+$//e' | let @/=_s | nohl | exe "normal! 'tzt`s"
 endfunction
-command! -range=% -complete=command StripTrailingWhitespace call StripTrailingWhitespace(<line1>, <line2>)
+command! -range=% -complete=command StripTrailingWhitespace call s:StripTrailingWhitespace(<line1>, <line2>)
 
-function! ToggleDiffIgnoreWhitespace()
+function! s:ToggleDiffIgnoreWhitespace()
   if match(&diffopt, 'iwhite') == -1
     set diffopt+=iwhite
   else
@@ -258,13 +245,8 @@ function! ToggleDiffIgnoreWhitespace()
   endif
   set diffopt?
 endfunction
-command! -complete=command ToggleDiffIgnoreWhitespace call ToggleDiffIgnoreWhitespace()
-noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<CR>
-
-function! DefaultFont()
-  set guifont=Menlo:h11
-endfunction
-command! -complete=command DefaultFont call DefaultFont()
+command! -complete=command ToggleDiffIgnoreWhitespace call s:ToggleDiffIgnoreWhitespace()
+noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
 
 function! CscopeForTermUnderCursor()
   call inputsave()
