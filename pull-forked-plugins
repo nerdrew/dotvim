@@ -2,7 +2,10 @@
 
 require "fileutils"
 
-FileUtils.mkdir_p("forked-plugins")
+BASE_DIR = "forked-plugins"
+
+FileUtils.mkdir(BASE_DIR) unless Dir.exist?(BASE_DIR)
+Dir.chdir(BASE_DIR)
 
 changed = {
   "dart-vim-plugin" => "https://github.com/dart-lang",
@@ -12,11 +15,9 @@ changed = {
   "syntastic" => "https://github.com/scrooloose",
   "vim-addon-local-vimrc" => "https://github.com/MarcWeber",
 }.map do |repo, upstream|
-  dir = "forked-plugins/#{repo}"
+  `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(repo)
 
-  `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(dir)
-
-  Dir.chdir(dir) do
+  Dir.chdir(repo) do
     if /upstream/ !~ `git remote -v`
       `git remote add upstream #{upstream}/#{repo}.git`
       `git fetch upstream`
