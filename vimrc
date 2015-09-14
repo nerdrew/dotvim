@@ -4,6 +4,7 @@ let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_open_list = 1
 let g:neomake_serialize = 1
 let g:racer_cmd="./target/release/racer"
+let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
