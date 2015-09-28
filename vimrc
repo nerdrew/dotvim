@@ -3,7 +3,7 @@ let g:bufExplorerShowRelativePath=1
 let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_open_list = 1
 let g:neomake_serialize = 1
-let g:racer_cmd="./target/release/racer"
+let g:racer_cmd="racer"
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
@@ -17,7 +17,6 @@ Plug 'chrisbra/csv.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'evanmiller/nginx-vim-syntax'
-Plug 'phildawes/racer', { 'do': 'cargo build --release' }
 Plug 'ciaranm/securemodelines'
 Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
@@ -31,6 +30,7 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
 Plug 'simnalamburt/vim-mundo'
+Plug 'racer-rust/vim-racer'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
 Plug 'vim-ruby/vim-ruby'
