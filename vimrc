@@ -115,7 +115,9 @@ noremap <unique> <leader>es :sp <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>ev :vsp <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>b :ToggleBufExplorer<cr>
-vnoremap <unique> <leader>y "+y
+noremap <unique> <leader>y "+y
+noremap <unique> <leader>p "+p
+noremap <unique> <leader>P "+P
 "noremap <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
 noremap <unique> <leader>t :TagbarToggle<cr>
