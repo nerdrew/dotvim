@@ -37,7 +37,7 @@ function! RunRubyTest(single)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = 'rspec %f:%l %m, %-G%*[.F], %-G\\s%#'
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make({'enabled_makers': enabled_makers, 'file_mode': 1}) | echo "running: " . cmd
+  update | call neomake#Make({'enabled_makers': enabled_makers}) | echo "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call RunRubyTest(<q-args>)
 noremap <buffer> <silent> <unique> <leader>r :RunRubyTest<CR>

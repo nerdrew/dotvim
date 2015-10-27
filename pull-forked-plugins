@@ -13,7 +13,6 @@ changed = {
   "neomake" => "https://github.com/benekastah",
   "rust.vim" => "https://github.com/wting",
   "syntastic" => "https://github.com/scrooloose",
-  "vim-addon-local-vimrc" => "https://github.com/MarcWeber",
 }.map do |repo, upstream|
   `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(repo)
 

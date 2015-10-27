@@ -1,5 +1,7 @@
 let g:bufExplorerDisableDefaultKeyMapping=1
 let g:bufExplorerShowRelativePath=1
+"let $FZF_DEFAULT_COMMAND = 'ag -l -g ""'
+let g:fzf_command_prefix='FZF'
 let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_open_list = 1
 let g:neomake_serialize = 1
@@ -14,12 +16,14 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
+Plug 'junegunn/fzf.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'evanmiller/nginx-vim-syntax'
 Plug 'ciaranm/securemodelines'
 Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
+Plug 'MarcWeber/vim-addon-local-vimrc'
 Plug 'cstrahan/vim-capnp'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
@@ -44,6 +48,7 @@ endfor
 call plug#end()
 
 set backspace=indent,eol,start
+set backupdir=.,$TMPDIR
 set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set csre
@@ -51,7 +56,6 @@ set expandtab sw=2 ts=2 sts=2
 set hidden " handle multiple buffers better
 set history=1000
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
-set mouse=a
 set nolist
 set noswapfile
 set number
@@ -96,6 +100,8 @@ endif
 noremap / /\v
 noremap <C-e> 3<C-e>
 noremap <C-y> 3<C-y>
+nnoremap - <C-w>-
+nnoremap + <C-w>+
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
@@ -124,6 +130,7 @@ noremap <unique> <leader>t :TagbarToggle<cr>
 noremap <unique> <leader>g :GundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
+noremap <unique> <leader>d :FZFBuffers<cr>
 nmap <C-\> :call CscopeForTermUnderCursor()<cr>
 
 " See yankring-custom-maps
@@ -132,15 +139,15 @@ function! YRRunAfterMaps()
 endfunction
 
 function! s:Ag(file_mode, args)
-  let cmd = "ag --vimgrep --smart-case ".a:args
-  let custom_maker = neomake#utils#MakerFromCommand(&shell, cmd)
+  let cmd = "ag --vimgrep --smart-case ".substitute(a:args, '\\', '\\\\', 'g')
+  let custom_maker = neomake#utils#MakerFromCommand('bash', cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.place_signs = 0
   let enabled_makers =  [custom_maker]
   call neomake#Make({'enabled_makers': enabled_makers, 'file_mode': a:file_mode}) | echo "running: " . cmd
 endfunction
-command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>1, <q-args>)
+command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
 
 " From http://vim.wikia.com/wiki/Capture_ex_command_output
 " Captures ex command and puts it in a new tab
