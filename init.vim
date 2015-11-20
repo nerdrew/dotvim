@@ -13,6 +13,7 @@ let g:yankring_history_file = '.vim_yankring_history'
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
+Plug 'mustache/vim-mustache-handlebars'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
@@ -25,6 +26,7 @@ Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
 Plug 'MarcWeber/vim-addon-local-vimrc'
 Plug 'cstrahan/vim-capnp'
+Plug 'kchmck/vim-coffee-script'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'

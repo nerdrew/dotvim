@@ -31,11 +31,10 @@ function! RunRubyTest(single)
 
   " Match file:line message, ignore lines: ^\.|F$, ignore blank / whitespace
   " lines
-  "let &l:efm = 'rspec %f:%l %m, %-G%*[.F], %-G\\s%#'
   let custom_maker = neomake#utils#MakerFromCommand(&shell, cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
-  let custom_maker.errorformat = 'rspec %f:%l %m, %-G%*[.F], %-G\\s%#'
+  let custom_maker.errorformat = 'rspec %f:%l %m'
   let enabled_makers =  [custom_maker]
   update | call neomake#Make({'enabled_makers': enabled_makers}) | echo "running: " . cmd
 endfunction
