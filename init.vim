@@ -276,3 +276,17 @@ function! CscopeForTermUnderCursor()
   call inputrestore()
   execute 'cs find '.type.' '.search
 endfunction
+
+function SearchInProject()
+  let word = expand("<cword>")
+  "let @/=word
+  exec "Ag " . word
+endfunction
+
+function SearchWordInProject()
+  let word = expand("<cword>")
+  "let @/='\<' . word . '\>'
+  exec "Ag '\\b" . word . "\\b'"
+endfunction
+nnoremap <leader>a :call SearchInProject()<CR>
+nnoremap <leader>A :call SearchWordInProject()<CR>
