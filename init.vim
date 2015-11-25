@@ -146,6 +146,7 @@ function! s:Ag(file_mode, args)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.place_signs = 0
+  let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
   call neomake#Make({'enabled_makers': enabled_makers, 'file_mode': a:file_mode}) | echo "running: " . cmd
 endfunction
