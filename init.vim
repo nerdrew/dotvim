@@ -10,6 +10,8 @@ let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
+set grepprg=ag
+let g:grep_cmd_opts = '--vimgrep --smart-case'
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
@@ -18,6 +20,7 @@ Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
 Plug 'junegunn/fzf.vim'
+Plug 'skwp/greplace.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'evanmiller/nginx-vim-syntax'
