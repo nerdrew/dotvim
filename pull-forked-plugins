@@ -10,7 +10,7 @@ Dir.chdir(BASE_DIR)
 changed = {
   "dart-vim-plugin" => "https://github.com/dart-lang",
   "neomake" => "https://github.com/benekastah",
-  "rust.vim" => "https://github.com/wting",
+  "rust.vim" => "https://github.com/rust-lang",
   "syntastic" => "https://github.com/scrooloose",
 }.map do |repo, upstream|
   `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(repo)
