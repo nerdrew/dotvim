@@ -46,6 +46,7 @@ Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'cespare/vim-toml'
+Plug 'tpope/vim-unimpaired'
 
 for fork in split(globpath('~/.vim/forked-plugins', '*'))
   Plug fork
@@ -115,8 +116,11 @@ noremap “ :tabp<cr> " alt-[
 noremap ‘ :tabn<cr> " alt-]
 noremap ” :tabm -1<cr> " alt-shift-[
 noremap ’ :tabm +1<cr> " alt-shift-]
+noremap [w :tabp<cr>
+noremap ]w :tabn<cr>
 noremap <C-@> @@
 
+let mapleader = "\<Space>"
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
 noremap <unique> <leader>md :!mkdir -p %:p:h<cr>
