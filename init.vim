@@ -11,7 +11,7 @@ let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not r
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
 set grepprg=ag
-let g:grep_cmd_opts = '--vimgrep --smart-case'
+let g:grep_cmd_opts = '--smart-case'
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
@@ -140,6 +140,8 @@ noremap <unique> <leader>g :GundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
 noremap <unique> <leader>d :FZFBuffers<cr>
+"noremap <unique> <leader>a :Ag <C-r><C-w>
+"noremap <unique> <leader>A :Ag <C-r><C-w>
 nmap <C-\> :call CscopeForTermUnderCursor()<cr>
 
 " See yankring-custom-maps
