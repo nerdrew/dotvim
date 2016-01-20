@@ -103,24 +103,30 @@ if has('autocmd')
         \| exe "normal! g`\"" | endif
 endif
 
+let mapleader = "\<Space>"
 noremap / /\v
 noremap <C-e> 3<C-e>
 noremap <C-y> 3<C-y>
 nnoremap - <C-w>-
 nnoremap + <C-w>+
+nnoremap <bar> <C-w><
+nnoremap \ <C-w>>
 noremap <C-h> <C-w>h
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
-noremap “ :tabp<cr> " alt-[
-noremap ‘ :tabn<cr> " alt-]
-noremap ” :tabm -1<cr> " alt-shift-[
-noremap ’ :tabm +1<cr> " alt-shift-]
+" alt-[
+noremap “ :tabp<cr>
+" alt-]
+noremap ‘ :tabn<cr>
+" alt-shift-[
+noremap ” :tabm -1<cr>
+" alt-shift-]
+noremap ’ :tabm +1<cr>
 noremap [w :tabp<cr>
 noremap ]w :tabn<cr>
 noremap <C-@> @@
 
-let mapleader = "\<Space>"
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
 noremap <unique> <leader>md :!mkdir -p %:p:h<cr>
