@@ -163,7 +163,7 @@ function! s:Ag(file_mode, args)
   let custom_maker.place_signs = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
-  call neomake#Make({'enabled_makers': enabled_makers, 'file_mode': a:file_mode}) | echo "running: " . cmd
+  call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
 
