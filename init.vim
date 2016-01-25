@@ -87,7 +87,6 @@ filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 if has('autocmd')
   autocmd filetype python setlocal expandtab sw=4 ts=4 sts=4
   autocmd filetype c setlocal sw=4 ts=8 nolist
-  autocmd FileType go autocmd BufWritePre <buffer> GoFmt
 
   " Show trailing whitepace and spaces before a tab:
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
