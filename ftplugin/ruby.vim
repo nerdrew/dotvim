@@ -3,7 +3,7 @@ if exists("b:lazarus_ruby")
 endif
 let b:lazarus_ruby = 1
 
-function! RunRubyTest(single)
+function! RunRubyTest(mode)
   if exists('g:rspec')
     let rspec = g:rspec
   elseif glob('.zeus.sock') == '.zeus.sock'
@@ -23,10 +23,14 @@ function! RunRubyTest(single)
     let s:spec_file = '%'
   endif
 
-  let cmd = rspec . ' -f p ' . s:spec_file
+  let cmd = rspec . ' -f p '
 
-  if a:single
-    let cmd.= ':'. s:spec_line
+  if a:mode
+    let cmd .= s:spec_file
+
+    if a:mode == 2
+      let cmd.= ':'. s:spec_line
+    endif
   endif
 
   " Match file:line message, ignore lines: ^\.|F$, ignore blank / whitespace
@@ -39,5 +43,6 @@ function! RunRubyTest(single)
   update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call RunRubyTest(<q-args>)
-noremap <buffer> <silent> <unique> <leader>r :RunRubyTest<CR>
-noremap <buffer> <silent> <unique> <leader>R :RunRubyTest 1<CR>
+noremap <buffer> <silent> <unique> <leader>s :RunRubyTest<CR>
+noremap <buffer> <silent> <unique> <leader>r :RunRubyTest 1<CR>
+noremap <buffer> <silent> <unique> <leader>R :RunRubyTest 2<CR>

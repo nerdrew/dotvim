@@ -125,6 +125,7 @@ noremap ’ :tabm +1<cr>
 noremap [w :tabp<cr>
 noremap ]w :tabn<cr>
 noremap <C-@> @@
+noremap gn /<<<<<<<\\|>>>>>>>\\|=======\\|\|\|\|\|\|\|\|<cr>
 
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
