@@ -142,7 +142,7 @@ noremap <unique> <leader>P "+P
 "noremap <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
 noremap <unique> <leader>t :TagbarToggle<cr>
-noremap <unique> <leader>g :GundoToggle<cr>
+noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
 noremap <unique> <leader>d :FZFBuffers<cr>
