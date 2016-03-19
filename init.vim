@@ -12,6 +12,7 @@ let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
 set grepprg=ag
 let g:grep_cmd_opts = '--smart-case'
+let g:omni_sql_no_default_maps = 1
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
