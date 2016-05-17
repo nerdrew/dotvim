@@ -101,6 +101,8 @@ if has('autocmd')
   " see :help last-position-jump
   autocmd BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g`\"" | endif
+
+	au BufReadPost quickfix nnoremap <silent> <buffer> <leader>h  <C-W><CR><C-w>K | nnoremap <silent> <buffer> <leader>H  <C-W><CR><C-w>K<C-w>b | nnoremap <silent> <buffer> q :ccl<CR> | nnoremap <silent> <buffer> <leader>t  <C-w><CR><C-w>T | nnoremap <silent> <buffer> <leader>T  <C-w><CR><C-w>TgT<C-W><C-W> | nnoremap <silent> <buffer> <leader>v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
 endif
 
 let mapleader = "\<Space>"
