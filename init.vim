@@ -159,7 +159,7 @@ function! YRRunAfterMaps()
 endfunction
 
 function! s:Ag(file_mode, args)
-  let cmd = "ag --vimgrep --smart-case ".substitute(a:args, '\\', '\\\\', 'g')
+  let cmd = "ag --vimgrep --smart-case ".substitute(a:args, '\\', '\\\\\\\\', 'g')
   let custom_maker = neomake#utils#MakerFromCommand('bash', cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
@@ -298,14 +298,14 @@ endfunction
 
 function SearchInProject()
   let word = expand("<cword>")
-  "let @/=word
+  let @/=word
   exec "Ag " . word
 endfunction
 
 function SearchWordInProject()
   let word = expand("<cword>")
-  "let @/='\<' . word . '\>'
-  exec "Ag '\\b" . word . "\\b'"
+  let @/='\<' . word . '\>'
+  exec "Ag --word-regex " . word . ""
 endfunction
 nnoremap <leader>a :call SearchInProject()<CR>
 nnoremap <leader>A :call SearchWordInProject()<CR>
