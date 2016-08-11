@@ -152,6 +152,8 @@ noremap <unique> <leader>d :FZFBuffers<cr>
 "noremap <unique> <leader>a :Ag <C-r><C-w>
 "noremap <unique> <leader>A :Ag <C-r><C-w>
 nmap <C-\> :call CscopeForTermUnderCursor()<cr>
+noremap <buffer> <silent> <unique> <leader>x :let @+ = expand('%')<cr>
+noremap <buffer> <silent> <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
 
 " See yankring-custom-maps
 function! YRRunAfterMaps()

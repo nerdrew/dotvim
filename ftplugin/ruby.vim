@@ -3,7 +3,7 @@ if exists("b:lazarus_ruby")
 endif
 let b:lazarus_ruby = 1
 
-function! RunRubyTest(mode)
+function! s:RunRubyTest(mode)
   if exists('g:rspec')
     let rspec = g:rspec
   elseif glob('.zeus.sock') == '.zeus.sock'
@@ -42,7 +42,7 @@ function! RunRubyTest(mode)
   let enabled_makers =  [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
 endfunction
-command! -complete=command -nargs=? RunRubyTest call RunRubyTest(<q-args>)
+command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)
 noremap <buffer> <silent> <unique> <leader>s :RunRubyTest<CR>
 noremap <buffer> <silent> <unique> <leader>r :RunRubyTest 1<CR>
 noremap <buffer> <silent> <unique> <leader>R :RunRubyTest 2<CR>
