@@ -149,8 +149,6 @@ noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
 noremap <unique> <leader>d :FZFBuffers<cr>
-"noremap <unique> <leader>a :Ag <C-r><C-w>
-"noremap <unique> <leader>A :Ag <C-r><C-w>
 nmap <C-\> :call CscopeForTermUnderCursor()<cr>
 noremap <unique> <leader>x :let @+ = expand('%')<cr>
 noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
@@ -171,6 +169,18 @@ function! s:Ag(file_mode, args)
   call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
+
+function! s:Rg(file_mode, args)
+  let cmd = "rg --vimgrep ".substitute(a:args, '\\', '\\\\\\\\', 'g')
+  let custom_maker = neomake#utils#MakerFromCommand('bash', cmd)
+  let custom_maker.name = cmd
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.place_signs = 0
+  let custom_maker.errorformat = "%f:%l:%c:%m"
+  let enabled_makers =  [custom_maker]
+  call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
+endfunction
+command! -bang -nargs=* -complete=file Rg call s:Rg(<bang>0, <q-args>)
 
 " From http://vim.wikia.com/wiki/Capture_ex_command_output
 " Captures ex command and puts it in a new tab
@@ -301,13 +311,13 @@ endfunction
 function SearchInProject()
   let word = expand("<cword>")
   let @/=word
-  exec "Ag " . word
+  exec "Rg " . word
 endfunction
 
 function SearchWordInProject()
   let word = expand("<cword>")
   let @/='\<' . word . '\>'
-  exec "Ag --word-regex " . word . ""
+  exec "Rg --word-regexp " . word . ""
 endfunction
-nnoremap <leader>a :call SearchInProject()<CR>
-nnoremap <leader>A :call SearchWordInProject()<CR>
+nnoremap <leader>g :call SearchInProject()<CR>
+nnoremap <leader>G :call SearchWordInProject()<CR>
