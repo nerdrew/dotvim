@@ -180,7 +180,7 @@ function! s:Rg(file_mode, args)
   let enabled_makers =  [custom_maker]
   call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
 endfunction
-command! -bang -nargs=* -complete=file Rg call s:Rg(<bang>0, <q-args>)
+command! -bang -nargs=* -complete=file G call s:Rg(<bang>0, <q-args>)
 
 " From http://vim.wikia.com/wiki/Capture_ex_command_output
 " Captures ex command and puts it in a new tab
@@ -311,13 +311,13 @@ endfunction
 function SearchInProject()
   let word = expand("<cword>")
   let @/=word
-  exec "Rg " . word
+  exec "G " . word
 endfunction
 
 function SearchWordInProject()
   let word = expand("<cword>")
   let @/='\<' . word . '\>'
-  exec "Rg --word-regexp " . word . ""
+  exec "G --word-regexp " . word . ""
 endfunction
 nnoremap <leader>g :call SearchInProject()<CR>
 nnoremap <leader>G :call SearchWordInProject()<CR>
