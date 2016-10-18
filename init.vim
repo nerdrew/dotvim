@@ -160,7 +160,7 @@ endfunction
 
 function! s:Ag(file_mode, args)
   let cmd = "ag --vimgrep --smart-case ".substitute(a:args, '\\', '\\\\\\\\', 'g')
-  let custom_maker = neomake#utils#MakerFromCommand('bash', cmd)
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.place_signs = 0
@@ -172,7 +172,7 @@ command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
 
 function! s:Rg(file_mode, args)
   let cmd = "rg --vimgrep ".substitute(a:args, '\\', '\\\\\\\\', 'g')
-  let custom_maker = neomake#utils#MakerFromCommand('bash', cmd)
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.place_signs = 0
