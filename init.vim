@@ -3,8 +3,8 @@ let g:bufExplorerShowRelativePath=1
 "let $FZF_DEFAULT_COMMAND = 'ag -l -g ""'
 let g:fzf_command_prefix='FZF'
 let g:neomake_makeprg_remove_invalid_entries = 0
-let g:neomake_open_list = 1
 let g:neomake_serialize = 1
+let g:neomake_highlight_columns = 0
 let g:racer_cmd="racer"
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
@@ -170,8 +170,22 @@ function! s:Ag(file_mode, args)
 endfunction
 command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
 
+function! s:TestNeomake()
+  let cmd = 'echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n ""; sleep 0.1; echo -n .; echo ""; echo ""'
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = "test"
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.place_signs = 0
+  let custom_maker.errorformat = "%f:%l:%c:%m"
+  let enabled_makers =  [custom_maker]
+  call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+endfunction
+command! -complete=file TestNeomake call s:TestNeomake()
+
+command! NeomakeClear call neomake#CleanOldProjectSignsAndErrors()
+
 function! s:Rg(file_mode, args)
-  let cmd = "rg --vimgrep ".substitute(a:args, '\\', '\\\\\\\\', 'g')
+  let cmd = "rg --vimgrep ".a:args
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
