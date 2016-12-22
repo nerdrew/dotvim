@@ -5,6 +5,9 @@ let g:fzf_command_prefix='FZF'
 let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_serialize = 1
 let g:neomake_highlight_columns = 0
+let g:neomake_place_signs = 0
+"let g:neomake_verbose = 3
+"let g:neomake_logfile = '/Users/lazarus/.config/nvim/neomake.log'
 let g:racer_cmd="racer"
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
@@ -163,7 +166,7 @@ function! s:Ag(file_mode, args)
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
-  let custom_maker.place_signs = 0
+  "let custom_maker.place_signs = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
   call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
@@ -175,7 +178,7 @@ function! s:TestNeomake()
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = "test"
   let custom_maker.remove_invalid_entries = 0
-  let custom_maker.place_signs = 0
+  "let custom_maker.place_signs = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
   call neomake#Make(0, enabled_makers) | echo "running: " . cmd
@@ -189,7 +192,7 @@ function! s:Rg(file_mode, args)
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
-  let custom_maker.place_signs = 0
+  "let custom_maker.place_signs = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
   call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
