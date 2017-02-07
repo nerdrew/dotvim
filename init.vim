@@ -13,13 +13,13 @@ let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
-set grepprg=ag
+set grepprg=rg\ --vimgrep
 let g:grep_cmd_opts = '--smart-case'
 let g:omni_sql_no_default_maps = 1
+let g:loaded_python3_provider = 1
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
-Plug 'mustache/vim-mustache-handlebars'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
@@ -43,12 +43,14 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
 Plug 'simnalamburt/vim-mundo'
+Plug 'mustache/vim-mustache-handlebars'
 Plug 'racer-rust/vim-racer'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
 Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
+Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
 
@@ -116,10 +118,6 @@ nnoremap - <C-w>-
 nnoremap + <C-w>+
 nnoremap <bar> <C-w><
 nnoremap \ <C-w>>
-noremap <C-h> <C-w>h
-noremap <C-j> <C-w>j
-noremap <C-k> <C-w>k
-noremap <C-l> <C-w>l
 " alt-[
 noremap “ :tabp<cr>
 " alt-]
@@ -160,18 +158,6 @@ noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
 function! YRRunAfterMaps()
   noremap Y :<C-U>YRYankCount 'y$'<CR>
 endfunction
-
-function! s:Ag(file_mode, args)
-  let cmd = "ag --vimgrep --smart-case ".substitute(a:args, '\\', '\\\\\\\\', 'g')
-  let custom_maker = neomake#utils#MakerFromCommand(cmd)
-  let custom_maker.name = cmd
-  let custom_maker.remove_invalid_entries = 0
-  "let custom_maker.place_signs = 0
-  let custom_maker.errorformat = "%f:%l:%c:%m"
-  let enabled_makers =  [custom_maker]
-  call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
-endfunction
-command! -bang -nargs=* -complete=file Ag call s:Ag(<bang>0, <q-args>)
 
 function! s:TestNeomake()
   let cmd = 'echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n ""; sleep 0.1; echo -n .; echo ""; echo ""'
