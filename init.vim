@@ -1,22 +1,24 @@
+"let $FZF_DEFAULT_COMMAND = 'ag -l -g ""'
+"let g:neomake_logfile = '/Users/lazarus/.config/nvim/neomake.log'
+"let g:neomake_verbose = 3
 let g:bufExplorerDisableDefaultKeyMapping=1
 let g:bufExplorerShowRelativePath=1
-"let $FZF_DEFAULT_COMMAND = 'ag -l -g ""'
 let g:fzf_command_prefix='FZF'
-let g:neomake_makeprg_remove_invalid_entries = 0
-let g:neomake_serialize = 1
+let g:grep_cmd_opts = '--smart-case'
+let g:loaded_python3_provider = 1
 let g:neomake_highlight_columns = 0
+let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_place_signs = 0
-"let g:neomake_verbose = 3
-"let g:neomake_logfile = '/Users/lazarus/.config/nvim/neomake.log'
+let g:neomake_serialize = 1
+let g:omni_sql_no_default_maps = 1
 let g:racer_cmd="racer"
+let g:ruby_indent_end_alignment = 'variable'
+let g:rust_fold = 1
+let g:rustfmt_autosave = 1
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
-set grepprg=rg\ --vimgrep
-let g:grep_cmd_opts = '--smart-case'
-let g:omni_sql_no_default_maps = 1
-let g:loaded_python3_provider = 1
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
@@ -47,7 +49,6 @@ Plug 'mustache/vim-mustache-handlebars'
 Plug 'racer-rust/vim-racer'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
-Plug 'vim-ruby/vim-ruby'
 Plug 'tpope/vim-surround'
 Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'christoomey/vim-tmux-navigator'
@@ -65,9 +66,11 @@ set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set csre
 set expandtab sw=2 ts=2 sts=2
+set grepprg=rg\ --vimgrep
 set hidden " handle multiple buffers better
 set history=1000
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
+set mouse=a
 set nolist
 set noswapfile
 set number
@@ -77,16 +80,10 @@ set showcmd
 set showmatch " show matching parentheses
 set ssop-=folds
 set ssop-=options
+set statusline=%f\ %m\ %rLine:%l/%L[%p%%]Col:%vBuf:#%n[%b][0x%B]%{SyntasticStatuslineFlag()}
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
-
-set statusline=%f\ %m\ %r
-set statusline+=Line:%l/%L[%p%%]
-set statusline+=Col:%v
-set statusline+=Buf:#%n
-set statusline+=[%b][0x%B]
-set statusline+=%{SyntasticStatuslineFlag()}
 
 filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 
