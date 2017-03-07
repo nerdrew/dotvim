@@ -12,7 +12,7 @@ let g:neomake_place_signs = 0
 let g:neomake_serialize = 1
 let g:omni_sql_no_default_maps = 1
 let g:racer_cmd="racer"
-let g:ruby_indent_end_alignment = 'variable'
+let g:ruby_indent_assignment_style = 'variable'
 let g:rust_fold = 1
 let g:rustfmt_autosave = 1
 let g:syntastic_auto_loc_list = 0
@@ -64,9 +64,9 @@ set backspace=indent,eol,start
 set backupdir=.,$TMPDIR
 set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
-set csre
+set cst
 set expandtab sw=2 ts=2 sts=2
-set grepprg=rg\ --vimgrep
+set grepprg=rg\ -n
 set hidden " handle multiple buffers better
 set history=1000
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
@@ -105,6 +105,8 @@ if has('autocmd')
         \| exe "normal! g`\"" | endif
 
 	au BufReadPost quickfix nnoremap <silent> <buffer> <leader>h  <C-W><CR><C-w>K | nnoremap <silent> <buffer> <leader>H  <C-W><CR><C-w>K<C-w>b | nnoremap <silent> <buffer> q :ccl<CR> | nnoremap <silent> <buffer> <leader>t  <C-w><CR><C-w>T | nnoremap <silent> <buffer> <leader>T  <C-w><CR><C-w>TgT<C-W><C-W> | nnoremap <silent> <buffer> <leader>v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
+
+  au FileType rust noremap <leader>] :call RacerForTermUnderCursor()<cr>
 endif
 
 let mapleader = "\<Space>"
@@ -130,7 +132,7 @@ noremap gn /<<<<<<<\\|>>>>>>>\\|=======\\|\|\|\|\|\|\|\|<cr>
 
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
-noremap <unique> <leader>md :!mkdir -p %:p:h<cr>
+"noremap <unique> <leader>md :!mkdir -p %:p:h<cr>
 noremap <unique> <leader><space> :nohls<cr>
 noremap <unique> <leader>ew :e <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>es :sp <C-R>=expand('%:h').'/'<cr>
@@ -147,9 +149,10 @@ noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
 noremap <unique> <leader>d :FZFBuffers<cr>
-nmap <C-\> :call CscopeForTermUnderCursor()<cr>
 noremap <unique> <leader>x :let @+ = expand('%')<cr>
 noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
+
+noremap <leader>] :call CscopeForTermUnderCursor()<cr>
 
 " See yankring-custom-maps
 function! YRRunAfterMaps()
@@ -175,7 +178,6 @@ function! s:Rg(file_mode, args)
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
-  "let custom_maker.place_signs = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
   call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
@@ -300,12 +302,41 @@ function! CscopeForTermUnderCursor()
   while index(validTypes, type) == -1
     let type = nr2char(getchar())
     if index(quitTypes, type) >= 0
+      redraw!
       return
     endif
   endwhile
   let search = expand('<cword>')
   call inputrestore()
   execute 'cs find '.type.' '.search
+endfunction
+
+function! RacerForTermUnderCursor()
+  call inputsave()
+  let type = ''
+  let validTypes = ['g', 's', 'v', 'd']
+  let quitTypes = ['q', '', '']
+  echo 'racer navigation (g=rust-def/s=rust-def-split/v=rust-def-vertical/d=rust-doc/q=quit): '
+  while index(validTypes, type) == -1
+    let type = nr2char(getchar())
+    if index(quitTypes, type) >= 0
+      redraw!
+      return
+    endif
+  endwhile
+  call inputrestore()
+
+  if type == 'g'
+    call racer#GoToDefinition()
+  elseif type == 's'
+    split
+    call racer#GoToDefinition()
+  elseif type == 'v'
+    vsplit
+    call racer#GoToDefinition()
+  elseif type == 'd'
+    call racer#ShowDocumentation()
+  endif
 endfunction
 
 function SearchInProject()
