@@ -5,7 +5,6 @@ let g:bufExplorerDisableDefaultKeyMapping=1
 let g:bufExplorerShowRelativePath=1
 let g:fzf_command_prefix='FZF'
 let g:grep_cmd_opts = '--smart-case'
-let g:loaded_python3_provider = 1
 let g:neomake_highlight_columns = 0
 let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_place_signs = 0
@@ -14,7 +13,6 @@ let g:omni_sql_no_default_maps = 1
 let g:racer_cmd="racer"
 let g:ruby_indent_assignment_style = 'variable'
 let g:rust_fold = 1
-let g:rustfmt_autosave = 1
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
@@ -36,11 +34,11 @@ Plug 'majutsushi/tagbar'
 Plug 'MarcWeber/vim-addon-local-vimrc'
 Plug 'cstrahan/vim-capnp'
 Plug 'kchmck/vim-coffee-script'
+Plug 'justinmk/vim-dirvish'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'fatih/vim-go'
-Plug 'jnwhiteh/vim-golang'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
@@ -76,6 +74,7 @@ set noswapfile
 set number
 set numberwidth=3
 set ruler
+set shell=zsh
 set showcmd
 set showmatch " show matching parentheses
 set ssop-=folds
@@ -88,35 +87,40 @@ set wildmode=list:longest
 filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 
 if has('autocmd')
-  autocmd filetype python setlocal expandtab sw=4 ts=4 sts=4
-  autocmd filetype c setlocal sw=4 ts=8 nolist
+  autocmd FileType c setlocal sw=4 ts=8 nolist
+  autocmd FileType dirvish call fugitive#detect(@%)
+  autocmd FileType python setlocal expandtab sw=4 ts=4 sts=4
+  autocmd FileType rust noremap <silent> <buffer> <leader>] :call RacerForTermUnderCursor()<cr>
 
   " Show trailing whitepace and spaces before a tab:
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
 
   autocmd BufRead,BufNewFile *.as set filetype=actionscript
 
-  " Remove trailing whitespace on save
-  autocmd BufWritePre *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json} StripTrailingWhitespace
+  " Remove trailing whitespace on save if the file has no trailing whitespace
+  autocmd BufRead,BufNewFile *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json,vim} call s:TestStripTrailingWhitespace()
 
   " Remember last location in file, but not for commit messages.
   " see :help last-position-jump
   autocmd BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g`\"" | endif
 
-	au BufReadPost quickfix nnoremap <silent> <buffer> <leader>h  <C-W><CR><C-w>K | nnoremap <silent> <buffer> <leader>H  <C-W><CR><C-w>K<C-w>b | nnoremap <silent> <buffer> q :ccl<CR> | nnoremap <silent> <buffer> <leader>t  <C-w><CR><C-w>T | nnoremap <silent> <buffer> <leader>T  <C-w><CR><C-w>TgT<C-W><C-W> | nnoremap <silent> <buffer> <leader>v  <C-w><CR><C-w>H<C-W>b<C-W>J<C-W>t
-
-  au FileType rust noremap <leader>] :call RacerForTermUnderCursor()<cr>
+  autocmd BufReadPost quickfix nnoremap <silent> <buffer> <leader>h <C-W><cr><C-W>K
+        \| nnoremap <silent> <buffer> <leader>H <C-W><cr><C-W>K<C-W>b
+        \| nnoremap <silent> <buffer> q :ccl<cr>
+        \| nnoremap <silent> <buffer> <leader>t <C-W><cr><C-W>T
+        \| nnoremap <silent> <buffer> <leader>T <C-W><cr><C-W>TgT<C-W><C-W>
+        \| nnoremap <silent> <buffer> <leader>v <C-W><cr><C-W>H<C-W>b<C-W>J<C-W>t
 endif
 
 let mapleader = "\<Space>"
 noremap / /\v
-noremap <C-e> 3<C-e>
-noremap <C-y> 3<C-y>
-nnoremap - <C-w>-
-nnoremap + <C-w>+
-nnoremap <bar> <C-w><
-nnoremap \ <C-w>>
+noremap <C-E> 3<C-E>
+noremap <C-Y> 3<C-Y>
+nnoremap - <C-W>-
+nnoremap + <C-W>+
+nnoremap <bar> <C-W><
+nnoremap \ <C-W>>
 " alt-[
 noremap “ :tabp<cr>
 " alt-]
@@ -156,22 +160,22 @@ noremap <leader>] :call CscopeForTermUnderCursor()<cr>
 
 " See yankring-custom-maps
 function! YRRunAfterMaps()
-  noremap Y :<C-U>YRYankCount 'y$'<CR>
+  noremap Y :<C-U>YRYankCount 'y$'<cr>
 endfunction
 
-function! s:TestNeomake()
-  let cmd = 'echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n ""; sleep 0.1; echo -n .; echo ""; echo ""'
-  let custom_maker = neomake#utils#MakerFromCommand(cmd)
-  let custom_maker.name = "test"
-  let custom_maker.remove_invalid_entries = 0
-  "let custom_maker.place_signs = 0
-  let custom_maker.errorformat = "%f:%l:%c:%m"
-  let enabled_makers =  [custom_maker]
-  call neomake#Make(0, enabled_makers) | echo "running: " . cmd
-endfunction
-command! -complete=file TestNeomake call s:TestNeomake()
+"function! s:TestNeomake()
+"  let cmd = 'echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n .; sleep 0.1; echo .; sleep 0.1; echo -n ""; sleep 0.1; echo -n .; echo ""; echo ""'
+"  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+"  let custom_maker.name = "test"
+"  let custom_maker.remove_invalid_entries = 0
+"  "let custom_maker.place_signs = 0
+"  let custom_maker.errorformat = "%f:%l:%c:%m"
+"  let enabled_makers =  [custom_maker]
+"  call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+"endfunction
+"command! -complete=file TestNeomake call s:TestNeomake()
 
-command! NeomakeClear call neomake#CleanOldProjectSignsAndErrors()
+command! NeomakeClear call neomake#CleanOldProjectSignsAndErrors() | call neomake#CleanOldFileSignsAndErrors()
 
 function! s:Rg(file_mode, args)
   let cmd = "rg --vimgrep ".a:args
@@ -180,7 +184,7 @@ function! s:Rg(file_mode, args)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
-  call neomake#Make(a:file_mode, enabled_makers) | echo "running: " . cmd
+  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file G call s:Rg(<bang>0, <q-args>)
 
@@ -220,7 +224,8 @@ function! s:LargeFile()
   filetype off
   set filetype=text
   set noincsearch
-  set ft? incsearch?
+  set nonumber
+  set ft? incsearch? number?
 endfunction
 command! -complete=command LargeFile call s:LargeFile()
 
@@ -228,7 +233,8 @@ function! s:LargeFileOff()
   filetype on
   filetype detect
   set incsearch
-  set ft? incsearch?
+  set number
+  set ft? incsearch? number?
 endfunction
 command! -complete=command LargeFileOff call s:LargeFileOff()
 
@@ -277,8 +283,14 @@ endfunction
 command! -complete=command -range RunCommand <line1>,<line2>call s:RunCommand()
 map <unique> <leader>! :RunCommand<cr>
 
+function! s:TestStripTrailingWhitespace()
+  if !search('\s\+$', "cnw", 0, 500)
+    autocmd BufWritePre <buffer> StripTrailingWhitespace
+  endif
+endfunction
+
 function! s:StripTrailingWhitespace(line1, line2)
-  let _s=@/ | exe "normal! msHmt" | exe 'keepj '.a:line1.",".a:line2.'s/\s\+$//e' | let @/=_s | nohl | exe "normal! 'tzt`s"
+  let _s=@/ | exe "keepj normal! msHmt" | exe 'keepj '.a:line1.",".a:line2.'s/\s\+$//e' | let @/=_s | nohl | exe "keepj normal! 'tzt`s"
 endfunction
 command! -range=% -complete=command StripTrailingWhitespace call s:StripTrailingWhitespace(<line1>, <line2>)
 
@@ -350,5 +362,5 @@ function SearchWordInProject()
   let @/='\<' . word . '\>'
   exec "G --word-regexp " . word . ""
 endfunction
-nnoremap <leader>g :call SearchInProject()<CR>
-nnoremap <leader>G :call SearchWordInProject()<CR>
+nnoremap <leader>g :call SearchInProject()<cr>
+nnoremap <leader>G :call SearchWordInProject()<cr>
