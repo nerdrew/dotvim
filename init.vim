@@ -10,7 +10,11 @@ let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_place_signs = 0
 let g:neomake_serialize = 1
 let g:omni_sql_no_default_maps = 1
-let g:racer_cmd="racer"
+let g:racer_cmd = "racer"
+let g:rooter_manual_only = 1
+let g:rooter_patterns = ['Gemfile', 'Cargo.toml', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
+let g:rooter_resolve_links = 1
+let g:rooter_use_lcd = 1
 let g:ruby_indent_assignment_style = 'variable'
 let g:rust_fold = 1
 let g:syntastic_auto_loc_list = 0
@@ -27,7 +31,7 @@ Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'skwp/greplace.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
-Plug 'evanmiller/nginx-vim-syntax'
+Plug 'chr4/nginx.vim'
 Plug 'ciaranm/securemodelines'
 Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
@@ -40,6 +44,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'fatih/vim-go'
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'artur-shaik/vim-javacomplete2'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
 Plug 'simnalamburt/vim-mundo'
@@ -47,11 +52,17 @@ Plug 'mustache/vim-mustache-handlebars'
 Plug 'racer-rust/vim-racer'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
+Plug 'airblade/vim-rooter'
 Plug 'tpope/vim-surround'
+Plug 'wellle/targets.vim'
 Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 for fork in split(globpath('~/.vim/forked-plugins', '*'))
   Plug fork
@@ -89,6 +100,7 @@ filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 if has('autocmd')
   autocmd FileType c setlocal sw=4 ts=8 nolist
   autocmd FileType dirvish call fugitive#detect(@%)
+  autocmd FileType java setlocal omnifunc=javacomplete#Complete
   autocmd FileType python setlocal expandtab sw=4 ts=4 sts=4
   autocmd FileType rust noremap <buffer> <leader>] :call RacerForTermUnderCursor()<cr>
 
@@ -132,7 +144,6 @@ noremap ’ :tabm +1<cr>
 noremap [w :tabp<cr>
 noremap ]w :tabn<cr>
 noremap <C-@> @@
-noremap gn /<<<<<<<\\|>>>>>>>\\|=======\\|\|\|\|\|\|\|\|<cr>
 
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
@@ -146,7 +157,7 @@ noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>y "+y
 noremap <unique> <leader>p "+p
 noremap <unique> <leader>P "+P
-"noremap <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
+noremap <unique> <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
 noremap <unique> <leader>t :TagbarToggle<cr>
 noremap <unique> <leader>u :MundoToggle<cr>
