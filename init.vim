@@ -23,7 +23,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
-Plug 'junegunn/fzf.vim'
+Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'skwp/greplace.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -90,7 +90,7 @@ if has('autocmd')
   autocmd FileType c setlocal sw=4 ts=8 nolist
   autocmd FileType dirvish call fugitive#detect(@%)
   autocmd FileType python setlocal expandtab sw=4 ts=4 sts=4
-  autocmd FileType rust noremap <silent> <buffer> <leader>] :call RacerForTermUnderCursor()<cr>
+  autocmd FileType rust noremap <buffer> <leader>] :call RacerForTermUnderCursor()<cr>
 
   " Show trailing whitepace and spaces before a tab:
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
@@ -310,7 +310,7 @@ function! CscopeForTermUnderCursor()
   let type = ''
   let validTypes = ['d', 'c', 'g', 's', 't']
   let quitTypes = ['q', '', '']
-  echo 'cscope find type (d=called/c=calling/g=definition/s=symbol/t=text/q=quit): '
+  echo 'cscope find <type> (d=called/c=calling/g=definition/s=symbol/t=text/q=quit): '
   while index(validTypes, type) == -1
     let type = nr2char(getchar())
     if index(quitTypes, type) >= 0
@@ -351,15 +351,21 @@ function! RacerForTermUnderCursor()
   endif
 endfunction
 
+if executable('rls')
+  au User lsp_setup call lsp#register_server({ 'name': 'rls', 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']}, 'whitelist': ['rust'], })
+endif
+
 function SearchInProject()
   let word = expand("<cword>")
-  let @/=word
+  let @/='\v'.word
+  set hls
   exec "G " . word
 endfunction
 
 function SearchWordInProject()
   let word = expand("<cword>")
-  let @/='\<' . word . '\>'
+  let @/='\v<' . word . '>'
+  set hls
   exec "G --word-regexp " . word . ""
 endfunction
 nnoremap <leader>g :call SearchInProject()<cr>
