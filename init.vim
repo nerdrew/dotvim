@@ -21,6 +21,7 @@ let g:syntastic_auto_loc_list = 0
 let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
+let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ] }
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
@@ -169,6 +170,10 @@ noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
 
 noremap <leader>] :call CscopeForTermUnderCursor()<cr>
 
+if filereadable(".git/cscope.out")
+  execute "cs add .git/cscope.out"
+endif
+
 " See yankring-custom-maps
 function! YRRunAfterMaps()
   noremap Y :<C-U>YRYankCount 'y$'<cr>
@@ -217,6 +222,7 @@ function! s:XMLlint(line1, line2)
 endfunction
 command! -range=% -complete=command XMLlint call s:XMLlint(<line1>, <line2>)
 
+" json_reformt is part of yajl
 function! s:JSONlint(line1, line2)
   execute a:line1.",".a:line2." !json_reformat"
 endfunction

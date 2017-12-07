@@ -47,7 +47,7 @@ function! RunPantsTest()
 endfunction
 command! -complete=command -nargs=? RunPantsTest call RunPantsTest()
 
-if g:java_pants
+if exists('g:java_pants') && g:java_pants
   noremap <buffer> <silent> <unique> <leader>r :RunPantsTest<CR>
   "compiler pants
 else
