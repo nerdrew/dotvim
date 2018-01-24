@@ -92,6 +92,7 @@ set showmatch " show matching parentheses
 set ssop-=folds
 set ssop-=options
 set statusline=%f\ %m\ %rLine:%l/%L[%p%%]Col:%vBuf:#%n[%b][0x%B]%{SyntasticStatuslineFlag()}
+set tags+=.git/tags
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
