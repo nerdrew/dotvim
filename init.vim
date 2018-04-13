@@ -65,7 +65,7 @@ Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
-for fork in split(globpath('~/.vim/forked-plugins', '*'))
+for fork in split(globpath('~/.config/nvim/forked-plugins', '*'))
   Plug fork
 endfor
 call plug#end()
