@@ -93,6 +93,7 @@ set ssop-=folds
 set ssop-=options
 set statusline=%f\ %m\ %rLine:%l/%L[%p%%]Col:%vBuf:#%n[%b][0x%B]%{SyntasticStatuslineFlag()}
 set tags+=.git/tags
+set title
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
@@ -125,6 +126,10 @@ if has('autocmd')
         \| nnoremap <silent> <buffer> <leader>t <C-W><cr><C-W>T
         \| nnoremap <silent> <buffer> <leader>T <C-W><cr><C-W>TgT<C-W><C-W>
         \| nnoremap <silent> <buffer> <leader>v <C-W><cr><C-W>H<C-W>b<C-W>J<C-W>t
+
+  if executable('rls')
+    autocmd User lsp_setup call lsp#register_server({ 'name': 'rls', 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']}, 'whitelist': ['rust'], })
+  endif
 endif
 
 let mapleader = "\<Space>"
@@ -368,10 +373,6 @@ function! RacerForTermUnderCursor()
     call racer#ShowDocumentation()
   endif
 endfunction
-
-if executable('rls')
-  au User lsp_setup call lsp#register_server({ 'name': 'rls', 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']}, 'whitelist': ['rust'], })
-endif
 
 function SearchInProject()
   let word = expand("<cword>")
