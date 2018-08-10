@@ -43,7 +43,7 @@ function! RunPantsTest()
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
   let enabled_makers =  [custom_maker]
-  "update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+  update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunPantsTest call RunPantsTest()
 

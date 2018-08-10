@@ -17,15 +17,31 @@ let g:rooter_resolve_links = 1
 let g:rooter_use_lcd = 1
 let g:ruby_indent_assignment_style = 'variable'
 let g:rust_fold = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
+"let g:syntastic_auto_loc_list = 0
+"let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
+"let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
+"let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
+"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
+let g:tagbar_autofocus = 1
 let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ] }
+"let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ], 'ctagsbin': 'ripper-tags', 'ctagsargs': [] }
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+"let g:ale_completion_enabled = 1
+let g:ale_lint_delay = 2000 " wait 2s before linting after a change
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
 Plug 'vim-scripts/YankRing.vim'
+Plug 'w0rp/ale'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
 Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
@@ -33,12 +49,15 @@ Plug 'skwp/greplace.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
+Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
 Plug 'ervandew/supertab'
+Plug 'keith/swift.vim'
 Plug 'majutsushi/tagbar'
 Plug 'MarcWeber/vim-addon-local-vimrc'
 Plug 'cstrahan/vim-capnp'
 Plug 'kchmck/vim-coffee-script'
+Plug 'sebdah/vim-delve'
 Plug 'justinmk/vim-dirvish'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
@@ -60,10 +79,10 @@ Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
-Plug 'prabirshrestha/asyncomplete.vim'
+"Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
+"Plug 'prabirshrestha/asyncomplete-lsp.vim'
 
 for fork in split(globpath('~/.config/nvim/forked-plugins', '*'))
   Plug fork
@@ -73,6 +92,7 @@ call plug#end()
 set backspace=indent,eol,start
 set backupdir=.,$TMPDIR
 set copyindent
+set completeopt=menu,preview,noinsert
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
@@ -91,9 +111,11 @@ set showcmd
 set showmatch " show matching parentheses
 set ssop-=folds
 set ssop-=options
-set statusline=%f\ %m\ %rLine:%l/%L[%p%%]Col:%vBuf:#%n[%b][0x%B]%{SyntasticStatuslineFlag()}
+let &statusline="%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
+      \ . "%{tagbar#currenttag(' %s','','f')}%{AleStatus()}"
 set tags+=.git/tags
 set title
+"set termguicolors
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
@@ -105,7 +127,6 @@ if has('autocmd')
   autocmd FileType dirvish call fugitive#detect(@%)
   autocmd FileType java setlocal omnifunc=javacomplete#Complete
   autocmd FileType python setlocal expandtab sw=4 ts=4 sts=4
-  autocmd FileType rust noremap <buffer> <leader>] :call RacerForTermUnderCursor()<cr>
 
   " Show trailing whitepace and spaces before a tab:
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
@@ -127,30 +148,43 @@ if has('autocmd')
         \| nnoremap <silent> <buffer> <leader>T <C-W><cr><C-W>TgT<C-W><C-W>
         \| nnoremap <silent> <buffer> <leader>v <C-W><cr><C-W>H<C-W>b<C-W>J<C-W>t
 
-  if executable('rls')
-    autocmd User lsp_setup call lsp#register_server({ 'name': 'rls', 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']}, 'whitelist': ['rust'], })
-  endif
+  " :bd! doesn't seem to kill the process correctly
+  "autocmd TermOpen * noremap <unique> <silent> <buffer> q :bd!<CR>
 endif
 
 let mapleader = "\<Space>"
-noremap / /\v
-noremap <C-E> 3<C-E>
-noremap <C-Y> 3<C-Y>
-nnoremap - <C-W>-
-nnoremap + <C-W>+
-nnoremap <bar> <C-W><
-nnoremap \ <C-W>>
+" tmux-navigator maps the others
+tnoremap <unique> <C-h> <C-\><C-N><C-w>h
+tnoremap <unique> <C-j> <C-\><C-N><C-w>j
+tnoremap <unique> <C-k> <C-\><C-N><C-w>k
+tnoremap <unique> <C-l> <C-\><C-N><C-w>l
+noremap <unique> / /\v
+noremap <unique> <C-E> 3<C-E>
+noremap <unique> <C-Y> 3<C-Y>
+nnoremap <unique> - <C-W>-
+nnoremap <unique> + <C-W>+
+nnoremap <unique> <bar> <C-W><
+nnoremap <unique> \ <C-W>>
 " alt-[
-noremap “ :tabp<cr>
+noremap <unique> “ :tabp<cr>
+inoremap <unique> “ <ESC>:tabp<cr>
+tnoremap <unique> “ <C-\><C-N>:tabp<cr>
 " alt-]
-noremap ‘ :tabn<cr>
+noremap <unique> ‘ :tabn<cr>
+inoremap <unique> ‘ <ESC>:tabn<cr>
+tnoremap <unique> ‘ <C-\><C-N>:tabn<cr>
 " alt-shift-[
-noremap ” :tabm -1<cr>
+noremap <unique> ” :tabm -1<cr>
+inoremap <unique> ” <ESC>:tabm -1<cr>
+tnoremap <unique> ” <C-\><C-N>:tabm -1<cr>
 " alt-shift-]
-noremap ’ :tabm +1<cr>
-noremap [w :tabp<cr>
-noremap ]w :tabn<cr>
-noremap <C-@> @@
+noremap <unique> ’ :tabm +1<cr>
+inoremap <unique> ’ <ESC>:tabm +1<cr>
+tnoremap <unique> ’ <C-\><C-N>:tabm +1<cr>
+
+noremap <unique> [w :tabp<cr>
+noremap <unique> ]w :tabn<cr>
+noremap <unique> <C-@> @@
 
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
@@ -164,7 +198,7 @@ noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>y "+y
 noremap <unique> <leader>p "+p
 noremap <unique> <leader>P "+P
-noremap <unique> <leader>gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
+noremap <unique> gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
 noremap <unique> <leader>t :TagbarToggle<cr>
 noremap <unique> <leader>u :MundoToggle<cr>
@@ -284,6 +318,23 @@ function! s:HideSynStack()
 endfunction
 command! -complete=command HideSynStack call s:HideSynStack()
 
+function! AleStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
+
+    let l:status = ''
+
+    if all_errors > 0
+      let l:status .= printf('  E:%d', all_errors)
+    endif
+    if all_non_errors > 0
+      let l:status .= printf('  W:%d', all_non_errors)
+    endif
+    return status
+endfunction
+
 " Send the range to specified shell command's standard input
 function! s:SendToCommand(UserCommand) range
   let SelectedLines = getline(a:firstline,a:lastline)
@@ -344,34 +395,6 @@ function! CscopeForTermUnderCursor()
   let search = expand('<cword>')
   call inputrestore()
   execute 'cs find '.type.' '.search
-endfunction
-
-function! RacerForTermUnderCursor()
-  call inputsave()
-  let type = ''
-  let validTypes = ['g', 's', 'v', 'd']
-  let quitTypes = ['q', '', '']
-  echo 'racer navigation (g=rust-def/s=rust-def-split/v=rust-def-vertical/d=rust-doc/q=quit): '
-  while index(validTypes, type) == -1
-    let type = nr2char(getchar())
-    if index(quitTypes, type) >= 0
-      redraw!
-      return
-    endif
-  endwhile
-  call inputrestore()
-
-  if type == 'g'
-    call racer#GoToDefinition()
-  elseif type == 's'
-    split
-    call racer#GoToDefinition()
-  elseif type == 'v'
-    vsplit
-    call racer#GoToDefinition()
-  elseif type == 'd'
-    call racer#ShowDocumentation()
-  endif
 endfunction
 
 function SearchInProject()
