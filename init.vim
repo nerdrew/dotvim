@@ -156,6 +156,8 @@ set title
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
+set undofile
+set undodir=~/.vim/undo
 
 filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 
