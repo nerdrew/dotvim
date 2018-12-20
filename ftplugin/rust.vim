@@ -1,32 +1,61 @@
-if exists("b:lazarus_rust")
+if exists('b:lazarus_rust')
   finish
 endif
 let b:lazarus_rust = 1
 
-function! CargoTest(filter)
-  let &l:makeprg = 'cargo test ' . a:filter
-  " ignore lines: ignore blank / whitespace lines
-  let &l:efm = '%f:%l:%m, %f:%l %m, %m\, %f:%l, %-G\\s%#'
-  update | Neomake! | echo "running: cargo test " . a:filter
+let b:rust_project_root = get(b:, 'rust_project_root', FindRootDirectory())
 
-  "let cmd = 'cargo test'
+noremap <buffer> <silent> <unique> <leader>e :DebugRustTest<CR>
+noremap <buffer> <silent> <unique> <leader>E :DebugRustTest!<CR>
+noremap <buffer> <silent> <unique> <leader>r :RunRustTest<CR>
+noremap <buffer> <silent> <unique> <leader>R :RunRustTest!<CR>
+noremap <buffer> <silent> <unique> <leader>s :RustToggleBreakpoint<CR>
+noremap <buffer> <silent> <unique> <leader>S :RustClearAll<CR>
 
-  "if a:filter
-    "let s:test_function = substitute(tagbar#currenttag('%s', ''), '()$', '', '')
-    "if s:test_function == ''
-      "throw 'could not find the current function'
-    "endif
-  "endif
+"noremap <buffer> <silent> <leader>] :call RacerForTermUnderCursor()<cr>
+"noremap <buffer> <silent> <unique> K :call LanguageClient#textDocument_hover()<CR>
+"noremap <buffer> <silent> <unique> <leader>] :call LanguageClient#textDocument_definition()<CR>
+"imap <buffer> <tab> <c-o>:call ale#completion#ManualQueue()<cr>
+"imap <buffer> <silent> <expr> <tab> pumvisible() ? "\<tab>" : "\<c-o>:call ale#completion#ManualQueue()\<cr>"
 
-  "let custom_maker = neomake#utils#MakerFromCommand(cmd)
-  "let custom_maker.name = cmd
-  "let custom_maker.remove_invalid_entries = 0
-  "let custom_maker.errorformat = '%f:%l:%m, %f:%l %m, %m\, %f:%l, %-G\\s%#'
-  "let custom_maker.mapexpr = 'substitute(v:val, "\\v^(\\s+)(\\S+:\\d+:\\s+.*)$", "\\1".neomake_bufdir."/\\2", "")'
-  "let enabled_makers =  [custom_maker]
-  "update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+"set completeopt=menu,preview,noinsert
+"set completefunc=LanguageClient#complete
+
+if exists('g:lazarus_rust')
+  finish
+endif
+let g:lazarus_rust = 1
+
+function! s:GetCurrentTest() abort
+  let test_function = substitute(tagbar#currenttag('%s', '', 'f'), '()$', '', '')
+  if match(test_function, '^tests::') > -1
+    let s:test_function = l:test_function
+  endif
+  if !exists('s:test_function') || s:test_function == ''
+    throw 'could not find the current function'
+  endif
+  return s:test_function
 endfunction
-command! -complete=command -nargs=? CargoTest call CargoTest(<q-args>)
+
+function! s:RunRustTest(mode) abort
+  let cmd = 'cargo test '
+
+  if a:mode
+    let cmd .= s:GetCurrentTest()
+  endif
+
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.cwd = b:rust_project_root
+  " thread 'search::tests::search_no_context' panicked at 'assertion failed: `(left == right)`
+  "   left: `SearchResult { matches: Matches({None: {(2, 2), (5, 5)}}), has_groups: Some(false) }`,
+ "   right: `SearchResult { matches: Matches({None: {(2, 2), (4, 5)}}), has_groups: Some(false) }`', src/search.rs:322:9
+  let custom_maker.errorformat = '%Ethread %m, %Z%m\,%f:%l:%c, %C%m'
+  let enabled_makers =  [custom_maker]
+  update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+endfunction
+command! -complete=command -bang RunRustTest call s:RunRustTest(<bang>0)
 
 function! RacerForTermUnderCursor()
   call inputsave()
@@ -57,12 +86,158 @@ function! RacerForTermUnderCursor()
 endfunction
 
 
-if has('autocmd')
-  if executable('rls')
-    autocmd User lsp_setup call lsp#register_server({ 'name': 'rls', 'cmd': {server_info->['rustup', 'run', 'nightly', 'rls']}, 'whitelist': ['rust'], })
-  endif
+" rust-lldb
+"-------------------------------------------------------------------------------
+"                           Configuration options
+"-------------------------------------------------------------------------------
+
+if !exists("g:rust_lldb_cache_path")
+  let g:rust_lldb_cache_path = $HOME ."/.cache/". v:progname ."/vim-rust_lldb"
 endif
 
-noremap <buffer> <silent> <unique> <leader>r :CargoTest<CR>
-noremap <buffer> <silent> <unique> <leader>R :exe CargoTest(expand('<cword>'))<CR>
-noremap <buffer> <silent> <leader>] :call RacerForTermUnderCursor()<cr>
+" g:rust_lldb_breakpoint_sign sets the sign to use in the gutter to indicate
+" breakpoints.
+if !exists("g:rust_lldb_breakpoint_sign")
+  let g:rust_lldb_breakpoint_sign = "●"
+endif
+
+" g:rust_lldb_breakpoint_sign_highlight sets the highlight color for the breakpoint
+" sign.
+if !exists("g:rust_lldb_breakpoint_sign_highlight")
+  let g:rust_lldb_breakpoint_sign_highlight = "WarningMsg"
+endif
+
+" g:rust_lldb_new_command is used to create a new window to run the terminal in.
+"
+" Supported values are:
+" - vnew         Opens a vertical window (default)
+" - new          Opens a horizontal window
+" - enew         Opens a new full screen window
+if !exists("g:rust_lldb_new_command")
+  let g:rust_lldb_new_command = "vnew"
+endif
+
+" g:rust_lldb_watchpoint_sign sets the sign to use in the gutter to indicate
+" watchpoints.
+if !exists("g:rust_lldb_watchpoint_sign")
+  let g:rust_lldb_watchpoint_sign = "◆"
+endif
+
+" g:rust_lldb_watchpoint_sign_highlight sets the highlight color for the watchpoint
+" sign.
+if !exists("g:rust_lldb_watchpoint_sign_highlight")
+  let g:rust_lldb_watchpoint_sign_highlight = "WarningMsg"
+endif
+
+" g:rust_lldb_instructions_file holdes the path to the instructions file. It should
+" be reasonably unique.
+let g:rust_lldb_instructions_file = g:rust_lldb_cache_path ."/". getpid() .".". localtime()
+
+"-------------------------------------------------------------------------------
+"                              Implementation
+"-------------------------------------------------------------------------------
+" rust_lldb_instructions holds all the instructions to rust_lldb in a list.
+let s:rust_lldb_instructions = []
+
+" Ensure that the cache path exists.
+call mkdir(g:rust_lldb_cache_path, "p")
+
+" Remove the instructions file
+autocmd VimLeave * call s:RustRemoveInstructionsFile()
+
+" Configure the breakpoint and watchpoint signs in the gutter.
+exe "sign define rust_lldb_breakpoint text=". g:rust_lldb_breakpoint_sign ." texthl=". g:rust_lldb_breakpoint_sign_highlight
+exe "sign define rust_lldb_watchpoint text=". g:rust_lldb_watchpoint_sign ." texthl=". g:rust_lldb_watchpoint_sign_highlight
+
+" clearAll is removing all active breakpoints and watchpoints.
+function! s:RustClearAll()
+  for i in range(len(s:rust_lldb_instructions))
+    exe "sign unplace ". eval(i+1)
+  endfor
+
+  let s:rust_lldb_instructions = []
+  call s:RustRemoveInstructionsFile()
+endfunction
+command! -nargs=0 RustClearAll call s:RustClearAll()
+
+" removeInstructionsFile is removing the defined instructions file. Typically
+" called when neovim is exited.
+function! s:RustRemoveInstructionsFile()
+  call delete(g:rust_lldb_instructions_file)
+endfunction
+
+" runCommand is running the  commands.
+"
+" command:           Is the  command to run.
+" flags:             String passing additional flags to the command.
+" dir:               Path to the cwd.
+" init:              Boolean determining if we should append the --init
+"                    parameter.
+" flushInstructions: Boolean determining if we should flush the in memory
+"                    instructions before calling .
+function! s:DebugRustTest(mode)
+  if a:mode
+    let test_function = s:GetCurrentTest()
+  endif
+
+  call s:RustWriteInstructionsFile()
+
+  " brew python makes lldb sad
+  let cmd = 'set -x; '
+        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. b:rust_project_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | ggrep -oP "(?<=Running ).*$"); '
+        \. 'PATH=/usr/bin:$PATH rust-lldb -s '.g:rust_lldb_instructions_file.' -- $TEST_BINARY '.l:test_function
+
+  if g:rust_lldb_new_command == "vnew"
+    vnew
+  elseif g:rust_lldb_new_command == "enew"
+    enew
+  elseif g:rust_lldb_new_command == "new"
+    new
+  else
+    echoerr "Unsupported g:rust_lldb_new_command, ". g:rust_lldb_new_command
+    return
+  endif
+
+  update | echom "running: " . cmd
+  call termopen(cmd)
+  startinsert
+endfunction
+command! -bang DebugRustTest call s:DebugRustTest(<bang>0)
+
+function! s:RustAddBreakpoint(file, line)
+  let breakpoint = "breakpoint set -f ". a:file ." -l ". a:line
+
+    call add(s:rust_lldb_instructions, breakpoint)
+
+    exe "sign place ". len(s:rust_lldb_instructions) ." line=". a:line ." name=rust_lldb_breakpoint file=". a:file
+endfunction
+
+function! s:RustRemoveBreakpoint(file, line)
+  let breakpoint = "breakpoint set -f ". a:file ." -l ". a:line
+
+    let i = index(s:rust_lldb_instructions, breakpoint)
+    if i != -1
+        call remove(s:rust_lldb_instructions, i)
+        exe "sign unplace ". eval(i+1) ." file=". a:file
+    endif
+endfunction
+
+" toggleBreakpoint is toggling breakpoints at the line under the cursor.
+function! s:RustToggleBreakpoint(file, line)
+  let breakpoint = "breakpoint set -f ". a:file ." -l ". a:line
+
+  " Find the breakpoint in the instructions, if available. If it's already
+  " there, remove it. If not, add it.
+  if index(s:rust_lldb_instructions, breakpoint) == -1
+    call s:RustAddBreakpoint(a:file, a:line)
+  else
+    call s:RustRemoveBreakpoint(a:file, a:line)
+  endif
+endfunction
+command! -nargs=0 RustToggleBreakpoint call s:RustToggleBreakpoint(expand('%:p'), line('.'))
+
+" writeInstructionsFile is persisting the instructions to the set file.
+function! s:RustWriteInstructionsFile()
+  call s:RustRemoveInstructionsFile()
+  call writefile(s:rust_lldb_instructions + ["b rust_panic", "run"], g:rust_lldb_instructions_file)
+endfunction

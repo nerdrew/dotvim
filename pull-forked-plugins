@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "fileutils"
 
@@ -12,11 +13,15 @@ changed = {
   "neomake" => "https://github.com/benekastah",
   #"syntastic" => "https://github.com/scrooloose",
   "vim-ruby" => "https://github.com/vim-ruby",
+  "ale" => "https://github.com/w0rp",
+  "rust.vim" => "https://github.com/rust-lang",
+  "vim-sh-indent" => "https://github.com/chrisbra",
 }.map do |repo, upstream|
+  puts repo
   `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(repo)
 
   Dir.chdir(repo) do
-    if /upstream/ !~ `git remote -v`
+    unless /upstream/.match?(`git remote -v`)
       `git remote add upstream #{upstream}/#{repo}.git`
       `git fetch upstream`
     end

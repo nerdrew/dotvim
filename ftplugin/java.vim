@@ -55,3 +55,27 @@ else
   noremap <buffer> <silent> <unique> <leader>R :RunMvnTest 1<CR>
   compiler mvn
 endif
+
+function! CscopeForTermUnderCursor()
+  call inputsave()
+  let type = ''
+  let validTypes = ['d', 'c', 'g', 's', 't']
+  let quitTypes = ['q', '', '']
+  echo 'cscope find <type> (d=called/c=calling/g=definition/s=symbol/t=text/q=quit): '
+  while index(validTypes, type) == -1
+    let type = nr2char(getchar())
+    if index(quitTypes, type) >= 0
+      redraw!
+      return
+    endif
+  endwhile
+  let search = expand('<cword>')
+  call inputrestore()
+  execute 'cs find '.type.' '.search
+endfunction
+
+if filereadable(".git/cscope.out")
+  execute "cs add .git/cscope.out"
+endif
+
+noremap <leader>] :call CscopeForTermUnderCursor()<cr>

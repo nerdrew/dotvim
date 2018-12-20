@@ -1,32 +1,44 @@
-"let $FZF_DEFAULT_COMMAND = 'ag -l -g ""'
-"let g:neomake_logfile = '/Users/lazarus/.config/nvim/neomake.log'
-"let g:neomake_verbose = 3
 let g:bufExplorerDisableDefaultKeyMapping=1
 let g:bufExplorerShowRelativePath=1
 let g:fzf_command_prefix='FZF'
-let g:grep_cmd_opts = '--smart-case'
+let g:neomake_echo_current_error=0
 let g:neomake_highlight_columns = 0
+"let g:neomake_open_list = 2
 let g:neomake_makeprg_remove_invalid_entries = 0
 let g:neomake_place_signs = 0
 let g:neomake_serialize = 1
+let g:neomake_virtualtext_current_error=0
 let g:omni_sql_no_default_maps = 1
-let g:racer_cmd = "racer"
 let g:rooter_manual_only = 1
 let g:rooter_patterns = ['Gemfile', 'Cargo.toml', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
 let g:rooter_resolve_links = 1
 let g:rooter_use_lcd = 1
 let g:ruby_indent_assignment_style = 'variable'
-let g:rust_fold = 1
-"let g:syntastic_auto_loc_list = 0
-"let g:syntastic_html_tidy_ignore_errors=['proprietary attribute "ng-', 'is not recognized!']
-"let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
-"let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
-"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+let g:ruby_indent_block_style = 'do'
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
+
 let g:tagbar_autofocus = 1
 let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ] }
 "let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ], 'ctagsbin': 'ripper-tags', 'ctagsargs': [] }
+let g:tagbar_type_rust = {
+      \ 'ctagstype' : 'rust',
+      \ 'kinds' : [
+      \ 'n:module',
+      \ 's:structural type',
+      \ 'i:trait interface',
+      \ 'c:implementation',
+      \ 'f:Function',
+      \ 'g:Enum',
+      \ 't:Type Alias',
+      \ 'v:Global variable',
+      \ 'M:Macro Definition',
+      \ 'm:A struct field',
+      \ 'e:An enum variant',
+      \ 'P:A method',
+      \ ]
+      \ }
+
 let g:go_highlight_build_constraints = 1
 let g:go_highlight_extra_types = 1
 let g:go_highlight_fields = 1
@@ -35,25 +47,40 @@ let g:go_highlight_methods = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
-"let g:ale_completion_enabled = 1
+
+let g:ale_completion_enabled = 1
+"let g:ale_completion_delay = 10
+let g:ale_completion_manual = 1
 let g:ale_lint_delay = 2000 " wait 2s before linting after a change
+let g:ale_linters = { 'rust': ['cargo', 'rls'], } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
+let g:ale_fixers = { 'ruby': ['rubocop'] }
+let g:ale_rust_rls_toolchain = 'nightly'
+
+let g:rust_use_custom_ctags_defs = 1
+let g:rustfmt_autosave = 0
+let g:rust_fold = 1
 
 call plug#begin('~/.vim/plugged')
 " :sort /\v.{-}\//
+"Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
+Plug 'chrisbra/Colorizer'
 Plug 'vim-scripts/YankRing.vim'
-Plug 'w0rp/ale'
+"Plug 'w0rp/ale'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
 Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'skwp/greplace.vim'
+Plug 'udalov/kotlin-vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
-Plug 'rust-lang/rust.vim'
+"Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
 Plug 'ervandew/supertab'
 Plug 'keith/swift.vim'
 Plug 'majutsushi/tagbar'
+Plug 'junegunn/vader.vim'
 Plug 'MarcWeber/vim-addon-local-vimrc'
 Plug 'cstrahan/vim-capnp'
 Plug 'kchmck/vim-coffee-script'
@@ -79,20 +106,29 @@ Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
-"Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-"Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+"Plug 'iCyMind/NeoSolarized'
+"Plug 'ayu-theme/ayu-vim'
+"Plug 'joshdick/onedark.vim'
+Plug 'lifepillar/vim-solarized8'
+"Plug 'romainl/flattened'
+"Plug 'rakr/vim-one'
+"Plug 'dracula/vim', { 'as': 'dracula' }
+"Plug 'morhetz/gruvbox'
 
 for fork in split(globpath('~/.config/nvim/forked-plugins', '*'))
   Plug fork
 endfor
 call plug#end()
 
+set termguicolors
+set background=light
+colorscheme solarized8_flat
+
 set backspace=indent,eol,start
 set backupdir=.,$TMPDIR
+"set completeopt=menu,menuone,preview,noinsert
 set copyindent
-set completeopt=menu,preview,noinsert
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
@@ -111,11 +147,12 @@ set showcmd
 set showmatch " show matching parentheses
 set ssop-=folds
 set ssop-=options
+" TODO statusline shows currenttag from the current buffer on all splits
 let &statusline="%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
-      \ . "%{tagbar#currenttag(' %s','','f')}%{AleStatus()}"
+      \ . "%{CurrentTag()}%{AleStatus()}"
 set tags+=.git/tags
+set tildeop
 set title
-"set termguicolors
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
@@ -150,6 +187,7 @@ if has('autocmd')
 
   " :bd! doesn't seem to kill the process correctly
   "autocmd TermOpen * noremap <unique> <silent> <buffer> q :bd!<CR>
+  autocmd User NeomakeJobFinished nested call s:NeomakeFinished()
 endif
 
 let mapleader = "\<Space>"
@@ -205,14 +243,19 @@ noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
 noremap <unique> <leader>f :FZF<cr>
 noremap <unique> <leader>d :FZFBuffers<cr>
+"noremap <unique> <leader>c :Rooter<cr>
 noremap <unique> <leader>x :let @+ = expand('%')<cr>
 noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
 
-noremap <leader>] :call CscopeForTermUnderCursor()<cr>
-
-if filereadable(".git/cscope.out")
-  execute "cs add .git/cscope.out"
-endif
+noremap <unique> <leader>af :ALEFix<cr>
+noremap <unique> <leader>at :ALEToggle<cr>
+noremap <unique> <leader>al :ALELint<cr>
+noremap <unique> <leader>an :ALENext<cr>
+noremap <unique> <leader>ap :ALEPrevious<cr>
+noremap <unique> <leader>ar :ALEReset<cr>
+noremap <unique> <leader>ad :ALEDetail<cr>
+noremap <unique> <leader>ag :ALEGoToDefinition<cr>
+noremap <unique> <leader>ah :ALEHover<cr>
 
 " See yankring-custom-maps
 function! YRRunAfterMaps()
@@ -243,6 +286,15 @@ function! s:Rg(file_mode, args)
   call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file G call s:Rg(<bang>0, <q-args>)
+
+function s:NeomakeFinished() abort
+  if g:neomake_hook_context.jobinfo.file_mode
+    lope
+  else
+    cope
+  end
+  normal gg
+endfunction
 
 " From http://vim.wikia.com/wiki/Capture_ex_command_output
 " Captures ex command and puts it in a new tab
@@ -277,14 +329,16 @@ function! s:Tabs(num)
 endfunction
 command! -nargs=1 -complete=command Tabs call s:Tabs(<args>)
 
-function! s:LargeFile()
+function! s:LargeFile(echo)
   filetype off
   set filetype=text
   set noincsearch
   set nonumber
-  set ft? incsearch? number?
+  if a:echo
+    set ft? incsearch? number?
+  endif
 endfunction
-command! -complete=command LargeFile call s:LargeFile()
+command! -bang -complete=command LargeFile call s:LargeFile(<bang>1)
 
 function! s:LargeFileOff()
   filetype on
@@ -317,6 +371,12 @@ function! s:HideSynStack()
   let &laststatus=g:old_laststatus
 endfunction
 command! -complete=command HideSynStack call s:HideSynStack()
+
+function! CurrentTag() abort
+  if &filetype != 'text'
+    return tagbar#currenttag(' %s','','f')
+  endif
+endfunction
 
 function! AleStatus() abort
     let l:counts = ale#statusline#Count(bufnr(''))
@@ -378,24 +438,6 @@ function! s:ToggleDiffIgnoreWhitespace()
 endfunction
 command! -complete=command ToggleDiffIgnoreWhitespace call s:ToggleDiffIgnoreWhitespace()
 noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
-
-function! CscopeForTermUnderCursor()
-  call inputsave()
-  let type = ''
-  let validTypes = ['d', 'c', 'g', 's', 't']
-  let quitTypes = ['q', '', '']
-  echo 'cscope find <type> (d=called/c=calling/g=definition/s=symbol/t=text/q=quit): '
-  while index(validTypes, type) == -1
-    let type = nr2char(getchar())
-    if index(quitTypes, type) >= 0
-      redraw!
-      return
-    endif
-  endwhile
-  let search = expand('<cword>')
-  call inputrestore()
-  execute 'cs find '.type.' '.search
-endfunction
 
 function SearchInProject()
   let word = expand("<cword>")
