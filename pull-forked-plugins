@@ -10,7 +10,7 @@ Dir.chdir(BASE_DIR)
 
 changed = {
   "dart-vim-plugin" => "https://github.com/dart-lang",
-  "neomake" => "https://github.com/benekastah",
+  #"neomake" => "https://github.com/neomake",
   #"syntastic" => "https://github.com/scrooloose",
   "vim-ruby" => "https://github.com/vim-ruby",
   "ale" => "https://github.com/w0rp",

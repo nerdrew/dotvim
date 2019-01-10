@@ -72,6 +72,7 @@ Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'skwp/greplace.vim'
 Plug 'udalov/kotlin-vim'
+Plug 'neomake/neomake'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
@@ -278,8 +279,25 @@ endfunction
 
 command! NeomakeClear call neomake#CleanOldProjectSignsAndErrors() | call neomake#CleanOldFileSignsAndErrors()
 
+function! s:GetArgsOrVisualSelection(args)
+  if a:args != ''
+    return a:args
+  else
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+      return ''
+    endif
+    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
+    let lines[0] = lines[0][column_start - 1:]
+    return join(lines, "\n")
+  endif
+endfunction
+
 function! s:Rg(file_mode, args)
-  let cmd = "rg --vimgrep ".a:args
+  let needle = s:GetArgsOrVisualSelection(a:args)
+  let cmd = "rg --vimgrep ".needle
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
@@ -287,7 +305,18 @@ function! s:Rg(file_mode, args)
   let enabled_makers =  [custom_maker]
   call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
 endfunction
-command! -bang -nargs=* -complete=file G call s:Rg(<bang>0, <q-args>)
+command! -bang -nargs=* -complete=file -range Rg call s:Rg(<bang>0, <q-args>)
+
+function! s:RgFiles(file_mode, args)
+  let cmd = "rg --files -g '".a:args."'"
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.errorformat = "%f"
+  let enabled_makers =  [custom_maker]
+  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
+endfunction
+command! -bang -nargs=* -complete=file F call s:RgFiles(<bang>0, <q-args>)
 
 function s:NeomakeFinished() abort
   if g:neomake_hook_context.jobinfo.file_mode
@@ -445,14 +474,14 @@ function SearchInProject()
   let word = expand("<cword>")
   let @/='\v'.word
   set hls
-  exec "G " . word
+  call s:Rg(0, word)
 endfunction
 
 function SearchWordInProject()
   let word = expand("<cword>")
   let @/='\v<' . word . '>'
   set hls
-  exec "G --word-regexp " . word . ""
+  call s:Rg(0, '--word-regexp '.word)
 endfunction
 nnoremap <leader>g :call SearchInProject()<cr>
 nnoremap <leader>G :call SearchWordInProject()<cr>
