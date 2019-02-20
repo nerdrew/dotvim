@@ -59,7 +59,19 @@ function! s:DebugRubyTest(mode)
     endif
   endif
 
-  update | vnew | call termopen(cmd) | startinsert | echo "running: " . cmd
+  update
+
+  if winnr('$') == 1
+    vnew
+  else
+    cclose
+    lclose
+    botright new
+  endif
+
+  echom "running: " . cmd
+  call termopen(cmd)
+  startinsert
 endfunction
 command! -complete=command -nargs=? DebugRubyTest call s:DebugRubyTest(<q-args>)
 
@@ -91,6 +103,6 @@ function! s:RunRubyTest(mode)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = 'rspec %f:%l %m'
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)

@@ -50,10 +50,10 @@ function! s:RunRustTest(mode) abort
   let custom_maker.cwd = b:rust_project_root
   " thread 'search::tests::search_no_context' panicked at 'assertion failed: `(left == right)`
   "   left: `SearchResult { matches: Matches({None: {(2, 2), (5, 5)}}), has_groups: Some(false) }`,
- "   right: `SearchResult { matches: Matches({None: {(2, 2), (4, 5)}}), has_groups: Some(false) }`', src/search.rs:322:9
+  "   right: `SearchResult { matches: Matches({None: {(2, 2), (4, 5)}}), has_groups: Some(false) }`', src/search.rs:322:9
   let custom_maker.errorformat = '%Ethread %m, %Z%m\,%f:%l:%c, %C%m'
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=command -bang RunRustTest call s:RunRustTest(<bang>0)
 
@@ -107,16 +107,6 @@ if !exists("g:rust_lldb_breakpoint_sign_highlight")
   let g:rust_lldb_breakpoint_sign_highlight = "WarningMsg"
 endif
 
-" g:rust_lldb_new_command is used to create a new window to run the terminal in.
-"
-" Supported values are:
-" - vnew         Opens a vertical window (default)
-" - new          Opens a horizontal window
-" - enew         Opens a new full screen window
-if !exists("g:rust_lldb_new_command")
-  let g:rust_lldb_new_command = "vnew"
-endif
-
 " g:rust_lldb_watchpoint_sign sets the sign to use in the gutter to indicate
 " watchpoints.
 if !exists("g:rust_lldb_watchpoint_sign")
@@ -149,7 +139,6 @@ autocmd VimLeave * call s:RustRemoveInstructionsFile()
 exe "sign define rust_lldb_breakpoint text=". g:rust_lldb_breakpoint_sign ." texthl=". g:rust_lldb_breakpoint_sign_highlight
 exe "sign define rust_lldb_watchpoint text=". g:rust_lldb_watchpoint_sign ." texthl=". g:rust_lldb_watchpoint_sign_highlight
 
-" clearAll is removing all active breakpoints and watchpoints.
 function! s:RustClearAll()
   for i in range(len(s:rust_lldb_instructions))
     exe "sign unplace ". eval(i+1)
@@ -160,21 +149,10 @@ function! s:RustClearAll()
 endfunction
 command! -nargs=0 RustClearAll call s:RustClearAll()
 
-" removeInstructionsFile is removing the defined instructions file. Typically
-" called when neovim is exited.
 function! s:RustRemoveInstructionsFile()
   call delete(g:rust_lldb_instructions_file)
 endfunction
 
-" runCommand is running the  commands.
-"
-" command:           Is the  command to run.
-" flags:             String passing additional flags to the command.
-" dir:               Path to the cwd.
-" init:              Boolean determining if we should append the --init
-"                    parameter.
-" flushInstructions: Boolean determining if we should flush the in memory
-"                    instructions before calling .
 function! s:DebugRustTest(mode)
   if a:mode
     let test_function = s:GetCurrentTest()
@@ -184,21 +162,20 @@ function! s:DebugRustTest(mode)
 
   " brew python makes lldb sad
   let cmd = 'set -x; '
-        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. b:rust_project_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | ggrep -oP "(?<=Running ).*$"); '
+        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. b:rust_project_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | ggrep -oP "(?<=Running ).*$" | head -1); '
         \. 'PATH=/usr/bin:$PATH rust-lldb -s '.g:rust_lldb_instructions_file.' -- $TEST_BINARY '.l:test_function
 
-  if g:rust_lldb_new_command == "vnew"
+  update
+
+  if winnr('$') == 1
     vnew
-  elseif g:rust_lldb_new_command == "enew"
-    enew
-  elseif g:rust_lldb_new_command == "new"
-    new
   else
-    echoerr "Unsupported g:rust_lldb_new_command, ". g:rust_lldb_new_command
-    return
+    cclose
+    lclose
+    botright new
   endif
 
-  update | echom "running: " . cmd
+  echom "running: " . cmd
   call termopen(cmd)
   startinsert
 endfunction
@@ -207,19 +184,19 @@ command! -bang DebugRustTest call s:DebugRustTest(<bang>0)
 function! s:RustAddBreakpoint(file, line)
   let breakpoint = "breakpoint set -f ". a:file ." -l ". a:line
 
-    call add(s:rust_lldb_instructions, breakpoint)
+  call add(s:rust_lldb_instructions, breakpoint)
 
-    exe "sign place ". len(s:rust_lldb_instructions) ." line=". a:line ." name=rust_lldb_breakpoint file=". a:file
+  exe "sign place ". len(s:rust_lldb_instructions) ." line=". a:line ." name=rust_lldb_breakpoint file=". a:file
 endfunction
 
 function! s:RustRemoveBreakpoint(file, line)
   let breakpoint = "breakpoint set -f ". a:file ." -l ". a:line
 
-    let i = index(s:rust_lldb_instructions, breakpoint)
-    if i != -1
-        call remove(s:rust_lldb_instructions, i)
-        exe "sign unplace ". eval(i+1) ." file=". a:file
-    endif
+  let i = index(s:rust_lldb_instructions, breakpoint)
+  if i != -1
+    call remove(s:rust_lldb_instructions, i)
+    exe "sign unplace ". eval(i+1) ." file=". a:file
+  endif
 endfunction
 
 " toggleBreakpoint is toggling breakpoints at the line under the cursor.
@@ -239,5 +216,9 @@ command! -nargs=0 RustToggleBreakpoint call s:RustToggleBreakpoint(expand('%:p')
 " writeInstructionsFile is persisting the instructions to the set file.
 function! s:RustWriteInstructionsFile()
   call s:RustRemoveInstructionsFile()
-  call writefile(s:rust_lldb_instructions + ["b rust_panic", "run"], g:rust_lldb_instructions_file)
+  call writefile(s:rust_lldb_instructions + [
+        \ 'b rust_panic',
+        \ "command regex ls s/^$/frame variable/ 's/(\w+)/image lookup -rn %1::\w+::\w+$/'",
+        \ 'run',
+        \ ], g:rust_lldb_instructions_file)
 endfunction

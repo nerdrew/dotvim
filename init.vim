@@ -133,6 +133,7 @@ set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
+set formatoptions-=t
 set grepprg=rg\ -n
 set hidden " handle multiple buffers better
 set history=1000
@@ -152,6 +153,7 @@ set ssop-=options
 let &statusline="%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
       \ . "%{CurrentTag()}%{AleStatus()}"
 set tags+=.git/tags
+set textwidth=120
 set tildeop
 set title
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
@@ -303,7 +305,7 @@ function! s:Rg(file_mode, args)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = "%f:%l:%c:%m"
   let enabled_makers =  [custom_maker]
-  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
+  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echom "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file -range Rg call s:Rg(<bang>0, <q-args>)
 
@@ -314,7 +316,7 @@ function! s:RgFiles(file_mode, args)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = "%f"
   let enabled_makers =  [custom_maker]
-  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echo "running: " . cmd
+  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echom "running: " . cmd
 endfunction
 command! -bang -nargs=* -complete=file F call s:RgFiles(<bang>0, <q-args>)
 

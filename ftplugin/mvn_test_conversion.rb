@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 paths = {}
 failures = false
@@ -13,7 +14,7 @@ while (line = gets)
   if failures
     if (match = line.match(/^  (\w+)\.([^:]*):(\d+)(.*)$/))
       puts "  #{paths[match[1]]}:#{match[3]} (#{match[2]})#{match[4]}"
-    elsif line.match(/^\s*$/)
+    elsif line.match?(/^\s*$/)
       failures = false
       puts
     else

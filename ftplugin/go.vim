@@ -57,7 +57,7 @@ function! s:RunGoTest(mode) abort
   let custom_maker.errorformat = '%E--- FAIL: %m, %Z%f:%l: %m, %E%># %.%#, %Z%f:%l:%c: %m'
   let custom_maker.mapexpr = 'substitute(v:val, "\\v^(\\s+)(\\S+:\\d+:\\s+.*)$", "\\1".neomake_bufdir."/\\2", "")'
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echo "running: " . cmd
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=command -bang RunGoTest call s:RunGoTest(<bang>0)
 
@@ -68,6 +68,6 @@ function! s:DebugGoTest(mode) abort
     let flags = ""
   endif
 
-  update | call delve#runCommand('test', flags, s:GetCurrentPackage()) | echo "running: delve#runCommand('test', ".flags.", ".s:GetCurrentPackage().")"
+  update | call delve#runCommand('test', flags, s:GetCurrentPackage()) | echom "running: delve#runCommand('test', ".flags.", ".s:GetCurrentPackage().")"
 endfunction
 command! -complete=command -bang DebugGoTest call s:DebugGoTest(<bang>0)
