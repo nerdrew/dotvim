@@ -10,6 +10,7 @@ noremap <buffer> <silent> <unique> <leader>r :RunRubyTest 1<CR>
 noremap <buffer> <silent> <unique> <leader>R :RunRubyTest 2<CR>
 noremap <buffer> <silent> <unique> <leader>e :DebugRubyTest 1<CR>
 noremap <buffer> <silent> <unique> <leader>E :DebugRubyTest 2<CR>
+noremap <buffer> <silent> <unique> <leader>F :Format<CR>
 
 if exists('g:lazarus_ruby')
   finish
@@ -46,13 +47,13 @@ function! s:DebugRubyTest(mode)
   endif
 
   let cmd = ''
-  if b:ruby_project_root != ''
+  if !empty(b:ruby_project_root)
     let cmd .= 'cd ' . b:ruby_project_root . ' && '
   endif
   let cmd .= get(b:, 'rspec', g:rspec) . ' ' . get(b:, 'rspec_args', g:rspec_args) . ' '
 
   if a:mode
-    let cmd .= s:spec_file
+    let cmd .= fnamemodify(s:spec_file, ':p:s?' . b:ruby_project_root . '/??')
 
     if a:mode == 2
       let cmd.= ':'. s:spec_line
@@ -71,7 +72,7 @@ function! s:DebugRubyTest(mode)
 
   echom "running: " . cmd
   call termopen(cmd)
-  startinsert
+
 endfunction
 command! -complete=command -nargs=? DebugRubyTest call s:DebugRubyTest(<q-args>)
 
@@ -85,10 +86,14 @@ function! s:RunRubyTest(mode)
     let s:spec_file = expand('%')
   endif
 
-  let cmd = 'DISABLE_PRY=1 '.get(b:, 'rspec', g:rspec) . ' ' . get(b:, 'rspec_args', g:rspec_args) . ' '
+  let cmd = ''
+  if !empty(b:ruby_project_root)
+    let cmd .= 'cd ' . b:ruby_project_root . ' && '
+  endif
+  let cmd .= 'DISABLE_PRY=1 '.get(b:, 'rspec', g:rspec) . ' ' . get(b:, 'rspec_args', g:rspec_args) . ' '
 
   if a:mode
-    let cmd .= s:spec_file
+    let cmd .= fnamemodify(s:spec_file, ':p:s?' . b:ruby_project_root . '/??')
 
     if a:mode == 2
       let cmd.= ':'. s:spec_line
@@ -106,3 +111,38 @@ function! s:RunRubyTest(mode)
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)
+
+function! s:Rubocop(path)
+  let cmd = ''
+  if !empty(b:ruby_project_root)
+    let cmd .= 'cd ' . b:ruby_project_root . ' && '
+  endif
+
+  let cmd .= 'rubocop --format emacs '
+
+  if !empty(a:path)
+    let cmd .= fnamemodify(a:path, ':p:s?' . b:ruby_project_root . '/??')
+  endif
+
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.cwd = b:ruby_project_root
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.errorformat = '%f:%l:%c: %m'
+  let enabled_makers =  [custom_maker]
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
+endfunction
+command! -complete=file -nargs=? Rubocop call s:Rubocop(<q-args>)
+
+function! s:Format() range
+  let spaces = indent(a:firstline)
+  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft
+  if line("'<")
+    let pos = "'<,'>"
+  else
+    let pos = '.'
+  endif
+  let cmd = "keepjumps " . pos . "! " . prettier . " | sed 's/^/" . repeat(' ', spaces) . "/'"
+  exe cmd
+endfunction
+command! -range Format <line1>,<line2>call s:Format()

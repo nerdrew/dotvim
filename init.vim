@@ -17,6 +17,17 @@ let g:ruby_indent_assignment_style = 'variable'
 let g:ruby_indent_block_style = 'do'
 let g:yankring_clipboard_monitor = 0
 let g:yankring_history_file = '.vim_yankring_history'
+if has('macunix')
+  let g:yankring_replace_n_pkey = 'π' " option-p
+  let g:yankring_replace_n_nkey = 'ø' " option-o
+else
+  let g:yankring_replace_n_pkey = '<A-p>' " option-p
+  let g:yankring_replace_n_nkey = '<A-o>' " option-o
+endif
+
+let g:python_host_prog='/usr/local/bin/python'
+let g:python3_host_prog='/usr/local/bin/python3'
+let g:grep_cmd_opts = '--vimgrep --no-column'
 
 let g:tagbar_autofocus = 1
 let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ] }
@@ -48,37 +59,58 @@ let g:go_highlight_operators = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
 
-let g:ale_completion_enabled = 1
-"let g:ale_completion_delay = 10
-let g:ale_completion_manual = 1
-let g:ale_lint_delay = 2000 " wait 2s before linting after a change
-let g:ale_linters = { 'rust': ['cargo', 'rls'], } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
-let g:ale_fixers = { 'ruby': ['rubocop'] }
+let g:ale_linters = { 'rust': ['cargo', 'rls'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
+let g:ale_fixers = { 'ruby': ['rubocop'], 'javascript': ['eslint', 'importjs', 'prettier'], 'rust': 'rustfmt' }
 let g:ale_rust_rls_toolchain = 'nightly'
+let g:ale_rust_cargo_use_clippy = 1
+let g:ale_rust_cargo_check_tests = 1
+let g:ale_rust_cargo_check_examples = 1
+let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
+" let g:ale_rust_rls_executable = 'ra_lsp_server'
 
 let g:rust_use_custom_ctags_defs = 1
-let g:rustfmt_autosave = 0
 let g:rust_fold = 1
 
-call plug#begin('~/.vim/plugged')
+let g:surround_no_insert_mappings = 1
+
+let g:racer_experimental_completer = 1
+" let g:SuperTabDefaultCompletionType = "context"
+let g:mucomplete#chains = { 'default' : ['path', 'omni', 'incl', 'c-p', 'dict', 'uspl'], }
+let g:mucomplete#minimum_prefix_length = 0
+
+let g:multi_cursor_use_default_mapping=0
+let g:multi_cursor_start_word_key      = '≥' " option->
+let g:multi_cursor_select_all_word_key = 'µ' " option-m
+let g:multi_cursor_start_key           = 'g≥' "g option->
+let g:multi_cursor_select_all_key      = 'gµ' "g option-m
+let g:multi_cursor_next_key            = '≥' " option->
+let g:multi_cursor_prev_key            = '≤' " option-<
+let g:multi_cursor_skip_key            = '÷' " option-/
+let g:multi_cursor_quit_key            = '<Esc>'
+
+call plug#begin('~/.config/nvim/plugged')
 " :sort /\v.{-}\//
-"Plug 'autozimu/LanguageClient-neovim', { 'branch': 'next', 'do': 'bash install.sh' }
 Plug 'chrisbra/Colorizer'
 Plug 'vim-scripts/YankRing.vim'
 "Plug 'w0rp/ale'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
-Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+if has('macunix')
+  Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+else
+  Plug '/home/linuxbrew/.linuxbrew/opt/fzf' | Plug 'junegunn/fzf.vim'
+endif
 Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'skwp/greplace.vim'
 Plug 'udalov/kotlin-vim'
 Plug 'neomake/neomake'
-Plug 'scrooloose/nerdcommenter'
+"Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
+Plug 'ruby-formatter/rufo-vim'
 "Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
-Plug 'ervandew/supertab'
+"Plug 'ervandew/supertab'
 Plug 'keith/swift.vim'
 Plug 'majutsushi/tagbar'
 Plug 'junegunn/vader.vim'
@@ -87,6 +119,8 @@ Plug 'cstrahan/vim-capnp'
 Plug 'kchmck/vim-coffee-script'
 Plug 'sebdah/vim-delve'
 Plug 'justinmk/vim-dirvish'
+Plug 'tpope/vim-abolish'
+Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
@@ -95,8 +129,11 @@ Plug 'michaeljsmith/vim-indent-object'
 Plug 'artur-shaik/vim-javacomplete2'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
+Plug 'lifepillar/vim-mucomplete'
+Plug 'terryma/vim-multiple-cursors'
 Plug 'simnalamburt/vim-mundo'
 Plug 'mustache/vim-mustache-handlebars'
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'racer-rust/vim-racer'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
@@ -107,6 +144,7 @@ Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
+Plug 'HerringtonDarkholme/yats.vim'
 
 "Plug 'iCyMind/NeoSolarized'
 "Plug 'ayu-theme/ayu-vim'
@@ -126,17 +164,20 @@ set termguicolors
 set background=light
 colorscheme solarized8_flat
 
+set autoread
 set backspace=indent,eol,start
 set backupdir=.,$TMPDIR
-"set completeopt=menu,menuone,preview,noinsert
+set completeopt=menu,menuone,noinsert
 set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
 set formatoptions-=t
-set grepprg=rg\ -n
+set grepprg=rg
 set hidden " handle multiple buffers better
 set history=1000
+set inccommand=nosplit
+set lazyredraw
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
 set mouse=a
 set nolist
@@ -144,9 +185,12 @@ set noswapfile
 set number
 set numberwidth=3
 set ruler
+" set scrolloff=1
 set shell=zsh
+" set sidescrolloff=5
 set showcmd
 set showmatch " show matching parentheses
+set smarttab
 set ssop-=folds
 set ssop-=options
 " TODO statusline shows currenttag from the current buffer on all splits
@@ -193,41 +237,67 @@ if has('autocmd')
   " :bd! doesn't seem to kill the process correctly
   "autocmd TermOpen * noremap <unique> <silent> <buffer> q :bd!<CR>
   autocmd User NeomakeJobFinished nested call s:NeomakeFinished()
+
+  autocmd TermOpen * startinsert
 endif
 
 let mapleader = "\<Space>"
+" inoremap <unique> <C-g> <ESC>
 " tmux-navigator maps the others
 tnoremap <unique> <C-h> <C-\><C-N><C-w>h
 tnoremap <unique> <C-j> <C-\><C-N><C-w>j
 tnoremap <unique> <C-k> <C-\><C-N><C-w>k
 tnoremap <unique> <C-l> <C-\><C-N><C-w>l
+tnoremap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 noremap <unique> / /\v
-noremap <unique> <C-E> 3<C-E>
-noremap <unique> <C-Y> 3<C-Y>
+noremap <unique> <C-E> 5<C-E>
+noremap <unique> <C-Y> 5<C-Y>
 nnoremap <unique> - <C-W>-
 nnoremap <unique> + <C-W>+
 nnoremap <unique> <bar> <C-W><
 nnoremap <unique> \ <C-W>>
-" alt-[
+" option-[
 noremap <unique> “ :tabp<cr>
 inoremap <unique> “ <ESC>:tabp<cr>
 tnoremap <unique> “ <C-\><C-N>:tabp<cr>
-" alt-]
+noremap <unique> <A-[> :tabp<cr>
+inoremap <unique> <A-[> <ESC>:tabp<cr>
+tnoremap <unique> <A-[> <C-\><C-N>:tabp<cr>
+" option-]
 noremap <unique> ‘ :tabn<cr>
 inoremap <unique> ‘ <ESC>:tabn<cr>
 tnoremap <unique> ‘ <C-\><C-N>:tabn<cr>
-" alt-shift-[
+noremap <unique> <A-]> :tabn<cr>
+inoremap <unique> <A-]> <ESC>:tabn<cr>
+tnoremap <unique> <A-]> <C-\><C-N>:tabn<cr>
+" option-shift-[
 noremap <unique> ” :tabm -1<cr>
 inoremap <unique> ” <ESC>:tabm -1<cr>
 tnoremap <unique> ” <C-\><C-N>:tabm -1<cr>
-" alt-shift-]
+noremap <unique> <A-{> :tabm -1<cr>
+inoremap <unique> <A-{> <ESC>:tabm -1<cr>
+tnoremap <unique> <A-{> <C-\><C-N>:tabm -1<cr>
+" option-shift-]
 noremap <unique> ’ :tabm +1<cr>
 inoremap <unique> ’ <ESC>:tabm +1<cr>
 tnoremap <unique> ’ <C-\><C-N>:tabm +1<cr>
+noremap <unique> <A-}> :tabm +1<cr>
+inoremap <unique> <A-}> <ESC>:tabm +1<cr>
+tnoremap <unique> <A-}> <C-\><C-N>:tabm +1<cr>
 
 noremap <unique> [w :tabp<cr>
 noremap <unique> ]w :tabn<cr>
-noremap <unique> <C-@> @@
+noremap <unique> Q @@
+noremap <unique> <C-n> :cn<cr>
+noremap <unique> <C-p> :cp<cr>
+" option-y = ¥ yankring show
+noremap <silent> ¥ :YRShow<CR>
+noremap <silent> <A-y> :YRShow<CR>
+" option-shift-m = Â
+noremap <silent> Â :MultipleCursorsFind <C-R>/<CR>
+vnoremap <silent> Â :MultipleCursorsFind <C-R>/<CR>
+noremap <silent> <A-M> :MultipleCursorsFind <C-R>/<CR>
+vnoremap <silent> <A-M> :MultipleCursorsFind <C-R>/<CR>
 
 noremap <unique> <leader>w :set wrap! wrap?<cr>
 noremap <unique> <leader>l :set list! list?<cr>
@@ -241,6 +311,8 @@ noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>y "+y
 noremap <unique> <leader>p "+p
 noremap <unique> <leader>P "+P
+noremap <unique> <leader>o "*p
+noremap <unique> <leader>O "*P
 noremap <unique> gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
 noremap <unique> <leader>t :TagbarToggle<cr>
@@ -261,6 +333,13 @@ noremap <unique> <leader>ar :ALEReset<cr>
 noremap <unique> <leader>ad :ALEDetail<cr>
 noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
+
+imap <C-Space> <Plug>(ale_complete)
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
 
 " See yankring-custom-maps
 function! YRRunAfterMaps()
@@ -293,7 +372,7 @@ function! s:GetArgsOrVisualSelection(args)
     endif
     let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
     let lines[0] = lines[0][column_start - 1:]
-    return join(lines, "\n")
+    return "'".join(lines, "\n")."'"
   endif
 endfunction
 
@@ -365,6 +444,7 @@ command! -nargs=1 -complete=command Tabs call s:Tabs(<args>)
 function! s:LargeFile(echo)
   filetype off
   set filetype=text
+  set inccommand=""
   set noincsearch
   set nonumber
   if a:echo

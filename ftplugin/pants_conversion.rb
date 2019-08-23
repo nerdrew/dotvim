@@ -61,6 +61,11 @@ last_compile_error = nil
 last_test_failure = nil
 
 while (input = STDIN.gets)
+  next if /^\d+:\d+:\d+ \d+:\d+\s+\[.+\](\s|\.)*$/ =~ input
+
+  puts input
+  STDOUT.flush
+
   if last_compile_error
     if last_compile_error.add(input)
       puts last_compile_error

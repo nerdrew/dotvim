@@ -177,7 +177,6 @@ function! s:DebugRustTest(mode)
 
   echom "running: " . cmd
   call termopen(cmd)
-  startinsert
 endfunction
 command! -bang DebugRustTest call s:DebugRustTest(<bang>0)
 
@@ -218,7 +217,7 @@ function! s:RustWriteInstructionsFile()
   call s:RustRemoveInstructionsFile()
   call writefile(s:rust_lldb_instructions + [
         \ 'b rust_panic',
-        \ "command regex ls s/^$/frame variable/ 's/(\w+)/image lookup -rn %1::\w+::\w+$/'",
+        \ "command regex ls 's/^$/frame variable/' 's/(\w+)/image lookup -rn %1::\w+::\w+$/'",
         \ 'run',
         \ ], g:rust_lldb_instructions_file)
 endfunction

@@ -1,29 +1,45 @@
-" if exists("b:lazarus_java")
-"   finish
-" endif
-" let b:lazarus_java = 1
+if exists("b:lazarus_java")
+  finish
+endif
+let b:lazarus_java = 1
 
 noremap <leader>] :call CscopeForTermUnderCursor()<cr>
 
-if exists('g:java_pants') && g:java_pants
-  noremap <buffer> <silent> <unique> <leader>s :RunPantsTest<CR>
-  noremap <buffer> <silent> <unique> <leader>r :RunPantsTest 1<CR>
-  noremap <buffer> <silent> <unique> <leader>R :RunPantsTest 2<CR>
-  "compiler pants
-else
-  noremap <buffer> <silent> <unique> <leader>r :RunMvnTest<CR>
-  noremap <buffer> <silent> <unique> <leader>R :RunMvnTest!<CR>
-  compiler mvn
-endif
+noremap <buffer> <silent> <unique> <leader>e :RunJavaTest! 1<CR>
+noremap <buffer> <silent> <unique> <leader>E :RunJavaTest! 2<CR>
+noremap <buffer> <silent> <unique> <leader>r :RunJavaTest 1<CR>
+noremap <buffer> <silent> <unique> <leader>R :RunJavaTest 2<CR>
+noremap <buffer> <silent> <unique> <leader>s :JavaToggleBreakpoint<CR>
+noremap <buffer> <silent> <unique> <leader>S :JavaClearAll<CR>
+noremap <buffer> <silent> <unique> <leader>D :GetCurrentTest<CR>
 
 if exists('g:lazarus_java')
   finish
 endif
 let g:lazarus_java = 1
 
+let s:google_java_formatter = expand('<sfile>:p:h').'/google-java-format-1.7-all-deps.jar'
+
+function! s:JavaFormat(line1, line2)
+  let l:file = expand('%')
+
+  let l:cmd = 'java -jar '.s:google_java_formatter.' --assume-filename='.l:file.' --lines='.a:line1.':'.a:line2.' -'
+  execute a:line1.','.a:line2.' !'.l:cmd
+endfunction
+command! -range=% -complete=command JavaFormat call s:JavaFormat(<line1>, <line2>)
+
+function! RunJavaTest(mode, debug)
+  if exists('g:java_pants') && g:java_pants
+    call s:RunPantsTest(a:mode, a:debug)
+  else
+    call s:RunMvnTest(a:mode)
+  endif
+endfunction
+command! -complete=command -nargs=? -bang RunJavaTest call RunJavaTest(<f-args>, <bang>0)
+
 let s:mvn_output_converter = expand('<sfile>:p:h') . '/mvn_test_conversion.rb'
-let s:pants_output_converter = expand('<sfile>:p:h') . '/pants_conversion.rb'
-function! RunMvnTest(single)
+let s:current_test = {'test': 0}
+function! s:RunMvnTest(mode)
   if exists('g:mvn_test')
     let cmd = g:mvn_test
   else
@@ -34,66 +50,113 @@ function! RunMvnTest(single)
     let s:test_file = '%:t'
   endif
 
-  if a:single
+  if a:mode
     let cmd.= ' -Dtest='. s:test_file
   endif
   let cmd .= ' | ' . s:mvn_output_converter
 
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
-  let custom_maker.remove_invalid_entries = 0
   let enabled_makers =  [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
-command! -complete=command -bang RunMvnTest call RunMvnTest(<bang>0)
 
-function! s:GetCurrentTest() abort
-  let l:test_file = matchlist(expand('%'), '^\(.\+\)/src/test/java/\(.\+\)\.java$')
+function! s:GetCurrent(...) abort
+  if a:0 > 0
+    let l:path = a:1
+  else
+    let l:path = expand('%')
+  endif
+  let l:file = matchlist(l:path, '^\(.\+\)/src/\(test\|main\)/java/\(.\+\)\.java$')
 
-  if !empty(test_file)
-    let s:test_file = l:test_file
-    let s:test_function = substitute(tagbar#currenttag('%s', '', ''), '()$', '', '')
+  if empty(l:file)
+    return s:current_file
   endif
 
-  if !exists('s:test_file')
-    let main_file = matchlist(expand('%'), '^\(.\+\)/src/main/java/\(.\+\)\.java$')
-    let test_file = l:main_file[1].'/src/test/java/'.l:main_file[2].'Test.java'
+  let s:current_file = {
+        \ 'root': fnamemodify(getcwd(), ':s?'. g:ale_java_pants_root .'/??') . '/' . l:file[1],
+        \ 'test': l:file[2] == 'test',
+        \ 'file': l:path,
+        \ 'package': substitute(l:file[3], '/', '.', 'g'),
+        \ }
+
+  return s:current_file
+endfunction
+
+function! s:GetCurrentTest() abort
+  let l:file = s:GetCurrent()
+
+  if !l:file.test
+    if s:current_test.test
+      return s:current_test
+    endif
+
+    let l:test_file = l:file.root.'/src/test/java/'.substitute(l:file.package, '.', '/', 'g').'Test.java'
     if filereadable(l:test_file)
-      let s:test_file = matchlist(l:test_file, '^\(.\+\)/src/test/java/\(.\+\)\.java$')
-      let s:test_function = ''
+      let l:file = s:GetCurrent(l:test_file)
+      let l:test_function = ''
     else
       throw 'could not find the test'
     endif
+  else
+    let l:test_function = substitute(tagbar#currenttag('%s', '', ''), '()$', '', '')
   endif
 
-  return { 'file': s:test_file[1], 'package': substitute(s:test_file[2], '/', '.', 'g'), 'function': s:test_function }
+  let s:current_test = l:file
+  let s:current_test['function'] = l:test_function
+
+  return s:current_test
+endfunction
+command! -complete=command -nargs=0 GetCurrentTest echo s:GetCurrentTest()
+
+let s:pants_output_converter = expand('<sfile>:p:h') . '/pants_conversion.rb'
+
+function! DebugPostprocess(_type, text) abort
+  if match(a:text, 'Listening for transport dt_socket at address: 5005') >= 0
+    "echom 'debug socket listening match='.a:text
+    call s:DebugJavaTest()
+  endif
+
+  return a:text
 endfunction
 
-function! RunPantsTest(mode)
+function! s:RunPantsTest(mode, debug)
   let l:test = s:GetCurrentTest()
-  let l:current_dir = fnamemodify(getcwd(), ':s?'. g:ale_java_pants_root .'/??') . '/' . l:test.file
 
-  let cmd = 'cd '.g:ale_java_pants_root.' && ./pants --no-colors test '.l:current_dir.':test'
+  let l:pants_cmd = './pants --no-colors test '.l:test.root.':test'
 
   if a:mode
-    let cmd .= ' --test-junit-test='.l:test.package
+    let l:pants_cmd .= ' --test-junit-test='.l:test.package
 
     if a:mode == 2 && !empty(l:test.function)
-      let cmd .= '#'.l:test.function
+      let l:pants_cmd .= '#'.l:test.function
     endif
   endif
 
-  "let cmd = 'cat boom-compile-error.txt boom-test-failure.txt'
-  let cmd .= ' | ruby ' . s:pants_output_converter . ' -- ' . l:current_dir
+  if a:debug
+     let l:pants_cmd .= ' --jvm-test-junit-debug'
+  endif
 
-  let custom_maker = neomake#utils#MakerFromCommand(cmd)
-  let custom_maker.name = cmd
+  let l:cmd = 'cd '.g:ale_java_pants_root.' && '.l:pants_cmd
+
+  "let cmd = 'cat boom-compile-error.txt boom-test-failure.txt'
+  let l:cmd .= ' 2>&1 | ruby ' . s:pants_output_converter . ' -- ' . l:test.root
+
+  let custom_maker = neomake#utils#MakerFromCommand(l:cmd)
+  let custom_maker.name = l:cmd
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.cwd = g:ale_java_pants_root
+  if a:debug
+    let s:debugged = 0
+    let custom_maker.buffer_output = 0
+    let custom_maker.mapexpr = function('DebugPostprocess')
+  endif
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . l:pants_cmd
+  if a:debug
+    cope
+  endif
 endfunction
-command! -complete=command -nargs=? RunPantsTest call RunPantsTest(<q-args>)
 
 function! CscopeForTermUnderCursor()
   call inputsave()
@@ -182,25 +245,29 @@ endfunction
 command! -nargs=0 JavaClearAll call s:JavaClearAll()
 
 function! s:JavaRemoveInstructionsFile()
-  call delete(g:java_jdb_instructions_file)
+  call delete(g:java_jdb_instructions_file.'-breakpoints')
+  call delete(g:java_jdb_instructions_file.'-sourcepaths')
 endfunction
 
-function! s:DebugJavaTest(mode)
-  if a:mode
-    let test_function = s:GetCurrentTest()
+function! s:DebugJavaTest()
+  if get(s:, 'debugged', 1)
+    return
   endif
+
+  let s:debugged = 1
 
   call s:JavaWriteInstructionsFile()
 
-  " brew python makes lldb sad
-  let cmd = 'set -x; '
-        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. g:ale_java_pants_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | ggrep -oP "(?<=Running ).*$" | head -1); '
-        \. 'PATH=/usr/bin:$PATH rust-lldb -s '.g:java_jdb_instructions_file.' -- $TEST_BINARY '.l:test_function
+  " \ 'RLJDB_DEBUG=1 '
+  let cmd = 'RLJDB_BREAKPOINT_FILE='.g:java_jdb_instructions_file.'-breakpoints '.
+        \ 'RLJDB_SOURCEPATH_FILE='.g:java_jdb_instructions_file.'-sourcepaths '.
+        \ 'rljdb -attach localhost:5005 -launch'
 
   update
 
-  if winnr('$') == 1
-    vnew
+  " The quickfix gets opened first
+  if winnr('$') == 2
+    topleft vnew
   else
     cclose
     lclose
@@ -209,46 +276,48 @@ function! s:DebugJavaTest(mode)
 
   echom "running: " . cmd
   call termopen(cmd)
-  startinsert
 endfunction
-command! -bang DebugJavaTest call s:DebugJavaTest(<bang>0)
 
-function! s:JavaAddBreakpoint(file, line)
-  let breakpoint = "stop at ". a:file .":". a:line
+function! s:JavaAddBreakpoint(test, line)
+  let breakpoint = a:test.package .":". a:line
 
   call add(s:java_jdb_instructions, breakpoint)
 
-  exe "sign place ". len(s:java_jdb_instructions) ." line=". a:line ." name=java_jdb_breakpoint file=". a:file
+  let cmd = "sign place ". len(s:java_jdb_instructions) ." line=". a:line ." name=java_jdb_breakpoint file=". a:test.file
+  echom cmd
+  exe cmd
 endfunction
 
-function! s:JavaRemoveBreakpoint(file, line)
-  let breakpoint = "clear ". a:file .":". a:line
+function! s:JavaRemoveBreakpoint(test, line)
+  let breakpoint = a:test.package .":". a:line
 
   let i = index(s:java_jdb_instructions, breakpoint)
   if i != -1
     call remove(s:java_jdb_instructions, i)
-    exe "sign unplace ". eval(i+1) ." file=". a:file
+    exe "sign unplace ". eval(i+1) ." file=". a:test.file
   endif
 endfunction
 
 " toggleBreakpoint is toggling breakpoints at the line under the cursor.
-function! s:JavaToggleBreakpoint(file, line)
-  let breakpoint = "stop at ". a:file .":". a:line
+function! s:JavaToggleBreakpoint(line)
+  let current = s:GetCurrent()
+  let breakpoint = current.package.":". a:line
 
   " Find the breakpoint in the instructions, if available. If it's already
   " there, remove it. If not, add it.
   if index(s:java_jdb_instructions, breakpoint) == -1
-    call s:JavaAddBreakpoint(a:file, a:line)
+    call s:JavaAddBreakpoint(current, a:line)
   else
-    call s:JavaRemoveBreakpoint(a:file, a:line)
+    call s:JavaRemoveBreakpoint(current, a:line)
   endif
 endfunction
-command! -nargs=0 JavaToggleBreakpoint call s:JavaToggleBreakpoint(expand('%:p'), line('.'))
+command! -nargs=0 JavaToggleBreakpoint call s:JavaToggleBreakpoint(line('.'))
 
 " writeInstructionsFile is persisting the instructions to the set file.
 function! s:JavaWriteInstructionsFile()
   call s:JavaRemoveInstructionsFile()
-  call writefile(s:java_jdb_instructions + [
-        \ 'run',
-        \ ], g:java_jdb_instructions_file)
+  call writefile(s:java_jdb_instructions, g:java_jdb_instructions_file.'-breakpoints')
+  let root = s:GetCurrent().root
+  echom root
+  call writefile([root.'/src/main/java', root.'/src/test/java'], g:java_jdb_instructions_file.'-sourcepaths')
 endfunction
