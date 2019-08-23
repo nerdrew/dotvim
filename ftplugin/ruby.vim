@@ -136,7 +136,7 @@ command! -complete=file -nargs=? Rubocop call s:Rubocop(<q-args>)
 
 function! s:Format() range
   let spaces = indent(a:firstline)
-  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft
+  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft . ' --print-width ' . string(120 - spaces)
   if line("'<")
     let pos = "'<,'>"
   else

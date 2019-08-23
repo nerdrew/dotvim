@@ -16,7 +16,8 @@ let g:rooter_use_lcd = 1
 let g:ruby_indent_assignment_style = 'variable'
 let g:ruby_indent_block_style = 'do'
 let g:yankring_clipboard_monitor = 0
-let g:yankring_history_file = '.vim_yankring_history'
+let g:yankring_history_file = '.cache/nvim/yankring_history'
+
 if has('macunix')
   let g:yankring_replace_n_pkey = 'π' " option-p
   let g:yankring_replace_n_nkey = 'ø' " option-o
@@ -25,8 +26,14 @@ else
   let g:yankring_replace_n_nkey = '<A-o>' " option-o
 endif
 
-let g:python_host_prog='/usr/local/bin/python'
-let g:python3_host_prog='/usr/local/bin/python3'
+if has('macunix')
+  let g:python_host_prog='/usr/local/bin/python'
+  let g:python3_host_prog='/usr/local/bin/python3'
+else
+  let g:python_host_prog='/home/linuxbrew/.linuxbrew/bin/python'
+  let g:python3_host_prog='/home/linuxbrew/.linuxbrew/bin/python3'
+endif
+
 let g:grep_cmd_opts = '--vimgrep --no-column'
 
 let g:tagbar_autofocus = 1
@@ -70,6 +77,12 @@ let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
 
 let g:rust_use_custom_ctags_defs = 1
 let g:rust_fold = 1
+
+"let g:JavaComplete_JvmLauncher = '/Library/Java/JavaVirtualMachines/jdk1.8.0_202.jdk/Contents/Home/bin/java'
+let g:JavaComplete_MavenRepositoryDisable = 1
+let g:JavaComplete_JavaviLogLevel = 'debug'
+let g:JavaComplete_ImportSortType = 'packageName'
+let g:JavaComplete_ImportOrder = ['*']
 
 let g:surround_no_insert_mappings = 1
 
