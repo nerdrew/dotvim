@@ -112,13 +112,16 @@ function! s:RunRubyTest(mode)
 endfunction
 command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)
 
-function! s:Rubocop(path)
+function! s:Rubocop(path, autocorrect)
   let cmd = ''
   if !empty(b:ruby_project_root)
     let cmd .= 'cd ' . b:ruby_project_root . ' && '
   endif
 
   let cmd .= 'rubocop --format emacs '
+  if a:autocorrect
+    let cmd .= '--auto-correct '
+  endif
 
   if !empty(a:path)
     let cmd .= fnamemodify(a:path, ':p:s?' . b:ruby_project_root . '/??')
@@ -132,7 +135,7 @@ function! s:Rubocop(path)
   let enabled_makers =  [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
-command! -complete=file -nargs=? Rubocop call s:Rubocop(<q-args>)
+command! -complete=file -nargs=? -bang Rubocop call s:Rubocop(<q-args>, <bang>0)
 
 function! s:Format() range
   let spaces = indent(a:firstline)

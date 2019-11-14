@@ -158,6 +158,32 @@ function! s:RunPantsTest(mode, debug)
   endif
 endfunction
 
+function! s:RunBazelTest()
+  let l:test = s:GetCurrentTest()
+
+  let l:bazel_cmd = 'bazel test '.l:test.root.''
+
+  let l:cmd = 'cd '.g:ale_java_pants_root.' && '.l:pants_cmd
+
+  "let cmd = 'cat boom-compile-error.txt boom-test-failure.txt'
+  let l:cmd .= ' 2>&1 | ruby ' . s:pants_output_converter . ' -- ' . l:test.root
+
+  let custom_maker = neomake#utils#MakerFromCommand(l:cmd)
+  let custom_maker.name = l:cmd
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.cwd = g:ale_java_pants_root
+  if a:debug
+    let s:debugged = 0
+    let custom_maker.buffer_output = 0
+    let custom_maker.mapexpr = function('DebugPostprocess')
+  endif
+  let enabled_makers =  [custom_maker]
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . l:pants_cmd
+  if a:debug
+    cope
+  endif
+endfunction
+
 function! CscopeForTermUnderCursor()
   call inputsave()
   let type = ''

@@ -320,7 +320,6 @@ noremap <unique> <leader>ew :e <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>es :sp <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>ev :vsp <C-R>=expand('%:h').'/'<cr>
 noremap <unique> <leader>et :tabe <C-R>=expand('%:h').'/'<cr>
-noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>y "+y
 noremap <unique> <leader>p "+p
 noremap <unique> <leader>P "+P
@@ -328,6 +327,7 @@ noremap <unique> <leader>o "*p
 noremap <unique> <leader>O "*P
 noremap <unique> gn <ESC>/\v^[<=>\|]{7}( .*\|$)<cr>
 
+noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>t :TagbarToggle<cr>
 noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
@@ -535,8 +535,7 @@ command! -complete=command -range -nargs=1 SendToCommand <line1>,<line2>call s:S
 function! s:RunCommand() range
   let RunCommandCursorPos = getpos(".")
   let SelectedLines = getline(a:firstline,a:lastline)
-  " Convert to a single string suitable for passing to the command
-  let ScriptInput = join(SelectedLines, " ") . "\n"
+  let ScriptInput = join(SelectedLines, "\n") . "\n"
   echo system(ScriptInput)
   call setpos(".", RunCommandCursorPos)
 endfunction
