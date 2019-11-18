@@ -149,6 +149,15 @@ function! s:Fast(args)
   let custom_maker.name = cmd
   let custom_maker.cwd = b:ruby_project_root
   let custom_maker.remove_invalid_entries = 0
+  " e.g.:
+  "   # path/to/file.rb:1141
+  "   my_method(
+  "     :boom,
+  "     arg1: 1,
+  "   )
+  " %W# %f:%l -> start a multiline warning when the line matches '# path/file.rb:1234'
+  " %-Z# end multiline warning on the next line that starts with '#'
+  " %C%m continued multiline warning message
   let custom_maker.errorformat = '%W# %f:%l, %-Z#, %C%m'
   let enabled_makers = [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
