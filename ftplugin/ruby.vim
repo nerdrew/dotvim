@@ -107,7 +107,7 @@ function! s:RunRubyTest(mode)
   let custom_maker.cwd = b:ruby_project_root
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = 'rspec %f:%l %m'
-  let enabled_makers =  [custom_maker]
+  let enabled_makers = [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)
@@ -132,10 +132,28 @@ function! s:Rubocop(path, autocorrect)
   let custom_maker.cwd = b:ruby_project_root
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = '%f:%l:%c: %m'
-  let enabled_makers =  [custom_maker]
+  let enabled_makers = [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
 command! -complete=file -nargs=? -bang Rubocop call s:Rubocop(<q-args>, <bang>0)
+
+function! s:Fast(args)
+  let cmd = ''
+  if !empty(b:ruby_project_root)
+    let cmd .= 'cd ' . b:ruby_project_root . ' && '
+  endif
+
+  let cmd .= 'fast --no-color ' . a:args
+
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.cwd = b:ruby_project_root
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.errorformat = '%W# %f:%l, %-Z#, %C%m'
+  let enabled_makers = [custom_maker]
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
+endfunction
+command! -complete=file -nargs=1 Fast call s:Fast(<q-args>)
 
 function! s:Format() range
   let spaces = indent(a:firstline)
