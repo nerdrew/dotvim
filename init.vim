@@ -78,12 +78,6 @@ let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
 let g:rust_use_custom_ctags_defs = 1
 let g:rust_fold = 1
 
-"let g:JavaComplete_JvmLauncher = '/Library/Java/JavaVirtualMachines/jdk1.8.0_202.jdk/Contents/Home/bin/java'
-let g:JavaComplete_MavenRepositoryDisable = 1
-let g:JavaComplete_JavaviLogLevel = 'debug'
-let g:JavaComplete_ImportSortType = 'packageName'
-let g:JavaComplete_ImportOrder = ['*']
-
 let g:surround_no_insert_mappings = 1
 
 let g:racer_experimental_completer = 1
@@ -139,7 +133,6 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-fugitive'
 Plug 'fatih/vim-go'
 Plug 'michaeljsmith/vim-indent-object'
-Plug 'artur-shaik/vim-javacomplete2'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
 Plug 'lifepillar/vim-mucomplete'
@@ -209,7 +202,10 @@ set ssop-=options
 " TODO statusline shows currenttag from the current buffer on all splits
 let &statusline="%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
       \ . "%{CurrentTag()}%{AleStatus()}"
-set tags+=.git/tags
+let git_root = systemlist('git rev-parse --show-toplevel')[0]
+if !empty(git_root)
+  let &tags .= ',' . git_root . '/.git/tags'
+endif
 set textwidth=120
 set tildeop
 set title
@@ -224,7 +220,6 @@ filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 if has('autocmd')
   autocmd FileType c setlocal sw=4 ts=8 nolist
   autocmd FileType dirvish call fugitive#detect(@%)
-  autocmd FileType java setlocal omnifunc=javacomplete#Complete
   autocmd FileType python setlocal expandtab sw=4 ts=4 sts=4
 
   " Show trailing whitepace and spaces before a tab:
@@ -233,7 +228,7 @@ if has('autocmd')
   autocmd BufRead,BufNewFile *.as set filetype=actionscript
 
   " Remove trailing whitespace on save if the file has no trailing whitespace
-  autocmd BufRead,BufNewFile *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json,vim} call s:TestStripTrailingWhitespace()
+  " autocmd BufRead,BufNewFile *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json,vim} call s:TestStripTrailingWhitespace()
 
   " Remember last location in file, but not for commit messages.
   " see :help last-position-jump
@@ -301,8 +296,8 @@ tnoremap <unique> <A-}> <C-\><C-N>:tabm +1<cr>
 noremap <unique> [w :tabp<cr>
 noremap <unique> ]w :tabn<cr>
 noremap <unique> Q @@
-noremap <unique> <C-n> :cn<cr>
-noremap <unique> <C-p> :cp<cr>
+noremap <silent> <unique> <C-n> :NextError<cr>
+noremap <silent> <unique> <C-p> :PreviousError<cr>
 " option-y = ¥ yankring show
 noremap <silent> ¥ :YRShow<CR>
 noremap <silent> <A-y> :YRShow<CR>
@@ -346,6 +341,10 @@ noremap <unique> <leader>ar :ALEReset<cr>
 noremap <unique> <leader>ad :ALEDetail<cr>
 noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
+
+noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
+nnoremap <leader>g :call SearchInProject()<cr>
+nnoremap <leader>G :call SearchWordInProject()<cr>
 
 imap <C-Space> <Plug>(ale_complete)
 
@@ -505,20 +504,20 @@ function! CurrentTag() abort
 endfunction
 
 function! AleStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
+  let l:counts = ale#statusline#Count(bufnr(''))
 
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
 
-    let l:status = ''
+  let l:status = ''
 
-    if all_errors > 0
-      let l:status .= printf('  E:%d', all_errors)
-    endif
-    if all_non_errors > 0
-      let l:status .= printf('  W:%d', all_non_errors)
-    endif
-    return status
+  if all_errors > 0
+    let l:status .= printf('  E:%d', all_errors)
+  endif
+  if all_non_errors > 0
+    let l:status .= printf('  W:%d', all_non_errors)
+  endif
+  return status
 endfunction
 
 " Send the range to specified shell command's standard input
@@ -543,7 +542,7 @@ command! -complete=command -range RunCommand <line1>,<line2>call s:RunCommand()
 map <unique> <leader>! :RunCommand<cr>
 
 function! s:TestStripTrailingWhitespace()
-  if !search('\s\+$', "cnw", 0, 500)
+  if search('\s\+$', "cnw", 0, 500)
     autocmd BufWritePre <buffer> StripTrailingWhitespace
   endif
 endfunction
@@ -562,7 +561,6 @@ function! s:ToggleDiffIgnoreWhitespace()
   set diffopt?
 endfunction
 command! -complete=command ToggleDiffIgnoreWhitespace call s:ToggleDiffIgnoreWhitespace()
-noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
 
 function SearchInProject()
   let word = expand("<cword>")
@@ -577,5 +575,34 @@ function SearchWordInProject()
   set hls
   call s:Rg(0, '--word-regexp '.word)
 endfunction
-nnoremap <leader>g :call SearchInProject()<cr>
-nnoremap <leader>G :call SearchWordInProject()<cr>
+
+let s:next_error_loclist = 0
+
+function! s:NextError()
+  try
+    if s:next_error_loclist
+      lne
+    else
+      cn
+    endif
+  catch
+  endtry
+endfunction
+command! -complete=command NextError call s:NextError()
+
+function! s:PreviousError()
+  try
+    if s:next_error_loclist
+      lprev
+    else
+      cp
+    endif
+  catch
+  endtry
+endfunction
+command! -complete=command PreviousError call s:PreviousError()
+
+function! s:ToggleError()
+  let s:next_error_loclist = !s:next_error_loclist
+endfunction
+command! -complete=command ToggleError call s:ToggleError()
