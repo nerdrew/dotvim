@@ -12,7 +12,7 @@ let g:omni_sql_no_default_maps = 1
 let g:rooter_manual_only = 1
 let g:rooter_patterns = ['Gemfile', 'Cargo.toml', '.git', '.git/', '_darcs/', '.hg/', '.bzr/', '.svn/']
 let g:rooter_resolve_links = 1
-let g:rooter_use_lcd = 1
+let g:rooter_cd_cmd = 'lcd'
 let g:ruby_indent_assignment_style = 'variable'
 let g:ruby_indent_block_style = 'do'
 let g:yankring_clipboard_monitor = 0
@@ -66,17 +66,23 @@ let g:go_highlight_operators = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
 
-let g:ale_linters = { 'rust': ['cargo', 'rls'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
+" let g:ale_linters = { 'rust': ['cargo', 'rls'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
+let g:ale_linters = { 'rust': ['cargo'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
 let g:ale_fixers = { 'ruby': ['rubocop'], 'javascript': ['eslint', 'importjs', 'prettier'], 'rust': 'rustfmt' }
-let g:ale_rust_rls_toolchain = 'nightly'
-let g:ale_rust_cargo_use_clippy = 1
-let g:ale_rust_cargo_check_tests = 1
+let g:ale_rust_cargo_avoid_whole_workspace = 0
+let g:ale_rust_cargo_check_all_targets = 1
 let g:ale_rust_cargo_check_examples = 1
+" let g:ale_rust_cargo_check_tests = 1
+let g:ale_rust_cargo_use_clippy = 1
 let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
+let g:ale_rust_rls_toolchain = 'nightly'
 " let g:ale_rust_rls_executable = 'ra_lsp_server'
+
+" let g:diagnostic_enable_virtual_text = 1
 
 let g:rust_use_custom_ctags_defs = 1
 let g:rust_fold = 1
+let g:rustfmt_options = '--edition 2018'
 
 let g:surround_no_insert_mappings = 1
 
@@ -114,6 +120,7 @@ Plug 'neomake/neomake'
 "Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
+Plug 'neovim/nvim-lsp'
 Plug 'ruby-formatter/rufo-vim'
 "Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
@@ -213,7 +220,7 @@ set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
 set wildmenu " better tab completion for files
 set wildmode=list:longest
 set undofile
-set undodir=~/.vim/undo
+set undodir=~/.cache/nvim/undo
 
 filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 
@@ -341,6 +348,20 @@ noremap <unique> <leader>ar :ALEReset<cr>
 noremap <unique> <leader>ad :ALEDetail<cr>
 noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
+
+noremap <unique> gD <cmd>lua vim.lsp.buf.declaration()<CR>
+noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
+noremap <unique> K <cmd>lua vim.lsp.buf.hover()<CR>
+noremap <unique> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+noremap <unique> <leader>k <cmd>lua vim.lsp.buf.signature_help()<CR>
+noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
+noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
+noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
+noremap <unique> <leader>h <cmd>lua vim.lsp.util.show_line_diagnostics()<CR>
+
+call luaeval('require("lsp_setup")', [])
+
+" lua require'nvim_lsp'.rust_analyzer.setup{on_attach=require'diagnostic'.on_attach}
 
 noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
 nnoremap <leader>g :call SearchInProject()<cr>
@@ -581,9 +602,13 @@ let s:next_error_loclist = 0
 function! s:NextError()
   try
     if s:next_error_loclist
-      lne
+      lbelow
     else
-      cn
+      try
+        cbelow
+      catch
+        cnext
+      endtry
     endif
   catch
   endtry
@@ -593,9 +618,10 @@ command! -complete=command NextError call s:NextError()
 function! s:PreviousError()
   try
     if s:next_error_loclist
-      lprev
+      labove
     else
-      cp
+      " cabove doesn't seem to throw an error when there are no errors above
+      cprevious
     endif
   catch
   endtry
