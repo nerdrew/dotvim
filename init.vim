@@ -37,8 +37,12 @@ endif
 let g:grep_cmd_opts = '--vimgrep --no-column'
 
 let g:tagbar_autofocus = 1
-let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ] }
-"let g:tagbar_type_ruby = { 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ], 'ctagsbin': 'ripper-tags', 'ctagsargs': [] }
+let g:tagbar_type_dart = { 'ctagsbin': '~/.pub-cache/bin/dart_ctags' }
+let g:tagbar_type_ruby = {
+      \ 'ctagsbin': 'ripper-tags',
+      \ 'ctagsargs': ['--tag-file', '-'],
+      \ 'kinds': [ 'c:classes', 'f:methods', 'm:modules', 'F:singleton methods', 'C:constants', 'a:aliases' ]
+      \ }
 let g:tagbar_type_rust = {
       \ 'ctagstype' : 'rust',
       \ 'kinds' : [
@@ -121,6 +125,7 @@ Plug 'neomake/neomake'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
 Plug 'neovim/nvim-lsp'
+Plug 'weilbith/nvim-lsp-diamove'
 Plug 'ruby-formatter/rufo-vim'
 "Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
@@ -349,17 +354,21 @@ noremap <unique> <leader>ad :ALEDetail<cr>
 noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
 
-noremap <unique> gD <cmd>lua vim.lsp.buf.declaration()<CR>
-noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
-noremap <unique> K <cmd>lua vim.lsp.buf.hover()<CR>
-noremap <unique> gi <cmd>lua vim.lsp.buf.implementation()<CR>
-noremap <unique> <leader>k <cmd>lua vim.lsp.buf.signature_help()<CR>
-noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
-noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
-noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
-noremap <unique> <leader>h <cmd>lua vim.lsp.util.show_line_diagnostics()<CR>
+try
+  call luaeval('require("lsp_setup")', [])
 
-call luaeval('require("lsp_setup")', [])
+  noremap <unique> gD <cmd>lua vim.lsp.buf.declaration()<CR>
+  noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
+  noremap <unique> K <cmd>lua vim.lsp.buf.hover()<CR>
+  noremap <unique> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+  noremap <unique> <leader>k <cmd>lua vim.lsp.buf.signature_help()<CR>
+  noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
+  noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
+  noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
+  noremap <unique> <leader>h <cmd>lua vim.lsp.util.show_line_diagnostics()<CR>
+catch
+  echom 'could not start nvim lsp: ' . v:exception
+endtry
 
 " lua require'nvim_lsp'.rust_analyzer.setup{on_attach=require'diagnostic'.on_attach}
 
