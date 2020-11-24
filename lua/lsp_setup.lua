@@ -1,4 +1,4 @@
-local nvim_lsp = require('nvim_lsp')
+local lspconfig = require('lspconfig')
 
 local on_attach_no_omnifunc = function(_, bufnr)
   local method = 'textDocument/publishDiagnostics'
@@ -43,14 +43,15 @@ local on_attach = function(_, bufnr)
   -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>h', '<cmd>lua vim.lsp.util.show_line_diagnostics()<CR>', opts)
 end
 
-local servers = {'gopls', 'tsserver', 'vimls', 'jsonls'}
+-- local servers = {'gopls', 'tsserver', 'vimls', 'jsonls'}
+local servers = {'tsserver', 'vimls', 'jsonls'}
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup {
+  lspconfig[lsp].setup {
     on_attach = on_attach,
   }
 end
 
-nvim_lsp.rust_analyzer.setup {
+lspconfig.rust_analyzer.setup {
   on_attach = on_attach,
   settings = {
     ["rust-analyzer"] = {
@@ -62,12 +63,12 @@ nvim_lsp.rust_analyzer.setup {
   }
 }
 
-nvim_lsp.solargraph.setup {
+lspconfig.solargraph.setup {
   on_attach = on_attach_no_omnifunc,
 }
 
-local configs = require 'nvim_lsp/configs'
-local util = require 'nvim_lsp/util'
+local configs = require 'lspconfig/configs'
+local util = require 'lspconfig/util'
 
 configs.java_lsp = {
   default_config = {
@@ -77,6 +78,6 @@ configs.java_lsp = {
   };
 };
 
-nvim_lsp.java_lsp.setup{
+lspconfig.java_lsp.setup{
   on_attach = on_attach,
 }

@@ -72,6 +72,7 @@ let g:go_highlight_types = 1
 
 " let g:ale_linters = { 'rust': ['cargo', 'rls'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
 let g:ale_linters = { 'rust': ['cargo'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
+let g:ale_linters_ignore = { 'ruby': ['solargraph'] }
 let g:ale_fixers = { 'ruby': ['rubocop'], 'javascript': ['eslint', 'importjs', 'prettier'], 'rust': 'rustfmt' }
 let g:ale_rust_cargo_avoid_whole_workspace = 0
 let g:ale_rust_cargo_check_all_targets = 1
