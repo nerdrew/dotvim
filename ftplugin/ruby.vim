@@ -108,7 +108,7 @@ function! s:RunRubyTest(mode)
   let custom_maker.remove_invalid_entries = 0
   let custom_maker.errorformat = 'rspec %f:%l %m'
   let enabled_makers = [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
+  update | call neomake#Make({ 'file_mode': 0, 'enabled_makers': enabled_makers }) | echom "running: " . cmd
 endfunction
 command! -complete=command -nargs=? RunRubyTest call s:RunRubyTest(<q-args>)
 
@@ -166,7 +166,8 @@ command! -complete=file -nargs=1 Fast call s:Fast(<q-args>)
 
 function! s:Format() range
   let spaces = indent(a:firstline)
-  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft . ' --print-width ' . string(120 - spaces)
+  " let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft . ' --print-width ' . string(120 - spaces)
+  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ruby --print-width ' . string(120 - spaces)
   if line("'<")
     let pos = "'<,'>"
   else

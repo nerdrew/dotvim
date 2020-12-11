@@ -16,6 +16,7 @@ changed = {
   "ale" => "https://github.com/w0rp",
   "rust.vim" => "https://github.com/rust-lang",
   "vim-sh-indent" => "https://github.com/chrisbra",
+  "vim-fugitive" => "https://github.com/tpope",
 }.map do |repo, upstream|
   puts repo
   `git clone git@github.com:nerdrew/#{repo}.git` unless Dir.exist?(repo)

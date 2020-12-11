@@ -27,12 +27,14 @@ else
 endif
 
 if has('macunix')
-  let g:python_host_prog='/usr/local/bin/python'
+  let g:python_host_prog='/usr/bin/python'
   let g:python3_host_prog='/usr/local/bin/python3'
 else
   let g:python_host_prog='/home/linuxbrew/.linuxbrew/bin/python'
   let g:python3_host_prog='/home/linuxbrew/.linuxbrew/bin/python3'
 endif
+
+let g:mundo_prefer_python3 = 1
 
 let g:grep_cmd_opts = '--vimgrep --no-column'
 
@@ -126,7 +128,9 @@ Plug 'neomake/neomake'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
 Plug 'neovim/nvim-lsp'
+Plug 'norcalli/nvim-colorizer.lua'
 Plug 'weilbith/nvim-lsp-diamove'
+Plug 'keith/rspec.vim'
 Plug 'ruby-formatter/rufo-vim'
 "Plug 'rust-lang/rust.vim'
 Plug 'ciaranm/securemodelines'
@@ -135,6 +139,7 @@ Plug 'keith/swift.vim'
 Plug 'majutsushi/tagbar'
 Plug 'junegunn/vader.vim'
 Plug 'MarcWeber/vim-addon-local-vimrc'
+Plug 'bazelbuild/vim-bazel' | Plug 'google/vim-maktaba'
 Plug 'cstrahan/vim-capnp'
 Plug 'kchmck/vim-coffee-script'
 Plug 'sebdah/vim-delve'
@@ -143,7 +148,7 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-fugitive'
+" Plug 'tpope/vim-fugitive'
 Plug 'fatih/vim-go'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'pangloss/vim-javascript'
@@ -248,12 +253,6 @@ if has('autocmd')
   autocmd BufReadPost * if &filetype !~ '^git\c' && line("'\"") > 0 && line("'\"") <= line("$")
         \| exe "normal! g`\"" | endif
 
-  autocmd BufReadPost quickfix nnoremap <silent> <buffer> <leader>h <C-W><cr><C-W>K
-        \| nnoremap <silent> <buffer> <leader>H <C-W><cr><C-W>K<C-W>b
-        \| nnoremap <silent> <buffer> q :ccl<cr>
-        \| nnoremap <silent> <buffer> <leader>t <C-W><cr><C-W>T
-        \| nnoremap <silent> <buffer> <leader>T <C-W><cr><C-W>TgT<C-W><C-W>
-        \| nnoremap <silent> <buffer> <leader>v <C-W><cr><C-W>H<C-W>b<C-W>J<C-W>t
 
   " :bd! doesn't seem to kill the process correctly
   "autocmd TermOpen * noremap <unique> <silent> <buffer> q :bd!<CR>
@@ -261,6 +260,8 @@ if has('autocmd')
 
   autocmd TermOpen * startinsert
 endif
+
+lua require 'colorizer'.setup()
 
 let mapleader = "\<Space>"
 " inoremap <unique> <C-g> <ESC>
