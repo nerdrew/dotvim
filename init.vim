@@ -127,9 +127,8 @@ Plug 'neomake/neomake'
 "Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
-Plug 'neovim/nvim-lsp'
 Plug 'norcalli/nvim-colorizer.lua'
-Plug 'weilbith/nvim-lsp-diamove'
+Plug 'neovim/nvim-lspconfig'
 Plug 'keith/rspec.vim'
 Plug 'ruby-formatter/rufo-vim'
 "Plug 'rust-lang/rust.vim'
@@ -148,6 +147,7 @@ Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-eunuch'
+Plug 'zchee/vim-flatbuffers'
 " Plug 'tpope/vim-fugitive'
 Plug 'fatih/vim-go'
 Plug 'michaeljsmith/vim-indent-object'
@@ -259,6 +259,8 @@ if has('autocmd')
   autocmd User NeomakeJobFinished nested call s:NeomakeFinished()
 
   autocmd TermOpen * startinsert
+  autocmd FileType rust if getline('$') =~ "vim-cargo-tests" | let b:ale_rust_cargo_check_tests = 1 | endif
+  " autocmd Filetype rust setlocal omnifunc=v:lua.vim.lsp.omnifunc
 endif
 
 lua require 'colorizer'.setup()
@@ -306,6 +308,8 @@ tnoremap <unique> ’ <C-\><C-N>:tabm +1<cr>
 noremap <unique> <A-}> :tabm +1<cr>
 inoremap <unique> <A-}> <ESC>:tabm +1<cr>
 tnoremap <unique> <A-}> <C-\><C-N>:tabm +1<cr>
+
+inoremap jj <Esc>
 
 noremap <unique> [w :tabp<cr>
 noremap <unique> ]w :tabn<cr>
@@ -367,7 +371,9 @@ try
   noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
   noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
   noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
-  noremap <unique> <leader>h <cmd>lua vim.lsp.util.show_line_diagnostics()<CR>
+  noremap <unique> <leader>h <cmd>lua vim.lsp.diagnostic.show_line_diagnostics({show_header = false})<CR>
+  noremap <unique> ]d <cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {show_header = false}})<CR>
+  noremap <unique> [d <cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {show_header = false}})<CR>
 catch
   echom 'could not start nvim lsp: ' . v:exception
 endtry

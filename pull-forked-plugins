@@ -26,7 +26,7 @@ changed = {
       `git remote add upstream #{upstream}/#{repo}.git`
       `git fetch upstream`
     end
-    `git pull`
+    `git pull origin master`
     `git fresh upstream/master`
     repo if %r{Your branch is up-to-date with 'origin/master'} !~ `git status`
   end

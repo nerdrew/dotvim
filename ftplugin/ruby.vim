@@ -166,8 +166,7 @@ command! -complete=file -nargs=1 Fast call s:Fast(<q-args>)
 
 function! s:Format() range
   let spaces = indent(a:firstline)
-  " let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ' . &ft . ' --print-width ' . string(120 - spaces)
-  let prettier = 'prettier --no-config --stdin --add-trailing-commas --parser ruby --print-width ' . string(120 - spaces)
+  let prettier = 'prettier --no-config --add-trailing-commas --prefer-single-quotes false --parser ruby --print-width ' . string(140 - spaces)
   if line("'<")
     let pos = "'<,'>"
   else

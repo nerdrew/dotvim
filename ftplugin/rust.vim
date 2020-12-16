@@ -26,6 +26,8 @@ if exists('g:lazarus_rust')
 endif
 let g:lazarus_rust = 1
 
+let g:rust_workspace_root = get(g:, 'rust_workspace_root', json_decode(system('cargo metadata --format-version 1'))['workspace_root'])
+
 function! s:GetCurrentTest() abort
   let test_function = substitute(tagbar#currenttag('%s', '', 'f'), '()$', '', '')
   if match(test_function, '^tests::') > -1
@@ -39,6 +41,10 @@ endfunction
 
 function! s:RunRustTest(mode) abort
   let cmd = 'cargo test '
+
+  if !ale#Var(bufnr('%'), 'rust_cargo_check_tests')
+    let cmd .= '--lib '
+  endif
 
   if a:mode
     let cmd .= s:GetCurrentTest()
@@ -156,14 +162,16 @@ endfunction
 function! s:DebugRustTest(mode)
   if a:mode
     let test_function = s:GetCurrentTest()
+  else
+    let test_function = ''
   endif
 
   call s:RustWriteInstructionsFile()
 
   " brew python makes lldb sad
   let cmd = 'set -x; '
-        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. b:rust_project_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | ggrep -oP "(?<=Running ).*$" | head -1); '
-        \. 'PATH=/usr/bin:$PATH rust-lldb -s '.g:rust_lldb_instructions_file.' -- $TEST_BINARY '.l:test_function
+        \. 'RUST_TEST_THREADS=1 TEST_BINARY=$(cd '. b:rust_project_root .'; cargo test '.l:test_function.' 2>&1 | tee /dev/stderr | grep -oP "(?<=Running ).*$" | head -1); '
+        \. 'rust-lldb -s '.g:rust_lldb_instructions_file.' -- $TEST_BINARY '.l:test_function
 
   update
 
@@ -221,3 +229,20 @@ function! s:RustWriteInstructionsFile()
         \ 'run',
         \ ], g:rust_lldb_instructions_file)
 endfunction
+
+function! s:CargoCheck()
+  let check_cmd = 'cargo check --quiet --workspace --tests --all-targets --bins --examples --message-format json'
+
+  let cmd = check_cmd . ' 2>&1 | '
+        \. "jq -r 'select(.reason != \"compiler-artifact\") | .message | try \"\\(.spans[] | \"\\(.file_name):\\(.line_start):\\(.column_start)\"): \\(.level[0:1]) \\(.message)\"' | "
+        \. 'sort -t : -k1,1 -k 2,2n -k 3,3n -u'
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.cwd = g:rust_workspace_root
+  let custom_maker.remove_invalid_entries = 1
+  " let custom_maker.errorformat = '%f:%l:%c: %t%*[^:]: %m'
+  let custom_maker.errorformat = '%f:%l:%c: %t %m'
+  let enabled_makers =  [custom_maker]
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . check_cmd
+endfunction
+command! CargoCheck call s:CargoCheck()
