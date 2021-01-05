@@ -127,7 +127,7 @@ Plug 'neomake/neomake'
 "Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
 Plug 'chr4/nginx.vim'
-Plug 'norcalli/nvim-colorizer.lua'
+" Plug 'norcalli/nvim-colorizer.lua'
 Plug 'neovim/nvim-lspconfig'
 Plug 'keith/rspec.vim'
 Plug 'ruby-formatter/rufo-vim'
@@ -263,10 +263,11 @@ if has('autocmd')
   " autocmd Filetype rust setlocal omnifunc=v:lua.vim.lsp.omnifunc
 endif
 
-lua require 'colorizer'.setup()
+" lua require 'colorizer'.setup()
 
 let mapleader = "\<Space>"
 " inoremap <unique> <C-g> <ESC>
+inoremap <unique> jk <ESC>
 " tmux-navigator maps the others
 tnoremap <unique> <C-h> <C-\><C-N><C-w>h
 tnoremap <unique> <C-j> <C-\><C-N><C-w>j
