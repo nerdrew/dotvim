@@ -650,3 +650,9 @@ function! s:ToggleError()
   let s:next_error_loclist = !s:next_error_loclist
 endfunction
 command! -complete=command ToggleError call s:ToggleError()
+
+function LSPReset()
+  update
+  call luaeval('vim.lsp.stop_client(vim.lsp.get_active_clients())')
+  edit
+endfunction

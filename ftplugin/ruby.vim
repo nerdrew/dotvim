@@ -172,7 +172,7 @@ function! s:Format() range
   else
     let pos = '.'
   endif
-  let cmd = "keepjumps " . pos . "! " . prettier . " | sed 's/^/" . repeat(' ', spaces) . "/'"
+  let cmd = "keepjumps " . pos . "! " . prettier . " | sed 's/^/" . repeat(' ', spaces) . "/' | sed 's/^\s +$//'"
   exe cmd
 endfunction
 command! -range Format <line1>,<line2>call s:Format()

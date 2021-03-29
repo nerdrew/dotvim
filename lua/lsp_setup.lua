@@ -3,9 +3,9 @@ local lspconfig = require('lspconfig')
 local on_attach_no_omnifunc = function(_, bufnr)
   local method = 'textDocument/publishDiagnostics'
 
-  local default_callback = vim.lsp.callbacks[method]
-  vim.lsp.callbacks[method] = function(err, method, result, client_id)
-    default_callback(err, method, result, client_id)
+  local default_handler = vim.lsp.handlers[method]
+  vim.lsp.handlers[method] = function(err, method, result, client_id)
+    default_handler(err, method, result, client_id)
     if result and result.diagnostics then
       for _, v in ipairs(result.diagnostics) do
         v.uri = v.uri or result.uri
@@ -19,9 +19,9 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
   local method = 'textDocument/publishDiagnostics'
 
-  local default_callback = vim.lsp.callbacks[method]
-  vim.lsp.callbacks[method] = function(err, method, result, client_id)
-    default_callback(err, method, result, client_id)
+  local default_handler = vim.lsp.handlers[method]
+  vim.lsp.handlers[method] = function(err, method, result, client_id)
+    default_handler(err, method, result, client_id)
     if result and result.diagnostics then
       for _, v in ipairs(result.diagnostics) do
         v.uri = v.uri or result.uri
@@ -80,7 +80,7 @@ configs.java_lsp = {
   default_config = {
     cmd = {"/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh", "--verbose"};
     filetypes = {"java"};
-    root_dir = util.root_pattern("BUILD.bazel", ".git");
+    root_dir = util.root_pattern("BUILD", ".git");
   };
 };
 
