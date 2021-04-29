@@ -267,7 +267,8 @@ endif
 
 let mapleader = "\<Space>"
 " inoremap <unique> <C-g> <ESC>
-inoremap <unique> jk <ESC>
+" inoremap <unique> jk <ESC>
+" inoremap jj <Esc>
 " tmux-navigator maps the others
 tnoremap <unique> <C-h> <C-\><C-N><C-w>h
 tnoremap <unique> <C-j> <C-\><C-N><C-w>j
@@ -309,8 +310,6 @@ tnoremap <unique> ’ <C-\><C-N>:tabm +1<cr>
 noremap <unique> <A-}> :tabm +1<cr>
 inoremap <unique> <A-}> <ESC>:tabm +1<cr>
 tnoremap <unique> <A-}> <C-\><C-N>:tabm +1<cr>
-
-inoremap jj <Esc>
 
 noremap <unique> [w :tabp<cr>
 noremap <unique> ]w :tabn<cr>
@@ -586,10 +585,15 @@ function! s:TestStripTrailingWhitespace()
   endif
 endfunction
 
-function! s:StripTrailingWhitespace(line1, line2)
-  let _s=@/ | exe "keepj normal! msHmt" | exe 'keepj '.a:line1.",".a:line2.'s/\s\+$//e' | let @/=_s | nohl | exe "keepj normal! 'tzt`s"
+function! s:StripTrailingWhitespace() range
+  if line("'<")
+    let pos = "'<,'>"
+  else
+    let pos = '.'
+  endif
+  let _s=@/ | exe "keepj normal! msHmt" | exe 'keepj '.pos.'s/\s\+$//e' | let @/=_s | nohl | exe "keepj normal! 'tzt`s"
 endfunction
-command! -range=% -complete=command StripTrailingWhitespace call s:StripTrailingWhitespace(<line1>, <line2>)
+command! -range=% -complete=command StripTrailingWhitespace <line1>,<line2>call s:StripTrailingWhitespace()
 
 function! s:ToggleDiffIgnoreWhitespace()
   if match(&diffopt, 'iwhite') == -1

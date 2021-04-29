@@ -166,13 +166,13 @@ command! -complete=file -nargs=1 Fast call s:Fast(<q-args>)
 
 function! s:Format() range
   let spaces = indent(a:firstline)
-  let prettier = 'prettier --no-config --add-trailing-commas --prefer-single-quotes false --parser ruby --print-width ' . string(140 - spaces)
+  let prettier = 'prettier --no-config --trailing-comma all --ruby-single-quote false --parser ruby --print-width ' . string(120 - spaces)
   if line("'<")
     let pos = "'<,'>"
   else
     let pos = '.'
   endif
-  let cmd = "keepjumps " . pos . "! " . prettier . " | sed 's/^/" . repeat(' ', spaces) . "/' | sed 's/^\s +$//'"
+  let cmd = "keepjumps " . pos . "! " . prettier . " | sed 's/^/" . repeat(' ', spaces) . "/' | sed 's/^ +$//'"
   exe cmd
 endfunction
-command! -range Format <line1>,<line2>call s:Format()
+command! -range=% Format <line1>,<line2>call s:Format()
