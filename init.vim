@@ -1,6 +1,6 @@
 let g:bufExplorerDisableDefaultKeyMapping=1
 let g:bufExplorerShowRelativePath=1
-let g:fzf_command_prefix='FZF'
+" let g:fzf_command_prefix='FZF'
 let g:neomake_echo_current_error=0
 let g:neomake_highlight_columns = 0
 "let g:neomake_open_list = 2
@@ -95,8 +95,8 @@ let g:surround_no_insert_mappings = 1
 
 let g:racer_experimental_completer = 1
 " let g:SuperTabDefaultCompletionType = "context"
-let g:mucomplete#chains = { 'default' : ['path', 'omni', 'incl', 'c-p', 'dict', 'uspl'], }
-let g:mucomplete#minimum_prefix_length = 0
+" let g:mucomplete#chains = { 'default' : ['path', 'omni', 'incl', 'c-p', 'dict', 'uspl'], }
+" let g:mucomplete#minimum_prefix_length = 0
 
 let g:multi_cursor_use_default_mapping=0
 let g:multi_cursor_start_word_key      = '≥' " option->
@@ -116,7 +116,7 @@ Plug 'vim-scripts/YankRing.vim'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
 if has('macunix')
-  Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
+  " Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
   Plug '/home/linuxbrew/.linuxbrew/opt/fzf' | Plug 'junegunn/fzf.vim'
 endif
@@ -153,7 +153,7 @@ Plug 'fatih/vim-go'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'pangloss/vim-javascript'
 Plug 'tpope/vim-markdown'
-Plug 'lifepillar/vim-mucomplete'
+" Plug 'lifepillar/vim-mucomplete'
 Plug 'terryma/vim-multiple-cursors'
 Plug 'simnalamburt/vim-mundo'
 Plug 'mustache/vim-mustache-handlebars'
@@ -169,6 +169,12 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'cespare/vim-toml'
 Plug 'tpope/vim-unimpaired'
 Plug 'HerringtonDarkholme/yats.vim'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'hrsh7th/nvim-compe'
 
 "Plug 'iCyMind/NeoSolarized'
 "Plug 'ayu-theme/ayu-vim'
@@ -191,11 +197,14 @@ colorscheme solarized8_flat
 set autoread
 set backspace=indent,eol,start
 set backupdir=.,$TMPDIR
-set completeopt=menu,menuone,noinsert
+set completeopt=menuone,noinsert
 set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
+set foldexpr=nvim_treesitter#foldexpr()
+set foldlevel=2
+set foldmethod=expr
 set formatoptions-=t
 set grepprg=rg
 set hidden " handle multiple buffers better
@@ -209,14 +218,22 @@ set noswapfile
 set number
 set numberwidth=3
 set ruler
-" set scrolloff=1
 set shell=zsh
-" set sidescrolloff=5
+set shortmess+=c " Shut off completion messages
 set showcmd
 set showmatch " show matching parentheses
 set smarttab
 set ssop-=folds
 set ssop-=options
+set textwidth=120
+set tildeop
+set title
+set undodir=~/.cache/nvim/undo
+set undofile
+set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
+set wildmenu " better tab completion for files
+set wildmode=list:longest
+
 " TODO statusline shows currenttag from the current buffer on all splits
 let &statusline="%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
       \ . "%{CurrentTag()}%{AleStatus()}"
@@ -224,14 +241,6 @@ let git_root = systemlist('git rev-parse --show-toplevel')[0]
 if !empty(git_root)
   let &tags .= ',' . git_root . '/.git/tags'
 endif
-set textwidth=120
-set tildeop
-set title
-set wildignore=*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg
-set wildmenu " better tab completion for files
-set wildmode=list:longest
-set undofile
-set undodir=~/.cache/nvim/undo
 
 filetype plugin indent on " Turn on filetype plugins (:help filetype-plugin)
 
@@ -344,9 +353,11 @@ noremap <unique> <leader>b :ToggleBufExplorer<cr>
 noremap <unique> <leader>t :TagbarToggle<cr>
 noremap <unique> <leader>u :MundoToggle<cr>
 noremap <unique> <leader>n :NERDTreeToggle<cr>
-noremap <unique> <leader>f :FZF<cr>
-noremap <unique> <leader>d :FZFBuffers<cr>
-"noremap <unique> <leader>c :Rooter<cr>
+" noremap <unique> <leader>f :FZF<cr>
+" noremap <unique> <leader>d :FZFBuffers<cr>
+nnoremap <leader>f <cmd>Telescope find_files<cr>
+nnoremap <leader>d <cmd>Telescope buffers<cr>
+nnoremap <leader>c <cmd>Telescope live_grep<cr>
 noremap <unique> <leader>x :let @+ = expand('%')<cr>
 noremap <unique> <leader>X :let @+ = expand('%').':'.line('.')<cr>
 
@@ -361,7 +372,7 @@ noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
 
 try
-  call luaeval('require("lsp_setup")', [])
+  call luaeval('require("setup")', [])
 
   noremap <unique> gD <cmd>lua vim.lsp.buf.declaration()<CR>
   noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
@@ -374,17 +385,18 @@ try
   noremap <unique> <leader>h <cmd>lua vim.lsp.diagnostic.show_line_diagnostics({show_header = false})<CR>
   noremap <unique> ]d <cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {show_header = false}})<CR>
   noremap <unique> [d <cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {show_header = false}})<CR>
-catch
-  echom 'could not start nvim lsp: ' . v:exception
-endtry
 
-" lua require'nvim_lsp'.rust_analyzer.setup{on_attach=require'diagnostic'.on_attach}
+  inoremap <silent><expr> <Tab> v:lua.tab_complete()
+  inoremap <silent><expr> <S-Tab> v:lua.s_tab_complete()
+catch
+  echom 'error in lua/setup.lua' . v:exception
+endtry
 
 noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
 nnoremap <leader>g :call SearchInProject()<cr>
 nnoremap <leader>G :call SearchWordInProject()<cr>
 
-imap <C-Space> <Plug>(ale_complete)
+" imap <C-Space> <Plug>(ale_complete)
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -660,3 +672,4 @@ function LSPReset()
   call luaeval('vim.lsp.stop_client(vim.lsp.get_active_clients())')
   edit
 endfunction
+command! -complete=command LSPReset call s:LSPReset()
