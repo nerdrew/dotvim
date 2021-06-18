@@ -202,9 +202,10 @@ set copyindent
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 set cst
 set expandtab sw=2 ts=2 sts=2
-set foldexpr=nvim_treesitter#foldexpr()
-set foldlevel=2
-set foldmethod=expr
+" set foldexpr=nvim_treesitter#foldexpr()
+" set nofoldenable
+" set foldlevel=2
+" set foldmethod=expr
 set formatoptions-=t
 set grepprg=rg
 set hidden " handle multiple buffers better
@@ -440,7 +441,8 @@ endfunction
 
 function! s:Rg(file_mode, args)
   let needle = s:GetArgsOrVisualSelection(a:args)
-  let cmd = "rg --vimgrep ".needle
+  " ripgrip will incorrectly detect that stdin is available and try to search that, <&- closes it.
+  let cmd = "rg --vimgrep ".needle. " <&-"
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
   let custom_maker.name = cmd
   let custom_maker.remove_invalid_entries = 0
@@ -667,9 +669,9 @@ function! s:ToggleError()
 endfunction
 command! -complete=command ToggleError call s:ToggleError()
 
-function LSPReset()
-  update
-  call luaeval('vim.lsp.stop_client(vim.lsp.get_active_clients())')
-  edit
-endfunction
-command! -complete=command LSPReset call s:LSPReset()
+" function s:LSPReset()
+"   update
+"   call luaeval('vim.lsp.stop_client(vim.lsp.get_active_clients())')
+"   edit
+" endfunction
+" command! -complete=command LSPReset call s:LSPReset()
