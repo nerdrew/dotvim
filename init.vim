@@ -72,6 +72,11 @@ let g:go_highlight_operators = 1
 let g:go_highlight_structs = 1
 let g:go_highlight_types = 1
 
+" Disable ale when opened with gem or bundler
+if match($_, '\(bundle\|gem\)$') > 0
+  let g:ale_enabled = 0
+endif
+
 " let g:ale_linters = { 'rust': ['cargo', 'rls'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
 let g:ale_linters = { 'rust': ['cargo'] } " \ 'go': ['gofmt', 'golint', 'go vet', 'golangserver'],
 let g:ale_linters_ignore = { 'ruby': ['solargraph'] }
@@ -174,6 +179,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
 Plug 'hrsh7th/nvim-compe'
 
 "Plug 'iCyMind/NeoSolarized'
