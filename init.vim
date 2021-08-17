@@ -494,13 +494,13 @@ command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
 function! s:XMLlint(line1, line2)
   execute a:line1.",".a:line2." !xmllint --format --recover -"
 endfunction
-command! -range=% -complete=command XMLlint call s:XMLlint(<line1>, <line2>)
+command! -range=% XMLlint call s:XMLlint(<line1>, <line2>)
 
 " json_reformt is part of yajl
 function! s:JSONlint(line1, line2)
   execute a:line1.",".a:line2." !json_reformat"
 endfunction
-command! -range=% -complete=command JSONlint call s:JSONlint(<line1>, <line2>)
+command! -range=% JSONlint call s:JSONlint(<line1>, <line2>)
 
 " Set ts sts sw = num
 function! s:Tabs(num)
@@ -521,7 +521,7 @@ function! s:LargeFile(echo)
     set ft? incsearch? number?
   endif
 endfunction
-command! -bang -complete=command LargeFile call s:LargeFile(<bang>1)
+command! -bang LargeFile call s:LargeFile(<bang>1)
 
 function! s:LargeFileOff()
   filetype on
@@ -530,7 +530,7 @@ function! s:LargeFileOff()
   set number
   set ft? incsearch? number?
 endfunction
-command! -complete=command LargeFileOff call s:LargeFileOff()
+command! LargeFileOff call s:LargeFileOff()
 
 function! SynStack()
   let s:syn_stack = ''
@@ -547,13 +547,13 @@ function! s:ShowSynStack()
   set statusline+=%{SynStack()}
   set laststatus=2
 endfunction
-command! -complete=command ShowSynStack call s:ShowSynStack()
+command! ShowSynStack call s:ShowSynStack()
 
 function! s:HideSynStack()
   let &statusline=g:old_statusline
   let &laststatus=g:old_laststatus
 endfunction
-command! -complete=command HideSynStack call s:HideSynStack()
+command! HideSynStack call s:HideSynStack()
 
 function! CurrentTag() abort
   if &filetype != 'text'
@@ -596,7 +596,7 @@ function! s:RunCommand() range
   echo system(ScriptInput)
   call setpos(".", RunCommandCursorPos)
 endfunction
-command! -complete=command -range RunCommand <line1>,<line2>call s:RunCommand()
+command! -range RunCommand <line1>,<line2>call s:RunCommand()
 map <unique> <leader>! :RunCommand<cr>
 
 function! s:TestStripTrailingWhitespace()
@@ -613,7 +613,7 @@ function! s:StripTrailingWhitespace() range
   endif
   let _s=@/ | exe "keepj normal! msHmt" | exe 'keepj '.pos.'s/\s\+$//e' | let @/=_s | nohl | exe "keepj normal! 'tzt`s"
 endfunction
-command! -range=% -complete=command StripTrailingWhitespace <line1>,<line2>call s:StripTrailingWhitespace()
+command! -range=% StripTrailingWhitespace <line1>,<line2>call s:StripTrailingWhitespace()
 
 function! s:ToggleDiffIgnoreWhitespace()
   if match(&diffopt, 'iwhite') == -1
@@ -623,7 +623,7 @@ function! s:ToggleDiffIgnoreWhitespace()
   endif
   set diffopt?
 endfunction
-command! -complete=command ToggleDiffIgnoreWhitespace call s:ToggleDiffIgnoreWhitespace()
+command! ToggleDiffIgnoreWhitespace call s:ToggleDiffIgnoreWhitespace()
 
 function SearchInProject()
   let word = expand("<cword>")
@@ -655,7 +655,7 @@ function! s:NextError()
   catch
   endtry
 endfunction
-command! -complete=command NextError call s:NextError()
+command! NextError call s:NextError()
 
 function! s:PreviousError()
   try
@@ -668,12 +668,12 @@ function! s:PreviousError()
   catch
   endtry
 endfunction
-command! -complete=command PreviousError call s:PreviousError()
+command! PreviousError call s:PreviousError()
 
 function! s:ToggleError()
   let s:next_error_loclist = !s:next_error_loclist
 endfunction
-command! -complete=command ToggleError call s:ToggleError()
+command! ToggleError call s:ToggleError()
 
 " function s:LSPReset()
 "   update
