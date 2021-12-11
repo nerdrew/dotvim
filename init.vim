@@ -220,6 +220,7 @@ set inccommand=nosplit
 set lazyredraw
 set listchars=tab:>\ ,trail:·,nbsp:·,extends:>,precedes:<
 set mouse=a
+set nojoinspaces
 set nolist
 set noswapfile
 set number
@@ -379,7 +380,7 @@ noremap <unique> <leader>ag :ALEGoToDefinition<cr>
 noremap <unique> <leader>ah :ALEHover<cr>
 
 try
-  call luaeval('require("setup")', [])
+  call luaeval('require("setup")', exists('g:no_lsp') && g:no_lsp)
 
   noremap <unique> gD <cmd>lua vim.lsp.buf.declaration()<CR>
   noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
@@ -458,6 +459,17 @@ function! s:Rg(file_mode, args)
 endfunction
 command! -bang -nargs=* -complete=file -range Rg call s:Rg(<bang>0, <q-args>)
 
+function! s:RgFilesContaining(file_mode, args)
+  let cmd = "rg -l ".a:args. " <&-"
+  let custom_maker = neomake#utils#MakerFromCommand(cmd)
+  let custom_maker.name = cmd
+  let custom_maker.remove_invalid_entries = 0
+  let custom_maker.errorformat = "%f"
+  let enabled_makers =  [custom_maker]
+  call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echom "running: " . cmd
+endfunction
+command! -bang -nargs=* -complete=file RgFilesContaining call s:RgFilesContaining(<bang>0, <q-args>)
+
 function! s:RgFiles(file_mode, args)
   let cmd = "rg --files -g '".a:args."'"
   let custom_maker = neomake#utils#MakerFromCommand(cmd)
@@ -467,7 +479,7 @@ function! s:RgFiles(file_mode, args)
   let enabled_makers =  [custom_maker]
   call neomake#Make({'file_mode': a:file_mode, 'enabled_makers': enabled_makers}) | echom "running: " . cmd
 endfunction
-command! -bang -nargs=* -complete=file F call s:RgFiles(<bang>0, <q-args>)
+command! -bang -nargs=* -complete=file RgFiles call s:RgFiles(<bang>0, <q-args>)
 
 function s:NeomakeFinished() abort
   if g:neomake_hook_context.jobinfo.file_mode
@@ -590,11 +602,11 @@ command! -complete=command -range -nargs=1 SendToCommand <line1>,<line2>call s:S
 
 " Run the range as a shell command
 function! s:RunCommand() range
-  let RunCommandCursorPos = getpos(".")
-  let SelectedLines = getline(a:firstline,a:lastline)
-  let ScriptInput = join(SelectedLines, "\n") . "\n"
-  echo system(ScriptInput)
-  call setpos(".", RunCommandCursorPos)
+  let pos = getpos(".")
+  let selected_lines = getline(a:firstline,a:lastline)
+  let cmd = join(selected_lines, "\n")
+  call neomake#Sh(cmd)
+  call setpos(".", pos)
 endfunction
 command! -range RunCommand <line1>,<line2>call s:RunCommand()
 map <unique> <leader>! :RunCommand<cr>

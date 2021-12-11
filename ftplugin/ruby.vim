@@ -164,10 +164,10 @@ function! s:Fast(args)
 endfunction
 command! -complete=file -nargs=1 Fast call s:Fast(<q-args>)
 
-function! s:Format() range
+function! s:Format(width = 120) range
   let spaces = indent(a:firstline)
-  " let formatter = 'prettier --plugin-search-dir /usr/local/lib/ --no-config --trailing-comma all --ruby-single-quote false --parser ruby --print-width ' . string(120 - spaces)
-  let formatter = 'rbprettier --no-config --trailing-comma all --parser ruby --ruby-single-quote false --print-width ' . string(120 - spaces)
+  " let formatter = '~/.config/nvim/plugged/vim-prettier/node_modules/.bin/prettier --plugin-search-dir ~/.config/nvim/plugged/vim-prettier/ --no-config --trailing-comma all --parser ruby --print-width ' . string(a:width - spaces)
+  let formatter = 'rbprettier --no-config --trailing-comma all --parser ruby --ruby-single-quote false --print-width ' . string(a:width - spaces)
   if line("'<")
     let pos = "'<,'>"
   else
@@ -176,4 +176,4 @@ function! s:Format() range
   let cmd = "keepjumps " . pos . "! " . formatter . " | sed 's/^/" . repeat(' ', spaces) . "/' | sed 's/^ +$//'"
   exe cmd
 endfunction
-command! -range=% Format <line1>,<line2>call s:Format()
+command! -range=% -nargs=? Format <line1>,<line2>call s:Format(<f-args>)

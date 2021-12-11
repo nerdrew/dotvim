@@ -23,7 +23,7 @@ class LastCompileError
   end
 
   def to_s
-    "#{@file}:#{@line}:#{@column}: #{@message}"
+    "java error #{@file}:#{@line}:#{@column}: #{@message}"
   end
 end
 
@@ -52,19 +52,19 @@ class LastTestFailure
   end
 
   def to_s
-    "#{@root}/src/test/java/#{@package.tr('.', '/')}.java:#{@line}: #{@meth}: #{@message}"
+    "java error #{@root}/src/test/java/#{@package.tr('.', '/')}.java:#{@line}: #{@meth}: #{@message}"
   end
 end
 
-relative_root = ARGV[1]
+relative_root = ARGV[1].chomp("/")
 last_compile_error = nil
 last_test_failure = nil
 
-while (input = STDIN.gets)
+while (input = $stdin.gets)
   next if /^\d+:\d+:\d+ \d+:\d+\s+\[.+\](\s|\.)*$/ =~ input
 
   puts input
-  STDOUT.flush
+  $stdout.flush
 
   if last_compile_error
     if last_compile_error.add(input)

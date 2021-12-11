@@ -45,10 +45,11 @@ local util = require 'lspconfig/util'
 
 lspconfig.java_language_server.setup {
   on_attach = on_attach,
-  cmd = {"/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh", "--verbose"},
+  cmd = {"/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh"},
+  -- cmd = {"/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh", "--verbose"},
   filetypes = {"java"},
   root_dir = util.root_pattern("BUILD", ".git"),
-  autostart = false,
+  -- autostart = false,
 }
 
 -- local configs = require 'lspconfig/configs'
@@ -70,7 +71,7 @@ lspconfig.java_language_server.setup {
 require'compe'.setup {
   enabled = true;
   autocomplete = false;
-  debug = false;
+  debug = true;
   throttle_time = 80;
   source_timeout = 200;
   incomplete_delay = 400;
@@ -122,25 +123,25 @@ _G.s_tab_complete = function()
 end
 
 
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = "gss",
-      node_incremental = "gsn",
-      scope_incremental = "gss",
-      node_decremental = "gsd",
-    },
-  },
-  indent = {
-    enable = true,
-    disable = { 'ruby' },
-  },
-}
+-- require'nvim-treesitter.configs'.setup {
+--   ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+--   highlight = {
+--     enable = true,              -- false will disable the whole extension
+--   },
+-- --   incremental_selection = {
+-- --     enable = true,
+-- --     keymaps = {
+-- --       init_selection = "gss",
+-- --       node_incremental = "gsn",
+-- --       scope_incremental = "gss",
+-- --       node_decremental = "gsd",
+-- --     },
+-- --   },
+--   indent = {
+--     enable = true,
+--     -- disable = { 'ruby' },
+--   },
+-- }
 
 local telescope_actions = require('telescope.actions')
 require('telescope').setup{
@@ -152,3 +153,7 @@ require('telescope').setup{
     },
   }
 }
+require('telescope').load_extension('fzy_native')
+
+-- local popup = require('popup')
+-- popup

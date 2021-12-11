@@ -11,7 +11,8 @@ noremap <buffer> <silent> <unique> <leader>r :RunJavaTest 1<CR>
 noremap <buffer> <silent> <unique> <leader>R :RunJavaTest 2<CR>
 noremap <buffer> <silent> <unique> <leader>s :JavaToggleBreakpoint<CR>
 noremap <buffer> <silent> <unique> <leader>S :JavaClearAll<CR>
-noremap <buffer> <silent> <unique> <leader>D :GetCurrentTest<CR>
+noremap <buffer> <silent> <unique> <leader>T :GetCurrentTest<CR>
+noremap <buffer> <silent> <unique> <leader>F :Format<CR>
 
 if exists('g:lazarus_java')
   finish
@@ -20,17 +21,17 @@ let g:lazarus_java = 1
 
 let s:google_java_formatter = expand('<sfile>:p:h').'/google-java-format-1.7-all-deps.jar'
 
-function! s:JavaFormat(line1, line2)
+function! s:Format(line1, line2)
   let l:file = expand('%')
 
   let l:cmd = 'java -jar '.s:google_java_formatter.' --assume-filename='.l:file.' --lines='.a:line1.':'.a:line2.' -'
   execute a:line1.','.a:line2.' !'.l:cmd
 endfunction
-command! -range=% -complete=command JavaFormat call s:JavaFormat(<line1>, <line2>)
+command! -range=% Format call s:Format(<line1>, <line2>)
 
 function! RunJavaTest(mode, debug)
-  if exists('g:java_pants') && g:java_pants
-    call s:RunPantsTest(a:mode, a:debug)
+  if exists('g:java_bazel') && g:java_bazel
+    call s:RunBazelTest(a:mode, a:debug)
   else
     call s:RunMvnTest(a:mode)
   endif
@@ -67,18 +68,21 @@ function! s:GetCurrent(...) abort
   else
     let l:path = expand('%')
   endif
-  let l:file = matchlist(l:path, '^\(.\+\)/src/\(test\|main\)/java/\(.\+\)\.java$')
+  let l:file = matchlist(l:path, '^\(.*\)/\?src/\(test\|main\)/java/\(.\+\)\.java$')
 
   if empty(l:file)
+    echom 'path='.l:path
     return s:current_file
   endif
 
   let s:current_file = {
-        \ 'root': fnamemodify(getcwd(), ':s?'. g:ale_java_pants_root .'/??') . '/' . l:file[1],
+        \ 'root': fnamemodify(getcwd(), ':s?'. g:java_bazel_workspace .'/??') . '/',
+        \ 'relative': substitute(l:file[1], '^\./', '', ''),
         \ 'test': l:file[2] == 'test',
         \ 'file': l:path,
-        \ 'package': substitute(l:file[3], '/', '.', 'g'),
+        \ 'package': l:file[3],
         \ }
+  echom s:current_file
 
   return s:current_file
 endfunction
@@ -91,7 +95,7 @@ function! s:GetCurrentTest() abort
       return s:current_test
     endif
 
-    let l:test_file = l:file.root.'/src/test/java/'.substitute(l:file.package, '.', '/', 'g').'Test.java'
+    let l:test_file = l:file.root. l:file.relative . '/src/test/java/'.substitute(l:file.package, '\.', '/', 'g').'Test.java'
     if filereadable(l:test_file)
       let l:file = s:GetCurrent(l:test_file)
       let l:test_function = ''
@@ -107,9 +111,9 @@ function! s:GetCurrentTest() abort
 
   return s:current_test
 endfunction
-command! -complete=command -nargs=0 GetCurrentTest echo s:GetCurrentTest()
+command! -nargs=0 GetCurrentTest echo s:GetCurrentTest()
 
-let s:pants_output_converter = expand('<sfile>:p:h') . '/pants_conversion.rb'
+let s:junit_output_converter = expand('<sfile>:p:h') . '/junit_output_converter.rb'
 
 function! DebugPostprocess(_type, text) abort
   if match(a:text, 'Listening for transport dt_socket at address: 5005') >= 0
@@ -120,65 +124,39 @@ function! DebugPostprocess(_type, text) abort
   return a:text
 endfunction
 
-function! s:RunPantsTest(mode, debug)
+function! s:RunBazelTest(mode, debug)
   let l:test = s:GetCurrentTest()
 
-  let l:pants_cmd = './pants --no-colors test '.l:test.root.':test'
+  let l:cmd = 'bazel test'
 
   if a:mode
-    let l:pants_cmd .= ' --test-junit-test='.l:test.package
+    let l:cmd .= ' //' . l:test.root . l:test.relative . 'src/test/java:' . substitute(l:test.package, '\.', '/', 'g')
 
     if a:mode == 2 && !empty(l:test.function)
-      let l:pants_cmd .= '#'.l:test.function
+      let l:cmd .= ' --test_filter='. l:test.function
     endif
+  else
+    let l:cmd .= ' ...'
   endif
 
   if a:debug
-     let l:pants_cmd .= ' --jvm-test-junit-debug'
+     let l:cmd .= ' --verbose_failures'
   endif
 
-  let l:cmd = 'cd '.g:ale_java_pants_root.' && '.l:pants_cmd
-
   "let cmd = 'cat boom-compile-error.txt boom-test-failure.txt'
-  let l:cmd .= ' 2>&1 | ruby ' . s:pants_output_converter . ' -- ' . l:test.root
+  let l:cmd .= ' 2>&1 | ruby ' . s:junit_output_converter . ' -- ' . l:test.relative
 
   let custom_maker = neomake#utils#MakerFromCommand(l:cmd)
   let custom_maker.name = l:cmd
   let custom_maker.remove_invalid_entries = 0
-  let custom_maker.cwd = g:ale_java_pants_root
+  let custom_maker.errorformat = 'java error %f:%l %m'
   if a:debug
     let s:debugged = 0
     let custom_maker.buffer_output = 0
     let custom_maker.mapexpr = function('DebugPostprocess')
   endif
   let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echom "running: " . l:pants_cmd
-  if a:debug
-    cope
-  endif
-endfunction
-
-function! s:RunBazelTest()
-  let l:test = s:GetCurrentTest()
-
-  let l:bazel_cmd = 'bazel test '.l:test.root.''
-
-  let l:cmd = 'cd '.g:ale_java_pants_root.' && '.l:pants_cmd
-
-  "let cmd = 'cat boom-compile-error.txt boom-test-failure.txt'
-  let l:cmd .= ' 2>&1 | ruby ' . s:pants_output_converter . ' -- ' . l:test.root
-
-  let custom_maker = neomake#utils#MakerFromCommand(l:cmd)
-  let custom_maker.name = l:cmd
-  let custom_maker.remove_invalid_entries = 0
-  let custom_maker.cwd = g:ale_java_pants_root
-  if a:debug
-    let s:debugged = 0
-    let custom_maker.buffer_output = 0
-    let custom_maker.mapexpr = function('DebugPostprocess')
-  endif
-  let enabled_makers =  [custom_maker]
-  update | call neomake#Make(0, enabled_makers) | echom "running: " . l:pants_cmd
+  update | call neomake#Make(0, enabled_makers) | echom "running: " . l:cmd
   if a:debug
     cope
   endif
