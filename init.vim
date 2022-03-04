@@ -113,6 +113,8 @@ let g:multi_cursor_prev_key            = '≤' " option-<
 let g:multi_cursor_skip_key            = '÷' " option-/
 let g:multi_cursor_quit_key            = '<Esc>'
 
+let g:markdown_fenced_languages = ['html', 'python', 'ruby', 'vim', 'mermaid']
+
 call plug#begin('~/.config/nvim/plugged')
 " :sort /\v.{-}\//
 Plug 'chrisbra/Colorizer'
@@ -128,6 +130,8 @@ endif
 Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'skwp/greplace.vim'
 Plug 'udalov/kotlin-vim'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
+Plug 'mracos/mermaid.vim'
 Plug 'neomake/neomake'
 "Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -293,8 +297,8 @@ tnoremap <unique> <C-k> <C-\><C-N><C-w>k
 tnoremap <unique> <C-l> <C-\><C-N><C-w>l
 tnoremap <expr> <C-R> '<C-\><C-N>"'.nr2char(getchar()).'pi'
 noremap <unique> / /\v
-noremap <unique> <C-E> 5<C-E>
-noremap <unique> <C-Y> 5<C-Y>
+" noremap <unique> <C-E> 5<C-E>
+" noremap <unique> <C-Y> 5<C-Y>
 nnoremap <unique> - <C-W>-
 nnoremap <unique> + <C-W>+
 nnoremap <unique> <bar> <C-W><
@@ -333,6 +337,7 @@ noremap <unique> ]w :tabn<cr>
 noremap <unique> Q @@
 noremap <silent> <unique> <C-n> :NextError<cr>
 noremap <silent> <unique> <C-p> :PreviousError<cr>
+noremap <silent> <unique> <leader>q :cope<cr>
 " option-y = ¥ yankring show
 noremap <silent> ¥ :YRShow<CR>
 noremap <silent> <A-y> :YRShow<CR>
@@ -386,6 +391,7 @@ try
   noremap <unique> gd <cmd>lua vim.lsp.buf.definition()<CR>
   noremap <unique> K <cmd>lua vim.lsp.buf.hover()<CR>
   noremap <unique> gi <cmd>lua vim.lsp.buf.implementation()<CR>
+  noremap <unique> gA <cmd>lua vim.lsp.buf.code_action()<CR>
   noremap <unique> <leader>k <cmd>lua vim.lsp.buf.signature_help()<CR>
   noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
   noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
