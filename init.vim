@@ -26,13 +26,8 @@ else
   let g:yankring_replace_n_nkey = '<A-o>' " option-o
 endif
 
-if has('macunix')
-  let g:python_host_prog='/usr/bin/python'
-  let g:python3_host_prog='/usr/local/bin/python3'
-else
-  let g:python_host_prog='/home/linuxbrew/.linuxbrew/bin/python'
-  let g:python3_host_prog='/home/linuxbrew/.linuxbrew/bin/python3'
-endif
+let g:python_host_prog=$HOMEBREW_PREFIX . '/bin/python'
+let g:python3_host_prog=$HOMEBREW_PREFIX . '/bin/python3'
 
 let g:mundo_prefer_python3 = 1
 
@@ -396,9 +391,9 @@ try
   noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
   noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
   noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
-  noremap <unique> <leader>h <cmd>lua vim.lsp.diagnostic.show_line_diagnostics({show_header = false})<CR>
-  noremap <unique> ]d <cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {show_header = false}})<CR>
-  noremap <unique> [d <cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {show_header = false}})<CR>
+  noremap <unique> <leader>h <cmd>lua vim.diagnostic.show_line_diagnostics({show_header = false})<CR>
+  noremap <unique> ]d <cmd>lua vim.diagnostic.goto_next({popup_opts = {show_header = false}})<CR>
+  noremap <unique> [d <cmd>lua vim.diagnostic.goto_prev({popup_opts = {show_header = false}})<CR>
 
   inoremap <silent><expr> <Tab> v:lua.tab_complete()
   inoremap <silent><expr> <S-Tab> v:lua.s_tab_complete()
@@ -409,6 +404,7 @@ endtry
 noremap <silent> <unique> <leader>W :ToggleDiffIgnoreWhitespace<cr>
 nnoremap <leader>g :call SearchInProject()<cr>
 nnoremap <leader>G :call SearchWordInProject()<cr>
+cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))
 
 " imap <C-Space> <Plug>(ale_complete)
 
@@ -692,6 +688,11 @@ function! s:ToggleError()
   let s:next_error_loclist = !s:next_error_loclist
 endfunction
 command! ToggleError call s:ToggleError()
+
+function! s:CI()
+  execute '!' . $CI_COMMAND
+endfunction
+command! CI call s:CI()
 
 " function s:LSPReset()
 "   update
