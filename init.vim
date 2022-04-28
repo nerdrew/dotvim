@@ -117,11 +117,6 @@ Plug 'vim-scripts/YankRing.vim'
 "Plug 'w0rp/ale'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'chrisbra/csv.vim'
-if has('macunix')
-  " Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
-else
-  Plug '/home/linuxbrew/.linuxbrew/opt/fzf' | Plug 'junegunn/fzf.vim'
-endif
 Plug 'mdempsky/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'skwp/greplace.vim'
 Plug 'udalov/kotlin-vim'
@@ -387,13 +382,13 @@ try
   noremap <unique> K <cmd>lua vim.lsp.buf.hover()<CR>
   noremap <unique> gi <cmd>lua vim.lsp.buf.implementation()<CR>
   noremap <unique> gA <cmd>lua vim.lsp.buf.code_action()<CR>
-  noremap <unique> <leader>k <cmd>lua vim.lsp.buf.signature_help()<CR>
-  noremap <unique> <leader>D <cmd>lua vim.lsp.buf.type_definition()<CR>
+  noremap <unique> gk <cmd>lua vim.lsp.buf.signature_help()<CR>
+  noremap <unique> gt <cmd>lua vim.lsp.buf.type_definition()<CR>
   noremap <unique> gR <cmd>lua vim.lsp.buf.rename()<CR>
   noremap <unique> gr <cmd>lua vim.lsp.buf.references()<CR>
-  noremap <unique> <leader>h <cmd>lua vim.diagnostic.show_line_diagnostics({show_header = false})<CR>
-  noremap <unique> ]d <cmd>lua vim.diagnostic.goto_next({popup_opts = {show_header = false}})<CR>
-  noremap <unique> [d <cmd>lua vim.diagnostic.goto_prev({popup_opts = {show_header = false}})<CR>
+  noremap <unique> gh <cmd>lua vim.diagnostic.open_float()<CR>
+  noremap <unique> ]d <cmd>lua vim.diagnostic.goto_next()<CR>
+  noremap <unique> [d <cmd>lua vim.diagnostic.goto_prev()<CR>
 
   inoremap <silent><expr> <Tab> v:lua.tab_complete()
   inoremap <silent><expr> <S-Tab> v:lua.s_tab_complete()
@@ -686,6 +681,7 @@ command! PreviousError call s:PreviousError()
 
 function! s:ToggleError()
   let s:next_error_loclist = !s:next_error_loclist
+  echo 'C-n, C-p use '. (s:next_error_loclist ? 'loclist' : 'qflist')
 endfunction
 command! ToggleError call s:ToggleError()
 

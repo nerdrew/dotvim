@@ -11,6 +11,7 @@ noremap <buffer> <silent> <unique> <leader>r :RunRustTest<CR>
 noremap <buffer> <silent> <unique> <leader>R :RunRustTest!<CR>
 noremap <buffer> <silent> <unique> <leader>s :RustToggleBreakpoint<CR>
 noremap <buffer> <silent> <unique> <leader>S :RustClearAll<CR>
+noremap <buffer> <silent> <unique> <leader>F :RustFormatRange<CR>
 
 "noremap <buffer> <silent> <leader>] :call RacerForTermUnderCursor()<cr>
 "noremap <buffer> <silent> <unique> K :call LanguageClient#textDocument_hover()<CR>
@@ -61,7 +62,7 @@ function! s:RunRustTest(mode) abort
   let enabled_makers =  [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
-command! -complete=command -bang RunRustTest call s:RunRustTest(<bang>0)
+command! -bang RunRustTest call s:RunRustTest(<bang>0)
 
 function! RacerForTermUnderCursor()
   call inputsave()
