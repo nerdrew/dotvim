@@ -84,6 +84,8 @@ let g:ale_rust_cargo_use_clippy = 1
 let g:ale_rust_rls_config = {'rust': {'clippy_preference': 'on'}}
 let g:ale_rust_rls_toolchain = 'nightly'
 " let g:ale_rust_rls_executable = 'ra_lsp_server'
+" let g:ale_java_javalsp_executable="/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh"
+" let g:ale_java_javac_executable = $JAVA_HOME . '/bin/javac'
 
 " let g:diagnostic_enable_virtual_text = 1
 
@@ -158,9 +160,10 @@ Plug 'simnalamburt/vim-mundo'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'racer-rust/vim-racer'
-Plug 'tpope/vim-rails'
+" Plug 'tpope/vim-rails'
 Plug 'tpope/vim-repeat'
 Plug 'airblade/vim-rooter'
+" Plug 'jlcrochet/vim-ruby'
 Plug 'tpope/vim-surround'
 Plug 'wellle/targets.vim'
 Plug 'kana/vim-textobj-user' | Plug 'nelstrom/vim-textobj-rubyblock'
@@ -255,6 +258,7 @@ if has('autocmd')
   "autocmd Syntax * syn match Error /\s\+$\| \+\ze\t/
 
   autocmd BufRead,BufNewFile *.as set filetype=actionscript
+  autocmd BufRead,BufNewFile *.rabl setf ruby
 
   " Remove trailing whitespace on save if the file has no trailing whitespace
   " autocmd BufRead,BufNewFile *.{java,proto,rb,rs,erb,h,m,haml,js,html,coffee,json,vim} call s:TestStripTrailingWhitespace()
