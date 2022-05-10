@@ -140,6 +140,7 @@ local function update_forked_plugin(upstream)
   if vim.v.shell_error == 0 then
   -- system({ "git", "-C", dir, "push", "-f", "origin" })
   else
+    print("git fresh hit an error, aborting")
     vim.fn.system({ "git", "-C", dir, "rebase", "--abort" })
   end
 end
@@ -165,11 +166,10 @@ local function bootstrap()
   vim.cmd('packadd paq-nvim')
   local paq = require('paq')
   -- Exit nvim after installing plugins + updating forks
-  vim.cmd('autocmd User PaqDoneSync lua require("bootstrap").updated_forked_plugins()')
-  -- vim.api.nvim_create_autocmd({"PaqDoneSync"}, { callback = update_forked_plugins })
+  vim.api.nvim_create_autocmd("User", { pattern = "PaqDoneSync", callback = update_forked_plugins })
   -- Read and install packages
   paq(PKGS)
   paq:sync()
 end
 
-return { bootstrap = bootstrap, updated_forked_plugins = update_forked_plugins }
+return { bootstrap = bootstrap }
