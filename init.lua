@@ -1,14 +1,14 @@
 require("lsp")
 local functions = require("functions")
 
-vim.g.bufExplorerDisableDefaultKeyMapping=1
-vim.g.bufExplorerShowRelativePath=1
-vim.g.neomake_echo_current_error=0
+vim.g.bufExplorerDisableDefaultKeyMapping = 1
+vim.g.bufExplorerShowRelativePath = 1
+vim.g.neomake_echo_current_error = 0
 vim.g.neomake_highlight_columns = 0
 vim.g.neomake_makeprg_remove_invalid_entries = 0
 vim.g.neomake_place_signs = 0
 vim.g.neomake_serialize = 1
-vim.g.neomake_virtualtext_current_error=0
+vim.g.neomake_virtualtext_current_error = 0
 vim.g.omni_sql_no_default_maps = 1
 vim.g.rooter_manual_only = 1
 vim.g.rooter_patterns = {"Gemfile", "Cargo.toml", ".git", ".git/", "_darcs/", ".hg/", ".bzr/", ".svn/"}
@@ -18,12 +18,12 @@ vim.g.ruby_indent_assignment_style = "variable"
 vim.g.ruby_indent_block_style = "do"
 vim.g.yankring_clipboard_monitor = 0
 vim.g.yankring_history_file = ".cache/nvim/yankring_history"
-vim.g.python_host_prog=vim.env.HOMEBREW_PREFIX .. "/bin/python"
-vim.g.python3_host_prog=vim.env.HOMEBREW_PREFIX .. "/bin/python3"
+vim.g.python_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python"
+vim.g.python3_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python3"
 vim.g.mundo_prefer_python3 = 1
 vim.g.grep_cmd_opts = "--vimgrep --no-column"
 vim.g.tagbar_autofocus = 1
-vim.g.tagbar_type_dart = { ctagsbin = "~/.pub-cache/bin/dart_ctags" }
+vim.g.tagbar_type_dart = { ctagsbin = vim.env.HOME.."/.pub-cache/bin/dart_ctags" }
 vim.g.tagbar_type_ruby = {
   ctagsbin = "ripper-tags",
   ctagsargs = {"--tag-file", "-"},
@@ -92,7 +92,7 @@ vim.g.multi_cursor_quit_key            = "<Esc>"
 vim.g.markdown_fenced_languages = {"html", "python", "ruby", "vim", "mermaid"}
 
 vim.opt.termguicolors = true
-vim.opt.background="light"
+vim.opt.background = "light"
 vim.opt.autoread = true
 vim.opt.backspace = "indent,eol,start"
 vim.opt.backupdir = { ".", vim.env.TMPDIR }
@@ -131,7 +131,7 @@ vim.opt.ssop:remove("options")
 vim.opt.textwidth = 120
 vim.opt.tildeop = true
 vim.opt.title = true
-vim.opt.undodir = "~/.cache/nvim/undo"
+vim.opt.undodir = vim.env.HOME.."/.cache/nvim/undo"
 vim.opt.undofile = true
 vim.opt.wildignore = "*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg"
 vim.opt.wildmenu = true -- better tab completion for files
@@ -148,11 +148,13 @@ vim.cmd("colorscheme solarized8_flat")
 
 vim.g.mapleader = " "
 
--- vim.keymap.set('n', '<leader>w', "<cmd>w<cr>", { silent = true, buffer = 5 })
 vim.keymap.set("t", "<C-h>", "<C-\\><C-N><C-w>h", { unique = true })
 vim.keymap.set("t", "<C-j>", "<C-\\><C-N><C-w>j", { unique = true })
 vim.keymap.set("t", "<C-k>", "<C-\\><C-N><C-w>k", { unique = true })
 vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l", { unique = true })
+-- insert from register
+vim.keymap.set("t", "<C-r>", "'<C-\\><C-N><C-w>l\"'.nr2char(getchar()).'pi'", { unique = true, expr = true })
+
 vim.keymap.set("", "/", "/\\v", { unique = true })
 vim.keymap.set("", "-", "<C-W>-", { unique = true })
 vim.keymap.set("", "+", "<C-W>+", { unique = true })
@@ -210,11 +212,11 @@ vim.keymap.set("", "<leader>ew", ":e <C-R>=expand('%:h').'/'<cr>", { unique = tr
 vim.keymap.set("", "<leader>es", ":sp <C-R>=expand('%:h').'/'<cr>", { unique = true })
 vim.keymap.set("", "<leader>ev", ":vsp <C-R>=expand('%:h').'/'<cr>", { unique = true })
 vim.keymap.set("", "<leader>et", ":tabe <C-R>=expand('%:h').'/'<cr>", { unique = true })
-vim.keymap.set("", "<leader>y", "+y", { unique = true })
-vim.keymap.set("", "<leader>p", "+p", { unique = true })
-vim.keymap.set("", "<leader>P", "+P", { unique = true })
-vim.keymap.set("", "<leader>o", "*p", { unique = true })
-vim.keymap.set("", "<leader>O", "*P", { unique = true })
+vim.keymap.set("", "<leader>y", '"+y', { unique = true })
+vim.keymap.set("", "<leader>p", '"+p', { unique = true })
+vim.keymap.set("", "<leader>P", '"+P', { unique = true })
+vim.keymap.set("", "<leader>o", '"*p', { unique = true })
+vim.keymap.set("", "<leader>O", '"*P', { unique = true })
 vim.keymap.set("", "gn", "<ESC>/\\v^[<=>\\|]{7}( .*\\|$)<cr>", { unique = true })
 
 vim.keymap.set("", "<leader>b", ":ToggleBufExplorer<cr>", { unique = true })
@@ -227,27 +229,27 @@ vim.keymap.set("n", "<leader>c", "<cmd>Telescope live_grep<cr>", { unique = true
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
 vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true })
 
-vim.keymap.set("", "gD", "<cmd>lua vim.lsp.buf.declaration()<CR>", { unique = true })
-vim.keymap.set("", "gd", "<cmd>lua vim.lsp.buf.definition()<CR>", { unique = true })
-vim.keymap.set("", "K", "<cmd>lua vim.lsp.buf.hover()<CR>", { unique = true })
-vim.keymap.set("", "gi", "<cmd>lua vim.lsp.buf.implementation()<CR>", { unique = true })
-vim.keymap.set("", "gA", "<cmd>lua vim.lsp.buf.code_action()<CR>", { unique = true })
-vim.keymap.set("", "gk", "<cmd>lua vim.lsp.buf.signature_help()<CR>", { unique = true })
-vim.keymap.set("", "gt", "<cmd>lua vim.lsp.buf.type_definition()<CR>", { unique = true })
-vim.keymap.set("", "gR", "<cmd>lua vim.lsp.buf.rename()<CR>", { unique = true })
-vim.keymap.set("", "gr", "<cmd>lua vim.lsp.buf.references()<CR>", { unique = true })
-vim.keymap.set("", "gh", "<cmd>lua vim.diagnostic.open_float()<CR>", { unique = true })
-vim.keymap.set("", "]d", "<cmd>lua vim.diagnostic.goto_next()<CR>", { unique = true })
-vim.keymap.set("", "[d", "<cmd>lua vim.diagnostic.goto_prev()<CR>", { unique = true })
+vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
+vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
+vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
+vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
+vim.keymap.set("", "gA", vim.lsp.buf.code_action, { unique = true })
+vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
+vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
+vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
+vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
+vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
+vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
+vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 
-vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace)
-vim.keymap.set("n", "<leader>g", functions.search_in_project, { unique = true, silent = true })
-vim.keymap.set("n", "<leader>G", functions.search_word_in_project, { unique = true, silent = true })
+vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
+vim.keymap.set("n", "<leader>g", functions.search_in_project, { unique = true })
+vim.keymap.set("n", "<leader>G", functions.search_word_in_project, { unique = true })
 vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))")
 
 vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
 vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
-vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
 
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true })
@@ -263,13 +265,28 @@ vim.api.nvim_create_user_command("ToggleErrorLoclist", functions.toggle_error_lo
 vim.api.nvim_create_user_command("CI", function() vim.cmd("!"..vim.env.CI_COMMAND) end, {})
 
 
+vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
+vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call fugitive#detect(@%)" })
+vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "expandtab sw=4 ts=4 sts=4" })
+vim.api.nvim_create_autocmd("BufReadPost", { callback = functions.last_position_jump })
+vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
+
+
 vim.api.nvim_exec([[
 " See yankring-custom-maps
 function! YRRunAfterMaps()
   noremap Y :<C-U>YRYankCount 'y$'<cr>
 endfunction
 
-autocmd User AsyncRunStop cope
+function! s:TabMessage(cmd)
+  redir => message
+  silent execute a:cmd
+  redir END
+  tabnew
+  silent put=message
+  set nomodified
+endfunction
+command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
 ]], false)
 
 

@@ -19,9 +19,9 @@ end
 --- jump to prev/next snippet's placeholder
 function TabComplete()
   if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
+    return t("<C-n>")
   elseif check_back_space() then
-    return t "<Tab>"
+    return t("<Tab>")
   else
     return vim.fn['compe#complete']()
   end
@@ -229,6 +229,17 @@ end
 function M.toggle_error_loclist()
   next_error_loclist = not next_error_loclist
   print("C-n, C-p use "..(next_error_loclist and "loclist" or "qflist"))
+end
+
+function M.last_position_jump()
+  if vim.opt.filetype:get():lower():match("^git") then
+    return
+  end
+
+  local line = vim.fn.line("'\"")
+  if line > 0 and line < vim.fn.line("$") then
+    vim.cmd('normal! g`\"')
+  end
 end
 
 return M
