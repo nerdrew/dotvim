@@ -86,7 +86,7 @@ function M.rg(args)
     strip = true,
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
-  print("running: "..vim.inspect(cmd))
+  print("running: "..cmd)
 end
 
 function M.rg_files_containing(args)
@@ -99,7 +99,7 @@ function M.rg_files_containing(args)
     strip = true,
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
-  print("running: "..vim.inspect(cmd))
+  print("running: "..cmd)
 end
 
 function M.rg_files(args)
@@ -112,7 +112,7 @@ function M.rg_files(args)
     strip = true,
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
-  print("running: "..vim.inspect(cmd))
+  print("running: "..cmd)
 end
 
 function M.xml_lint(args)

@@ -217,7 +217,7 @@ vim.keymap.set("", "<leader>p", '"+p', { unique = true })
 vim.keymap.set("", "<leader>P", '"+P', { unique = true })
 vim.keymap.set("", "<leader>o", '"*p', { unique = true })
 vim.keymap.set("", "<leader>O", '"*P', { unique = true })
-vim.keymap.set("", "gn", "<ESC>/\\v^[<=>\\|]{7}( .*\\|$)<cr>", { unique = true })
+vim.keymap.set("", "gn", "<ESC>/\\v^[<=>|]{7}( .*|$)<cr>", { unique = true })
 
 vim.keymap.set("", "<leader>b", ":ToggleBufExplorer<cr>", { unique = true })
 vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true })
@@ -255,8 +255,8 @@ vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true })
 vim.api.nvim_create_user_command("RgFilesContaining", functions.rg_files_containing, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("RgFiles", functions.rg_files, { nargs = "*", complete = "file" })
-vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = true })
-vim.api.nvim_create_user_command("JSONLint", functions.json_lint, { range = true })
+vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = "%" })
+vim.api.nvim_create_user_command("JSONLint", functions.json_lint, { range = "%" })
 vim.api.nvim_create_user_command("Tabs", functions.tabs, { nargs = 1 })
 vim.api.nvim_create_user_command("LargeFile", functions.large_file, {})
 vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
@@ -270,6 +270,7 @@ vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call f
 vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "expandtab sw=4 ts=4 sts=4" })
 vim.api.nvim_create_autocmd("BufReadPost", { callback = functions.last_position_jump })
 vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
+vim.api.nvim_create_autocmd("TermClose", { command = "if !v:event.status | exe 'bdelete! '..expand('<abuf>') | endif" })
 
 
 vim.api.nvim_exec([[
