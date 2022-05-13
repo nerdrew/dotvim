@@ -3,12 +3,6 @@ local functions = require("functions")
 
 vim.g.bufExplorerDisableDefaultKeyMapping = 1
 vim.g.bufExplorerShowRelativePath = 1
-vim.g.neomake_echo_current_error = 0
-vim.g.neomake_highlight_columns = 0
-vim.g.neomake_makeprg_remove_invalid_entries = 0
-vim.g.neomake_place_signs = 0
-vim.g.neomake_serialize = 1
-vim.g.neomake_virtualtext_current_error = 0
 vim.g.omni_sql_no_default_maps = 1
 vim.g.rooter_manual_only = 1
 vim.g.rooter_patterns = {"Gemfile", "Cargo.toml", ".git", ".git/", "_darcs/", ".hg/", ".bzr/", ".svn/"}

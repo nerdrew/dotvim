@@ -27,7 +27,6 @@ local PKGS = {
   "udalov/kotlin-vim";
   { "iamcco/markdown-preview.nvim", run = "cd app && yarn install"  };
   "mracos/mermaid.vim";
-  "neomake/neomake";
   "scrooloose/nerdtree";
   "chr4/nginx.vim";
   "neovim/nvim-lspconfig";

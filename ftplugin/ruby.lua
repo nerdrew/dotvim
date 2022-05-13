@@ -45,9 +45,6 @@ function RSpec(line, debug)
   end
 
   local cmd = rspec_cmd.." "..rspec_args.." "..spec_file
-  if root then
-    cmd = "cd "..root.." && "..cmd
-  end
   if not debug then
     cmd = "DISABLE_PRY=1 "..cmd
   end
@@ -67,6 +64,9 @@ function RSpec(line, debug)
       vim.cmd("botright new")
     end
 
+    if root then
+      cmd = "cd "..root.." && "..cmd
+    end
     vim.fn.termopen(cmd)
 
     print("running:"..cmd)
@@ -84,9 +84,6 @@ end
 
 local function rubocop(args)
   local cmd = "rubocop --format emacs "
-  if root then
-    cmd = "cd "..root.." && "..cmd
-  end
 
   if args.bang then
     cmd = cmd.."--auto-correct "
@@ -94,7 +91,7 @@ local function rubocop(args)
 
   local files = {}
   for _, file in ipairs(args.fargs) do
-    table.insert(vim.fn.fnamemodify(file, ":p:s?"..root.."/??"))
+    table.insert(files, vim.fn.fnamemodify(file, ":p:s?"..root.."/??"))
   end
 
   cmd = cmd..table.concat(files, " ")
