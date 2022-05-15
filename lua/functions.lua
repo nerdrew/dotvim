@@ -65,20 +65,34 @@ local function visual_selection_range()
     end_col = 0
   end
 
-  return start_row, start_col, end_row, end_col
+  local selected_lines = vim.api.nvim_buf_get_lines(0, start_row, end_row+1, true)
+  selected_lines[1] = string.sub(selected_lines[1], start_col)
+  selected_lines[#selected_lines] = string.sub(selected_lines[#selected_lines], 0, end_col - 1)
+  return selected_lines
 end
 
 function M.rg(args)
   local needle
   if not args.range or args.range == 0 then
-    needle = args.args
+    if args.args ~= "" then
+      needle = args.args
+    else
+      needle = vim.fn.expand("<cword>")
+    end
   elseif args.range == 1 then
     print("line range not implemented yet")
   elseif args.range == 2 then
-    local csrow, _, cerow, _ = visual_selection_range()
-    needle = "'"..table.concat(vim.api.nvim_buf_get_lines(0, csrow, cerow, true), "\n").."'"
+    needle = "'"..table.concat(visual_selection_range(), "\n").."'"
   end
-  local cmd = "rg --vimgrep "..needle.. " <&-"
+  local rg_args = " --vimgrep "
+  local search_reg
+  if args.bang then
+    rg_args = rg_args.."--word-regexp "
+    search_reg = "\\v<"..needle..">"
+  else
+    search_reg = "\\v"..needle
+  end
+  local cmd = "rg"..rg_args..needle.. " <&-"
 
   local opts = {
     mode = "async",
@@ -87,6 +101,8 @@ function M.rg(args)
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
   print("running: "..cmd)
+  vim.fn.setreg("/", search_reg)
+  vim.opt.hls = true
 end
 
 function M.rg_files_containing(args)
@@ -193,20 +209,6 @@ function M.toggle_diff_ignore_whitespace()
   print("diffopt="..table.concat(vim.opt.diffopt:get(), ","))
 end
 
-function M.search_in_project()
-  local word = vim.fn.expand("<cword>")
-  vim.fn.setreg("/", "\\v"..word)
-  vim.opt.hls = true
-  M.rg({ args = word })
-end
-
-function M.search_word_in_project()
-  local word = vim.fn.expand("<cword>")
-  vim.fn.setreg("/", "\\v<"..word..">")
-  vim.opt.hls = true
-  M.rg({ args = "--word-regexp "..word })
-end
-
 local next_error_loclist = false
 
 function M.next_error()
@@ -240,6 +242,54 @@ function M.last_position_jump()
   if line > 0 and line < vim.fn.line("$") then
     vim.cmd('normal! g`\"')
   end
+end
+
+local actions = require "telescope.actions"
+local action_state = require "telescope.actions.state"
+
+function M.telescope_live_grep(default)
+  local attach_mappings = function(prompt_bufnr, map)
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    actions.select_default:enhance({
+      post = function()
+        if picker.default_text == nil then
+          return
+        end
+        vim.fn.setreg("/", "\\v"..picker.default_text)
+        vim.opt.hls = true
+      end,
+    })
+    actions.send_to_qflist:enhance({
+      post = function()
+        if picker.default_text == nil then
+          return
+        end
+        vim.fn.setreg("/", "\\v"..picker.default_text)
+        vim.opt.hls = true
+      end,
+    })
+    return true
+  end
+  require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
+end
+
+function M.telescope_delete_buffer(prompt_bufnr, force)
+  local picker = action_state.get_current_picker(prompt_bufnr)
+  picker:delete_selection(function(selection)
+    if vim.fn.bufnr("#") == selection.bufnr then
+      actions.close(picker.prompt_bufnr)
+    end
+    local success, err = pcall(vim.api.nvim_buf_delete, selection.bufnr, { force = force })
+    local opts = {}
+    if not success then
+      opts.prompt_title = string.format("Buffers (bdelete error='%s', use X to bdelete!)", err)
+    end
+    require("telescope.builtin").buffers(opts)
+  end)
+end
+
+function M.telescope_force_delete_buffer(prompt_bufnr)
+  M.telescope_delete_buffer(prompt_bufnr, true)
 end
 
 return M

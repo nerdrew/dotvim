@@ -64,14 +64,13 @@ vim.g.rust_fold = 1
 vim.g.rustfmt_options = "--edition 2018"
 vim.g.surround_no_insert_mappings = 1
 
-if vim.fn.has('macunix') then
+if vim.fn.has('macunix') ~= 0 then
   vim.g.yankring_replace_n_pkey = "π" -- option-p
   vim.g.yankring_replace_n_nkey = "ø" -- option-o
 else
   vim.g.yankring_replace_n_pkey = "<A-p>" -- option-p
   vim.g.yankring_replace_n_nkey = "<A-o>" -- option-o
 end
-
 
 vim.g.multi_cursor_use_default_mapping = 0
 vim.g.multi_cursor_start_word_key      = "≥"  -- option->
@@ -112,7 +111,7 @@ vim.opt.swapfile = false
 vim.opt.number = true
 vim.opt.numberwidth = 3
 vim.opt.ruler = true
-vim.opt.scrolloff = 5
+vim.opt.scrolloff = 3
 vim.opt.shell = "zsh"
 vim.opt.shortmess:append("c") -- Shut off completion messages
 vim.opt.showcmd = true
@@ -213,13 +212,16 @@ vim.keymap.set("", "<leader>o", '"*p', { unique = true })
 vim.keymap.set("", "<leader>O", '"*P', { unique = true })
 vim.keymap.set("", "gn", "<ESC>/\\v^[<=>|]{7}( .*|$)<cr>", { unique = true })
 
-vim.keymap.set("", "<leader>b", ":ToggleBufExplorer<cr>", { unique = true })
 vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true })
 vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true })
 vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true })
 vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = true })
-vim.keymap.set("n", "<leader>d", "<cmd>Telescope buffers<cr>", { unique = true })
-vim.keymap.set("n", "<leader>c", "<cmd>Telescope live_grep<cr>", { unique = true })
+vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
+vim.keymap.set("n", "<leader>j", functions.telescope_live_grep, { unique = true })
+vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
+vim.keymap.set("n", "<leader>G", "<cmd>Rg!<cr>", { unique = true })
+vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
+vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
 vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true })
 
@@ -237,16 +239,15 @@ vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
 vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
-vim.keymap.set("n", "<leader>g", functions.search_in_project, { unique = true })
-vim.keymap.set("n", "<leader>G", functions.search_word_in_project, { unique = true })
 vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))")
 
 vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
 vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
+vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
 
 
-vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true })
+vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
 vim.api.nvim_create_user_command("RgFilesContaining", functions.rg_files_containing, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("RgFiles", functions.rg_files, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = "%" })
@@ -328,9 +329,28 @@ require("telescope").setup{
   defaults = {
     mappings = {
       i = {
-        ["<esc>"] = require("telescope.actions").close
+        ["<esc>"] = require("telescope.actions").close,
+        ["<C-\\><C-N>"] = function() vim.cmd("stopinsert") end,
       },
+      n = {
+        ["<C-c>"] = require("telescope.actions").close,
+      }
     },
-  }
+  },
+  pickers = {
+    buffers = {
+      initial_mode = "normal",
+      sort_mru = true,
+      mappings = {
+        i = {
+          ["<del>"] = require("telescope.actions").delete_buffer,
+        },
+        n = {
+          ["x"] = functions.telescope_delete_buffer,
+          ["X"] = functions.telescope_force_delete_buffer,
+        },
+      },
+    }
+  },
 }
 require("telescope").load_extension("fzy_native")

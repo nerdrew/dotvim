@@ -21,7 +21,6 @@ local PKGS = {
   "chrisbra/Colorizer";
   "vim-scripts/YankRing.vim";
   "skywind3000/asyncrun.vim";
-  "jlanzarotta/bufexplorer";
   "chrisbra/csv.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
