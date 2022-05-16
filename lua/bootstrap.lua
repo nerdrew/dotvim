@@ -3,21 +3,8 @@
 local plugin_dir = vim.fn.stdpath("data") .. "/site/pack/paqs/"
 local forked_plugin_dir = plugin_dir .. "start/"
 
-local function clone_paq()
-  local path = plugin_dir .. "opt/paq-nvim"
-  if vim.fn.empty(vim.fn.glob(path)) > 0 then
-    vim.fn.system {
-      "git",
-      "clone",
-      "--depth=1",
-      "https://github.com/savq/paq-nvim.git",
-      path
-    }
-  end
-end
-
 local PKGS = {
-  "savq/paq-nvim";
+  { upstream = "https://github.com/savq/paq-nvim.git", opt = true };
   "chrisbra/Colorizer";
   "vim-scripts/YankRing.vim";
   "skywind3000/asyncrun.vim";
@@ -73,34 +60,13 @@ local PKGS = {
   "nvim-telescope/telescope-fzy-native.nvim";
   "hrsh7th/nvim-compe";
   "lifepillar/vim-solarized8";
-  {
-    url = "git@github.com:nerdrew/ale.git",
-    upstream = "https://github.com/w0rp/ale.git",
-  };
-  {
-    url = "git@github.com:nerdrew/dart-vim-plugin.git",
-    upstream = "https://github.com/dart-lang/dart-vim-plugin.git",
-  };
-  {
-    url = "git@github.com:nerdrew/rust.vim.git",
-    upstream = "https://github.com/rust-lang/rust.vim.git",
-  };
-  {
-    url = "git@github.com:nerdrew/vim-fugitive.git",
-    upstream = "https://github.com/tpope/vim-fugitive.git",
-  };
-  {
-    url = "git@github.com:nerdrew/vim-rails.git",
-    upstream = "https://github.com/tpope/vim-rails.git",
-  };
-  {
-    url = "git@github.com:nerdrew/vim-ruby.git",
-    upstream = "https://github.com/vim-ruby/vim-ruby.git",
-  };
-  {
-    url = "git@github.com:nerdrew/vim-sh-indent.git",
-    upstream = "https://github.com/chrisbra/vim-sh-indent.git",
-  };
+  { upstream = "https://github.com/w0rp/ale.git" };
+  { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
+  { upstream = "https://github.com/rust-lang/rust.vim.git" };
+  { upstream = "https://github.com/tpope/vim-fugitive.git" };
+  { upstream = "https://github.com/tpope/vim-rails.git" };
+  { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
+  { upstream = "https://github.com/chrisbra/vim-sh-indent.git" };
   -- 'norcalli/nvim-colorizer.lua';
   -- 'rust-lang/rust.vim';
   -- 'ervandew/supertab';
@@ -123,35 +89,11 @@ local function system(cmd)
   return output
 end
 
-local function update_forked_plugin(upstream)
-  local name = string.match(upstream, "/([^/]+).git")
-  local dir = forked_plugin_dir .. name
-
-  vim.fn.system({ "git", "-C", dir, "remote", "get-url", "upstream" })
-  if vim.v.shell_error ~= 0 then
-    system({ "git", "-C", dir, "remote", "add", "upstream", upstream })
-    system({ "git", "-C", dir, "fetch", "--unshallow", "origin" })
+local function clone_paq()
+  local path = plugin_dir .. "opt/paq-nvim"
+  if vim.fn.empty(vim.fn.glob(path)) > 0 then
+    system({ "git", "clone", "git@github.com:nerdrew/paq-nvim.git", path })
   end
-  system({ "git", "-C", dir, "fetch", "upstream" })
-  system({ "git", "-C", dir, "pull", "origin", "master" })
-  vim.fn.system({ "git", "-C", dir, "fresh", "upstream/master" })
-  if vim.v.shell_error == 0 then
-  -- system({ "git", "-C", dir, "push", "-f", "origin" })
-  else
-    print("git fresh hit an error, aborting")
-    vim.fn.system({ "git", "-C", dir, "rebase", "--abort" })
-  end
-end
-
-
-local function update_forked_plugins()
-  for _, v in ipairs(PKGS) do
-    if type(v) == "table" and v.upstream ~= nil then
-      update_forked_plugin(v.upstream)
-    end
-  end
-
-  vim.cmd("quit")
 end
 
 local function bootstrap()
@@ -163,8 +105,8 @@ local function bootstrap()
   -- Load Paq
   vim.cmd('packadd paq-nvim')
   local paq = require('paq')
-  -- Exit nvim after installing plugins + updating forks
-  vim.api.nvim_create_autocmd("User", { pattern = "PaqDoneSync", callback = update_forked_plugins })
+  -- Exit nvim after installing plugins
+  vim.api.nvim_create_autocmd("User", { pattern = "PaqDoneSync", command = "quit" })
   -- Read and install packages
   paq(PKGS)
   paq:sync()
