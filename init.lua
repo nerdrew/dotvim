@@ -328,10 +328,6 @@ require("compe").setup {
 require("telescope").setup{
   defaults = {
     mappings = {
-      i = {
-        ["<esc>"] = require("telescope.actions").close,
-        ["<C-\\><C-N>"] = function() vim.cmd("stopinsert") end,
-      },
       n = {
         ["<C-c>"] = require("telescope.actions").close,
       }
@@ -339,12 +335,9 @@ require("telescope").setup{
   },
   pickers = {
     buffers = {
-      initial_mode = "normal",
       sort_mru = true,
+      previewer = false,
       mappings = {
-        i = {
-          ["<del>"] = require("telescope.actions").delete_buffer,
-        },
         n = {
           ["x"] = functions.telescope_delete_buffer,
           ["X"] = functions.telescope_force_delete_buffer,
