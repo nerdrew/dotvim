@@ -59,7 +59,7 @@ function! s:RunGoTest(mode) abort
   let enabled_makers =  [custom_maker]
   update | call neomake#Make(0, enabled_makers) | echom "running: " . cmd
 endfunction
-command! -complete=command -bang RunGoTest call s:RunGoTest(<bang>0)
+command! -bang RunGoTest call s:RunGoTest(<bang>0)
 
 function! s:DebugGoTest(mode) abort
   if a:mode
@@ -70,4 +70,4 @@ function! s:DebugGoTest(mode) abort
 
   update | call delve#runCommand('test', flags, s:GetCurrentPackage()) | echom "running: delve#runCommand('test', ".flags.", ".s:GetCurrentPackage().")"
 endfunction
-command! -complete=command -bang DebugGoTest call s:DebugGoTest(<bang>0)
+command! -bang DebugGoTest call s:DebugGoTest(<bang>0)
