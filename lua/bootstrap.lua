@@ -1,8 +1,5 @@
 -- nvim --headless -u NONE -c 'lua require("bootstrap.paq").bootstrap()'
 
-local plugin_dir = vim.fn.stdpath("data") .. "/site/pack/paqs/"
-local forked_plugin_dir = plugin_dir .. "start/"
-
 local PKGS = {
   { upstream = "https://github.com/savq/paq-nvim.git", opt = true };
   "chrisbra/Colorizer";
@@ -90,17 +87,13 @@ local function system(cmd)
 end
 
 local function clone_paq()
-  local path = plugin_dir .. "opt/paq-nvim"
+  local path = vim.fn.stdpath("data") .. "/site/pack/paqs/opt/paq-nvim"
   if vim.fn.empty(vim.fn.glob(path)) > 0 then
     system({ "git", "clone", "git@github.com:nerdrew/paq-nvim.git", path })
   end
 end
 
 local function bootstrap()
-  if vim.fn.isdirectory(forked_plugin_dir) == 0 then
-    vim.fn.mkdir(forked_plugin_dir, "p")
-  end
-
   clone_paq()
   -- Load Paq
   vim.cmd('packadd paq-nvim')
