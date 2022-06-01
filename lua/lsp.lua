@@ -53,7 +53,9 @@ lspconfig.sumneko_lua.setup {
       },
       workspace = {
         library = {
-          '/opt/homebrew/opt/neovim/share/nvim/runtime/lua'
+          [vim.fn.expand('$VIMRUNTIME/lua')] = true,
+          [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
+          ['/Applications/Hammerspoon.app/Contents/Resources/extensions/hs/'] = true,
         }
       }
     }

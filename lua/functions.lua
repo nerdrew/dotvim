@@ -209,6 +209,22 @@ function M.toggle_diff_ignore_whitespace()
   print("diffopt="..table.concat(vim.opt.diffopt:get(), ","))
 end
 
+function M.strip_trailing_whitespace(args)
+  local target
+  if not args.range or args.range == 0 or args.target == 1 then
+    target = "."
+  elseif args.range == 2 then
+    target = "'<,'>"
+  end
+
+  local search_reg = vim.fn.getreg("@")
+  vim.cmd("keepj normal! msHmt")
+  vim.cmd("keepj "..target.."s/\\s\\+$//e")
+  vim.fn.setreg("@", search_reg)
+  vim.cmd("nohl")
+  vim.cmd("keepj normal! 'tzt`s")
+end
+
 local next_error_loclist = false
 
 function M.next_error()
@@ -244,8 +260,8 @@ function M.last_position_jump()
   end
 end
 
-local actions = require "telescope.actions"
-local action_state = require "telescope.actions.state"
+local actions = require("telescope.actions")
+local action_state = require("telescope.actions.state")
 
 function M.telescope_live_grep(default)
   local attach_mappings = function(prompt_bufnr, map)
@@ -270,7 +286,8 @@ function M.telescope_live_grep(default)
     })
     return true
   end
-  require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
+  -- require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
+  require("telescope").extensions.live_grep_raw.live_grep_raw({ attach_mappings = attach_mappings, default_text = default })
 end
 
 function M.telescope_delete_buffer(prompt_bufnr, force)
@@ -280,7 +297,7 @@ function M.telescope_delete_buffer(prompt_bufnr, force)
       actions.close(picker.prompt_bufnr)
     end
     local success, err = pcall(vim.api.nvim_buf_delete, selection.bufnr, { force = force })
-    local opts = {}
+    local opts = { initial_mode = "normal" }
     if not success then
       opts.prompt_title = string.format("Buffers (bdelete error='%s', use X to bdelete!)", err)
     end

@@ -55,6 +55,7 @@ local PKGS = {
   "nvim-lua/plenary.nvim";
   "nvim-telescope/telescope.nvim";
   "nvim-telescope/telescope-fzy-native.nvim";
+  "nvim-telescope/telescope-rg.nvim";
   "hrsh7th/nvim-compe";
   "lifepillar/vim-solarized8";
   { upstream = "https://github.com/w0rp/ale.git" };

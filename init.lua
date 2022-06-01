@@ -117,8 +117,6 @@ vim.opt.shortmess:append("c") -- Shut off completion messages
 vim.opt.showcmd = true
 vim.opt.showmatch = true -- show matching parentheses
 vim.opt.smarttab = true
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
 vim.opt.ssop:remove("folds")
 vim.opt.ssop:remove("options")
 vim.opt.textwidth = 120
@@ -149,6 +147,7 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l", { unique = true })
 vim.keymap.set("t", "<C-r>", "'<C-\\><C-N><C-w>l\"'.nr2char(getchar()).'pi'", { unique = true, expr = true })
 
 vim.keymap.set("", "/", "/\\v", { unique = true })
+vim.keymap.set("", "?", "/\\v\\c", { unique = true })
 vim.keymap.set("", "-", "<C-W>-", { unique = true })
 vim.keymap.set("", "+", "<C-W>+", { unique = true })
 vim.keymap.set("", "<bar>", "<C-W><", { unique = true })
@@ -258,6 +257,7 @@ vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
 vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = true })
 vim.api.nvim_create_user_command("ToggleErrorLoclist", functions.toggle_error_loclist, {})
 vim.api.nvim_create_user_command("CI", function() vim.cmd("!"..vim.env.CI_COMMAND) end, {})
+vim.api.nvim_create_user_command("StripTrailingWhitespace", functions.strip_trailing_whitespace, { range = true })
 
 
 vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
@@ -325,7 +325,8 @@ require("compe").setup {
   -- },
 -- }
 
-require("telescope").setup{
+local telescope = require("telescope")
+telescope.setup{
   defaults = {
     mappings = {
       n = {
@@ -346,4 +347,5 @@ require("telescope").setup{
     }
   },
 }
-require("telescope").load_extension("fzy_native")
+telescope.load_extension("fzy_native")
+telescope.load_extension("live_grep_raw")
