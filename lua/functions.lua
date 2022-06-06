@@ -287,7 +287,7 @@ function M.telescope_live_grep(default)
     return true
   end
   -- require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
-  require("telescope").extensions.live_grep_raw.live_grep_raw({ attach_mappings = attach_mappings, default_text = default })
+  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, default_text = default })
 end
 
 function M.telescope_delete_buffer(prompt_bufnr, force)

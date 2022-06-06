@@ -348,4 +348,4 @@ telescope.setup{
   },
 }
 telescope.load_extension("fzy_native")
-telescope.load_extension("live_grep_raw")
+telescope.load_extension("live_grep_args")
