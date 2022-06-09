@@ -263,7 +263,24 @@ end
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
-function M.telescope_live_grep(default)
+function M.telescope_live_grep(args)
+  local needle
+  if args then
+    if not args.range or args.range == 0 then
+      if args.args ~= "" then
+        needle = args.args
+      else
+        needle = vim.fn.expand("<cword>")
+      end
+    elseif args.range == 1 then
+      print("line range not implemented yet")
+    elseif args.range == 2 then
+      needle = "'"..table.concat(visual_selection_range(), "\n").."'"
+    end
+    if args.bang then
+      needle = "\\b"..needle.."\\b"
+    end
+  end
   local attach_mappings = function(prompt_bufnr, map)
     local picker = action_state.get_current_picker(prompt_bufnr)
     actions.select_default:enhance({
@@ -287,7 +304,7 @@ function M.telescope_live_grep(default)
     return true
   end
   -- require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
-  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, default_text = default })
+  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, default_text = needle })
 end
 
 function M.telescope_delete_buffer(prompt_bufnr, force)
