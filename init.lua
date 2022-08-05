@@ -186,7 +186,7 @@ vim.keymap.set("t", "<A-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
 vim.keymap.set("", "Q", "@@", { unique = true })
 vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true })
 vim.keymap.set("", "<C-p>", functions.previous_error, { unique = true, silent = true })
-vim.keymap.set("", "<leader>q", ":cope", { unique = true, silent = true })
+vim.keymap.set("", "<leader>q", ":cope<cr>", { unique = true, silent = true })
 
 -- option-y = ¥ yankring show
 vim.keymap.set("", "¥", ":YRShow<CR>", { silent = true })
@@ -218,9 +218,9 @@ vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = tru
 vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
 vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
 vim.keymap.set("n", "<leader>G", "<cmd>Rg!<cr>", { unique = true })
-vim.keymap.set("n", "<leader>J", functions.telescope_live_grep, { unique = true })
-vim.keymap.set("n", "<leader>H", "<cmd>RgLive<cr>", { unique = true })
-vim.keymap.set("n", "<leader>K", "<cmd>RgLive!<cr>", { unique = true })
+-- vim.keymap.set("n", "<leader>J", functions.telescope_live_grep, { unique = true })
+vim.keymap.set("n", "<leader>J", "<cmd>RgLive<cr>", { unique = true })
+-- vim.keymap.set("n", "<leader>K", "<cmd>RgLive!<cr>", { unique = true })
 vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
 vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
@@ -249,7 +249,7 @@ vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
 
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
-vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { bang = true, range = true })
+vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { range = true })
 vim.api.nvim_create_user_command("RgFilesContaining", functions.rg_files_containing, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("RgFiles", functions.rg_files, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = "%" })
@@ -259,14 +259,14 @@ vim.api.nvim_create_user_command("LargeFile", functions.large_file, {})
 vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
 vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = true })
 vim.api.nvim_create_user_command("ToggleErrorLoclist", functions.toggle_error_loclist, {})
-vim.api.nvim_create_user_command("CI", "!"..vim.env.CI_COMMAND, {})
+vim.api.nvim_create_user_command("CI", function() vim.cmd("!"..vim.env.CI_COMMAND) end, {})
 vim.api.nvim_create_user_command("StripTrailingWhitespace", functions.strip_trailing_whitespace, { range = true })
 
 
 vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
 vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call fugitive#detect(@%)" })
 vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "expandtab sw=4 ts=4 sts=4" })
-vim.api.nvim_create_autocmd("BufReadPost", { callback = functions.last_position_jump })
+vim.api.nvim_create_autocmd("BufRead", { callback = functions.last_position_jump, once = true, buffer = 0 })
 vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
 vim.api.nvim_create_autocmd("TermClose", { command = "if !v:event.status | exe 'bdelete! '..expand('<abuf>') | endif" })
 
@@ -334,6 +334,9 @@ telescope.setup{
     mappings = {
       n = {
         ["<C-c>"] = require("telescope.actions").close,
+      },
+      i = {
+        ["<C-f>"] = functions.telescope_send_and_open_qflist,
       }
     },
   },

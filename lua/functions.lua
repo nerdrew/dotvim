@@ -249,8 +249,9 @@ function M.toggle_error_loclist()
   print("C-n, C-p use "..(next_error_loclist and "loclist" or "qflist"))
 end
 
-function M.last_position_jump()
-  if vim.opt.filetype:get():lower():match("^git") then
+function M.last_position_jump(args)
+  local ft = vim.opt.filetype:get():lower()
+  if ft:match("^git") or ft:match("fugitive") or args.file:match("COMMIT_EDITMSG$") then
     return
   end
 
@@ -263,24 +264,62 @@ end
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
+local telescope_live_grep_last_search
+
 function M.telescope_live_grep(args)
-  local needle
+  local current_word
+  local current_WORD
   if args then
     if not args.range or args.range == 0 then
       if args.args ~= "" then
-        needle = args.args
+        current_word = args.args
       else
-        needle = vim.fn.expand("<cword>")
+         current_word = vim.fn.expand("<cword>")
+         current_WORD = vim.fn.expand("<cWORD>")
       end
     elseif args.range == 1 then
       print("line range not implemented yet")
+      return
     elseif args.range == 2 then
-      needle = "'"..table.concat(visual_selection_range(), "\n").."'"
-    end
-    if args.bang then
-      needle = "\\b"..needle.."\\b"
+      current_word = table.concat(visual_selection_range(), "\n")
     end
   end
+
+  local replace_prompt = function(new_prompt, prompt_bufnr)
+    if new_prompt == nil or vim.trim(new_prompt) == "" then
+      return
+    end
+    action_state.get_current_picker(prompt_bufnr):set_prompt(new_prompt)
+  end
+
+  local insert_current_word = function(prompt_bufnr)
+    replace_prompt(current_word or current_WORD, prompt_bufnr)
+  end
+
+  local insert_current_WORD = function(prompt_bufnr)
+    replace_prompt(current_WORD or current_word, prompt_bufnr)
+  end
+
+  local insert_last_search = function(prompt_bufnr)
+    replace_prompt(telescope_live_grep_last_search, prompt_bufnr)
+  end
+
+  local quote_boundary = function(prompt_bufnr)
+    local picker = action_state.get_current_picker(prompt_bufnr)
+    local prompt = vim.trim(picker:_get_prompt())
+    prompt = prompt:gsub('"', "\\" .. '"')
+    prompt = '"\\b' .. prompt .. '\\b"'
+    picker:set_prompt(prompt)
+  end
+
+  local mappings = {
+    i = {
+      ["<C-w>"] = insert_current_word,
+      ["<C-a>"] = insert_current_WORD,
+      ["<C-s>"] = insert_last_search,
+      ["<C-b>"] = quote_boundary,
+    }
+  }
   local attach_mappings = function(prompt_bufnr, map)
     local picker = action_state.get_current_picker(prompt_bufnr)
     actions.select_default:enhance({
@@ -288,6 +327,7 @@ function M.telescope_live_grep(args)
         if picker.default_text == nil then
           return
         end
+        telescope_live_grep_last_search = picker.default_text
         vim.fn.setreg("/", "\\v"..picker.default_text)
         vim.opt.hls = true
       end,
@@ -304,7 +344,7 @@ function M.telescope_live_grep(args)
     return true
   end
   -- require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
-  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, default_text = needle })
+  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, mappings = mappings })
 end
 
 function M.telescope_delete_buffer(prompt_bufnr, force)
@@ -324,6 +364,11 @@ end
 
 function M.telescope_force_delete_buffer(prompt_bufnr)
   M.telescope_delete_buffer(prompt_bufnr, true)
+end
+
+function M.telescope_send_and_open_qflist(prompt_bufnr)
+  actions.smart_send_to_qflist(prompt_bufnr)
+  actions.open_qflist(prompt_bufnr)
 end
 
 return M
