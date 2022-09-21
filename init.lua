@@ -147,7 +147,7 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l", { unique = true })
 vim.keymap.set("t", "<C-r>", "'<C-\\><C-N><C-w>l\"'.nr2char(getchar()).'pi'", { unique = true, expr = true })
 
 vim.keymap.set("", "/", "/\\v", { unique = true })
-vim.keymap.set("", "?", "/\\v\\c", { unique = true })
+-- vim.keymap.set("", "?", "/\\v\\c", { unique = true })
 vim.keymap.set("", "-", "<C-W>-", { unique = true })
 vim.keymap.set("", "+", "<C-W>+", { unique = true })
 vim.keymap.set("", "<bar>", "<C-W><", { unique = true })
@@ -254,7 +254,7 @@ vim.api.nvim_create_user_command("RgFilesContaining", functions.rg_files_contain
 vim.api.nvim_create_user_command("RgFiles", functions.rg_files, { nargs = "*", complete = "file" })
 vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = "%" })
 vim.api.nvim_create_user_command("JSONLint", functions.json_lint, { range = "%" })
-vim.api.nvim_create_user_command("Tabs", functions.tabs, { nargs = 1 })
+vim.api.nvim_create_user_command("Tabs", functions.tabs, { nargs = "?" })
 vim.api.nvim_create_user_command("LargeFile", functions.large_file, {})
 vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
 vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = true })
@@ -329,14 +329,22 @@ require("compe").setup {
 -- }
 
 local telescope = require("telescope")
+local actions = require("telescope.actions")
 telescope.setup{
   defaults = {
     mappings = {
       n = {
-        ["<C-c>"] = require("telescope.actions").close,
+        ["<C-c>"] = actions.close,
+        ["<C-f>"] = functions.telescope_send_and_open_qflist,
+        ["œ"] = functions.telescope_send_and_open_qflist,
+        ["<A-q>"] = functions.telescope_send_and_open_qflist,
       },
       i = {
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
+        ["œ"] = functions.telescope_send_and_open_qflist,
+        ["<A-q>"] = functions.telescope_send_and_open_qflist,
+        ["<C-s>"] = actions.cycle_history_next,
+        ["<C-e>"] = actions.cycle_history_prev,
       }
     },
   },

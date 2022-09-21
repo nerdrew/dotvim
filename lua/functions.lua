@@ -142,9 +142,11 @@ function M.json_lint(args)
 end
 
 function M.tabs(args)
-  vim.opt.tabstop = tonumber(args.args)
-  vim.opt.shiftwidth = tonumber(args.args)
-  vim.opt.softtabstop = tonumber(args.args)
+  if args.args then
+    vim.opt.tabstop = tonumber(args.args)
+    vim.opt.shiftwidth = tonumber(args.args)
+    vim.opt.softtabstop = tonumber(args.args)
+  end
   print(string.format("ts=%d sw=%d sts=%d", vim.opt.tabstop:get(), vim.opt.shiftwidth:get(), vim.opt.softtabstop:get()))
 end
 
@@ -196,6 +198,7 @@ function M.run_command(args)
   local opts = {
     mode = "async",
     strip = true,
+    errorformat = "%m",
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
 end
