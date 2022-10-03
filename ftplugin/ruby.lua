@@ -73,7 +73,7 @@ function RSpec(line, debug)
   else
     local opts = {
       mode = "async",
-      errorformat = 'rspec %f:%l %m',
+      errorformat = "rspec %f:%l %m",
       strip = true,
       cwd = root,
     }

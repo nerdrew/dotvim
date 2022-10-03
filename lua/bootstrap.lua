@@ -56,7 +56,7 @@ local PKGS = {
   "nvim-telescope/telescope.nvim";
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
-  "hrsh7th/nvim-compe";
+  "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
   "lifepillar/vim-solarized8";
   { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };

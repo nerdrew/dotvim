@@ -23,31 +23,40 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-lspconfig.rust_analyzer.setup {
-  on_attach = on_attach,
-  settings = {
-    ["rust-analyzer"] = {
-      cargo = {
-        loadOutDirsFromCheck = true,
-      },
-      checkOnSave = {
-        command = 'clippy',
-      },
-      completion = {
-        addCallArgumentSnippets = false,
-        addCallParenthesis = false,
-      },
-      diagnostics = {
-        disabled = {'unresolved-import'},
-      },
-      procMacro = { enable = true },
-    },
-  }
-}
+-- lspconfig.rust_analyzer.setup {
+--   on_attach = on_attach,
+--   settings = {
+--     ["rust-analyzer"] = {
+--       cargo = {
+--         loadOutDirsFromCheck = true,
+--       },
+--       checkOnSave = {
+--         command = 'clippy',
+--       },
+--       completion = {
+--         addCallArgumentSnippets = false,
+--         addCallParenthesis = false,
+--       },
+--       diagnostics = {
+--         disabled = {'unresolved-import'},
+--       },
+--       procMacro = { enable = true },
+--     },
+--   }
+-- }
 
+local version
+if vim.fn.getcwd():match("nvim") then
+  version = "Lua 5.1"
+else
+  version = "Lua 5.4"
+end
 lspconfig.sumneko_lua.setup {
   settings = {
     Lua = {
+      runtime = {
+        version = version,
+      },
       diagnostics = {
         globals = { 'vim' },
       },

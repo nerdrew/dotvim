@@ -173,15 +173,23 @@ vim.keymap.set("", "”", ":tabm -1<cr>", { unique = true })
 vim.keymap.set("i", "”", "<ESC>:tabm -1<cr>", { unique = true })
 vim.keymap.set("t", "”", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
 vim.keymap.set("", "<A-{>", ":tabm -1<cr>", { unique = true })
+vim.keymap.set("", "<M-S-[>", ":tabm -1<cr>", { unique = true })
+vim.keymap.set("", "[W", ":tabm -1<cr>", { unique = true })
 vim.keymap.set("i", "<A-{>", "<ESC>:tabm -1<cr>", { unique = true })
+vim.keymap.set("i", "<M-S-{>", "<ESC>:tabm -1<cr>", { unique = true })
 vim.keymap.set("t", "<A-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
+vim.keymap.set("t", "<M-S-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
 -- option-shift-]
 vim.keymap.set("", "’", ":tabm +1<cr>", { unique = true })
 vim.keymap.set("i", "’", "<ESC>:tabm +1<cr>", { unique = true })
 vim.keymap.set("t", "’", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
 vim.keymap.set("", "<A-}>", ":tabm +1<cr>", { unique = true })
+vim.keymap.set("", "<M-S-]>", ":tabm +1<cr>", { unique = true })
+vim.keymap.set("", "]W", ":tabm +1<cr>", { unique = true })
 vim.keymap.set("i", "<A-}>", "<ESC>:tabm +1<cr>", { unique = true })
+vim.keymap.set("i", "<M-S-}>", "<ESC>:tabm +1<cr>", { unique = true })
 vim.keymap.set("t", "<A-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
+vim.keymap.set("t", "<M-S-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
 
 vim.keymap.set("", "Q", "@@", { unique = true })
 vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true })
@@ -226,25 +234,26 @@ vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
 vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true })
 
-vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
-vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
-vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
-vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
-vim.keymap.set("", "gA", vim.lsp.buf.code_action, { unique = true })
-vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
-vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
-vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
-vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
-vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
-vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
-vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
+-- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
+-- vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
+-- vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
+-- vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
+-- vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true })
+-- vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
+-- vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
+-- vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
+-- vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
+-- vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
+-- vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
+-- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
+-- vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
 vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))")
 
-vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
-vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
-vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
+-- vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
+-- vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
+-- vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
 
 
@@ -289,44 +298,122 @@ command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
 ]], false)
 
 
-require("compe").setup {
-  enabled = true;
-  autocomplete = false;
-  debug = true;
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = true;
+-- require("compe").setup {
+--   enabled = true;
+--   autocomplete = false;
+--   debug = true;
+--   throttle_time = 80;
+--   source_timeout = 200;
+--   incomplete_delay = 400;
+--   max_abbr_width = 100;
+--   max_kind_width = 100;
+--   max_menu_width = 100;
+--   documentation = true;
 
-  source = {
-    path = true;
-    nvim_lsp = true;
-    buffer = true;
-  };
-}
-
--- require'nvim-treesitter.configs'.setup {
---   ensure_installed = "all", -- { "rust", "ruby", "bash", "lua", "vim" },
---   highlight = {
---     enable = true,              -- false will disable the whole extension
---   },
---   incremental_selection = {
---     enable = true,
---     keymaps = {
---       init_selection = "gss",
---       node_incremental = "gsn",
---       scope_incremental = "gss",
---       node_decremental = "gsd",
---     },
---   },
-  -- indent = {
-  --   enable = true,
-  --   -- disable = { 'ruby' },
-  -- },
+--   source = {
+--     path = true;
+--     nvim_lsp = true;
+--     buffer = true;
+--   };
 -- }
+
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+end
+
+-- Setup cmp
+local cmp = require("cmp")
+cmp.setup({
+	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if not cmp.select_next_item() then
+        if vim.bo.buftype ~= 'prompt' and has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end
+    end, {"i","s","c",}),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if not cmp.select_prev_item() then
+        if vim.bo.buftype ~= 'prompt' and has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end
+    end, {"i","s","c",}),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+	}),
+	snippet = {
+		expand = function(args)
+			require("luasnip").lsp_expand(args.body)
+		end,
+	},
+	sources = cmp.config.sources({
+		{ name = "nvim_lsp" },
+		{ name = "nvim_lsp_signature_help" },
+		{ name = "nvim_lua" },
+		{ name = "path" },
+	}, {
+		{ name = "buffer", keyword_length = 3 },
+	}),
+	completion = {
+    autocomplete = false,
+  },
+})
+
+local rt = require("rust-tools")
+-- Setup buffer-local keymaps / options for LSP buffers
+local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local lsp_attach = function(client, buf)
+  vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
+  vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true, buffer = buf })
+  vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true, buffer = buf })
+  vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true, buffer = buf })
+  vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true, buffer = buf })
+  vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { buffer = buf })
+  vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true, buffer = buf })
+  vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true, buffer = buf })
+  vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true, buffer = buf })
+  vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true, buffer = buf })
+  vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true, buffer = buf })
+  vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true, buffer = buf })
+  vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true, buffer = buf })
+  vim.keymap.set("", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
+	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
+	vim.api.nvim_buf_set_option(buf, "tagfunc", "v:lua.vim.lsp.tagfunc")
+end
+
+-- Setup rust_analyzer via rust-tools.nvim
+rt.setup({
+	server = {
+		capabilities = capabilities,
+		on_attach = lsp_attach,
+	}
+})
+
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "all",
+  highlight = {
+    enable = true, -- false will disable the whole extension
+  },
+  incremental_selection = {
+    enable = true,
+    keymaps = {
+      init_selection = "gss",
+      node_incremental = "gsn",
+      scope_incremental = "gss",
+      node_decremental = "gsd",
+    },
+  },
+  indent = {
+    enable = false,
+    disable = { 'ruby' },
+  },
+}
 
 local telescope = require("telescope")
 local actions = require("telescope.actions")

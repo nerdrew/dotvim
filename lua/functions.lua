@@ -199,6 +199,7 @@ function M.run_command(args)
     mode = "async",
     strip = true,
     errorformat = "%m",
+    raw = true,
   }
   vim.fn["asyncrun#run"]("", opts, cmd)
 end
