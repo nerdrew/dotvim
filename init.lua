@@ -234,19 +234,19 @@ vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
 vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true })
 
--- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
--- vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
--- vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
--- vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
--- vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true })
--- vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
--- vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
--- vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
--- vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
--- vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
--- vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
--- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
--- vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true })
+vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
+vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
+vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
+vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
+vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true })
+vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
+vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
+vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
+vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
+vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
+vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
+vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
+vim.keymap.set("", "gQ", vim.lsp.buf.format, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
 vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))")
@@ -255,7 +255,6 @@ vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?
 -- vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
 -- vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
-
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
 vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { range = true })
@@ -326,6 +325,28 @@ end
 local cmp = require("cmp")
 cmp.setup({
 	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
+    -- ['<C-Space>'] = cmp.mapping.complete(),
+    ["<C-Space>"] = cmp.mapping(function(fallback)
+      if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
+        vim.api.nvim_input("<Down>")
+        return
+      end
+
+      if not cmp.select_next_item() then
+        cmp.complete()
+      end
+    end),
+    ["<C-S-Space>"] = cmp.mapping(function(fallback)
+      if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
+        vim.api.nvim_input("<Up>")
+        return
+      end
+
+      if not cmp.select_prev_item() then
+        fallback()
+      end
+    end),
+    ['<C-e>'] = cmp.mapping.abort(),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_next_item() then
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
@@ -334,7 +355,7 @@ cmp.setup({
           fallback()
         end
       end
-    end, {"i","s","c",}),
+    end), --, {"i","s","c",}),
     ['<S-Tab>'] = cmp.mapping(function(fallback)
       if not cmp.select_prev_item() then
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
@@ -343,8 +364,9 @@ cmp.setup({
           fallback()
         end
       end
-    end, {"i","s","c",}),
+    end), -- {"i","s","c",}),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<C-CR>'] = cmp.mapping.confirm({ select = true }),
 	}),
 	snippet = {
 		expand = function(args)
@@ -368,19 +390,19 @@ local rt = require("rust-tools")
 -- Setup buffer-local keymaps / options for LSP buffers
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(client, buf)
-  vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
-  vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true, buffer = buf })
-  vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true, buffer = buf })
-  vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true, buffer = buf })
-  vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true, buffer = buf })
-  vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { buffer = buf })
-  vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true, buffer = buf })
-  vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true, buffer = buf })
-  vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true, buffer = buf })
-  vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true, buffer = buf })
-  vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true, buffer = buf })
-  vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true, buffer = buf })
-  vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { buffer = buf })
+  -- vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true, buffer = buf })
+  -- vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true, buffer = buf })
   vim.keymap.set("", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
 	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
 	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -432,6 +454,8 @@ telescope.setup{
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
         ["<C-s>"] = actions.cycle_history_next,
         ["<C-e>"] = actions.cycle_history_prev,
+        ["<Down>"] = false,
+        ["<Up>"] = false,
       }
     },
   },
