@@ -17,23 +17,24 @@ vim.g.lazarus_ruby = true
 
 local root = vim.g.ruby_project_root or vim.fn.FindRootDirectory()
 local spec_file, spec_line
-local rspec_cmd = vim.g.rspec
-local rspec_args = vim.g.rspec_args or "-f p"
-
-if rspec_cmd == nil then
-  if vim.fn.glob("bin/rspec") == "bin/rspec" then
-    rspec_cmd = "bin/rspec"
-  else
-    vim.fn.system("grep -q spring Gemfile.lock")
-    if vim.v.shell_error == 0 then
-      rspec_cmd = "spring rspec"
-    else
-      rspec_cmd = "rspec"
-    end
-  end
-end
 
 function RSpec(line, debug)
+  local rspec_cmd = vim.g.rspec
+  local rspec_args = vim.g.rspec_args or "-f p"
+
+  if rspec_cmd == nil then
+    if vim.fn.glob("bin/rspec") == "bin/rspec" then
+      rspec_cmd = "bin/rspec"
+    else
+      vim.fn.system("grep -q spring Gemfile.lock")
+      if vim.v.shell_error == 0 then
+        rspec_cmd = "spring rspec"
+      else
+        rspec_cmd = "rspec"
+      end
+    end
+  end
+
   if vim.fn.expand("%"):match("_spec%.rb$") then
     spec_file = vim.fn.fnamemodify(vim.fn.expand("%"), ":p:s?"..root.."/??")
     spec_line = vim.fn.line(".")

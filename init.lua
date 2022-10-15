@@ -12,8 +12,10 @@ vim.g.ruby_indent_assignment_style = "variable"
 vim.g.ruby_indent_block_style = "do"
 vim.g.yankring_clipboard_monitor = 0
 vim.g.yankring_history_file = ".cache/nvim/yankring_history"
-vim.g.python_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python"
-vim.g.python3_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python3"
+if vim.env.HOMEBREW_PREFIX then
+  vim.g.python_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python"
+  vim.g.python3_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python3"
+end
 vim.g.mundo_prefer_python3 = 1
 vim.g.grep_cmd_opts = "--vimgrep --no-column"
 vim.g.tagbar_autofocus = 1
@@ -387,7 +389,6 @@ cmp.setup({
 })
 
 local rt = require("rust-tools")
--- Setup buffer-local keymaps / options for LSP buffers
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(client, buf)
   -- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
@@ -432,8 +433,32 @@ require'nvim-treesitter.configs'.setup {
     },
   },
   indent = {
-    enable = false,
-    disable = { 'ruby' },
+    enable = true,
+  },
+
+  endwise = {
+    enable = true,
+  },
+  matchup = {
+    enable = true,
+  },
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
   },
 }
 
@@ -452,8 +477,8 @@ telescope.setup{
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
         ["œ"] = functions.telescope_send_and_open_qflist,
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
-        ["<C-s>"] = actions.cycle_history_next,
-        ["<C-e>"] = actions.cycle_history_prev,
+        ["<C-s>"] = actions.cycle_history_prev,
+        ["<C-e>"] = actions.cycle_history_next,
         ["<Down>"] = false,
         ["<Up>"] = false,
       }

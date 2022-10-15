@@ -28,18 +28,19 @@ local PKGS = {
   "justinmk/vim-dirvish";
   "tpope/vim-abolish";
   "tpope/vim-commentary";
-  "tpope/vim-endwise";
+  "tpope/vim-endwise"; -- TODO can I get rid of this in favor of nvim-treesitter-endwise?
   "tpope/vim-eunuch";
   "zchee/vim-flatbuffers";
   "fatih/vim-go";
   "michaeljsmith/vim-indent-object";
   "pangloss/vim-javascript";
   "tpope/vim-markdown";
+  "andymass/vim-matchup";
   "terryma/vim-multiple-cursors";
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
   { "prettier/vim-prettier", run = "yarn install" };
-  "racer-rust/vim-racer";
+  -- "racer-rust/vim-racer";
   "tpope/vim-repeat";
   "airblade/vim-rooter";
   "tpope/vim-surround";
@@ -51,6 +52,8 @@ local PKGS = {
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
   { "nvim-treesitter/nvim-treesitter", run=function() vim.cmd('TSUpdate') end };
+  "nvim-treesitter/playground";
+  "RRethy/nvim-treesitter-endwise";
   "nvim-lua/popup.nvim";
   "nvim-lua/plenary.nvim";
   "nvim-telescope/telescope.nvim";
@@ -63,7 +66,7 @@ local PKGS = {
   { upstream = "https://github.com/rust-lang/rust.vim.git" };
   { upstream = "https://github.com/tpope/vim-fugitive.git" };
   { upstream = "https://github.com/tpope/vim-rails.git" };
-  { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
+  -- { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
   { upstream = "https://github.com/chrisbra/vim-sh-indent.git" };
   -- 'norcalli/nvim-colorizer.lua';
   -- 'rust-lang/rust.vim';
