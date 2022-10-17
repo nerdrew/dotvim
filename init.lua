@@ -389,7 +389,7 @@ cmp.setup({
 })
 
 local rt = require("rust-tools")
-local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(client, buf)
   -- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
   -- vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true, buffer = buf })
