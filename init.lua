@@ -327,7 +327,7 @@ end
 local cmp = require("cmp")
 cmp.setup({
 	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
-    -- ['<C-Space>'] = cmp.mapping.complete(),
+    -- ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-Space>"] = cmp.mapping(function(fallback)
       if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
         vim.api.nvim_input("<Down>")
@@ -348,7 +348,7 @@ cmp.setup({
         fallback()
       end
     end),
-    ['<C-e>'] = cmp.mapping.abort(),
+    ["<C-e>"] = cmp.mapping.abort(),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_next_item() then
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
@@ -358,7 +358,7 @@ cmp.setup({
         end
       end
     end), --, {"i","s","c",}),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_prev_item() then
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
           cmp.complete()
@@ -367,8 +367,8 @@ cmp.setup({
         end
       end
     end), -- {"i","s","c",}),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-    ['<C-CR>'] = cmp.mapping.confirm({ select = true }),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<C-CR>"] = cmp.mapping.confirm({ select = true }),
 	}),
 	snippet = {
 		expand = function(args)
@@ -391,19 +391,6 @@ cmp.setup({
 local rt = require("rust-tools")
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(client, buf)
-  -- vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { buffer = buf })
-  -- vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true, buffer = buf })
-  -- vim.keymap.set("", "gQ", vim.lsp.buf.formatting_sync, { unique = true, buffer = buf })
   vim.keymap.set("", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
 	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
 	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -418,7 +405,7 @@ rt.setup({
 	}
 })
 
-require'nvim-treesitter.configs'.setup {
+require'nvim-treesitter.configs'.setup({
   ensure_installed = "all",
   highlight = {
     enable = true, -- false will disable the whole extension
@@ -460,11 +447,19 @@ require'nvim-treesitter.configs'.setup {
       show_help = '?',
     },
   },
-}
+})
+
+require'treesitter-context'.setup({
+  patterns = {
+    ruby = {
+      'block',
+    },
+  },
+})
 
 local telescope = require("telescope")
 local actions = require("telescope.actions")
-telescope.setup{
+telescope.setup({
   defaults = {
     mappings = {
       n = {
@@ -496,6 +491,20 @@ telescope.setup{
       },
     }
   },
-}
+})
 telescope.load_extension("fzy_native")
 telescope.load_extension("live_grep_args")
+
+local lsp_kinds = require('cmp.types').lsp.CompletionItemKind
+cmp.setup.filetype('TelescopePrompt', {
+  enabled = true,
+  completion = { autocomplete = false },
+  sources = cmp.config.sources {
+    {
+      name = 'path',
+      entry_filter = function(entry)
+        return lsp_kinds[entry:get_kind()] == 'Folder'
+      end,
+    },
+  },
+})

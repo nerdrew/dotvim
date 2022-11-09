@@ -268,8 +268,6 @@ end
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
 
-local telescope_live_grep_last_search
-
 function M.telescope_live_grep(args)
   local current_word
   local current_WORD
@@ -304,10 +302,6 @@ function M.telescope_live_grep(args)
     replace_prompt(current_WORD or current_word, prompt_bufnr)
   end
 
-  local insert_last_search = function(prompt_bufnr)
-    replace_prompt(telescope_live_grep_last_search, prompt_bufnr)
-  end
-
   local quote_boundary = function(prompt_bufnr)
     local picker = action_state.get_current_picker(prompt_bufnr)
     local prompt = vim.trim(picker:_get_prompt())
@@ -320,7 +314,6 @@ function M.telescope_live_grep(args)
     i = {
       ["<C-w>"] = insert_current_word,
       ["<C-a>"] = insert_current_WORD,
-      ["<C-s>"] = insert_last_search,
       ["<C-b>"] = quote_boundary,
     }
   }
@@ -331,7 +324,6 @@ function M.telescope_live_grep(args)
         if picker.default_text == nil then
           return
         end
-        telescope_live_grep_last_search = picker.default_text
         vim.fn.setreg("/", "\\v"..picker.default_text)
         vim.opt.hls = true
       end,
@@ -343,6 +335,14 @@ function M.telescope_live_grep(args)
         end
         vim.fn.setreg("/", "\\v"..picker.default_text)
         vim.opt.hls = true
+      end,
+    })
+    actions.close:enhance({
+      post = function()
+        if picker.default_text == nil then
+          return
+        end
+        action_state.get_current_history():append(action_state.get_current_line(), picker)
       end,
     })
     return true

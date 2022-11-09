@@ -13,7 +13,7 @@ local PKGS = {
   "scrooloose/nerdtree";
   "chr4/nginx.vim";
   "neovim/nvim-lspconfig";
-  "keith/rspec.vim";
+  -- "keith/rspec.vim";
   "ruby-formatter/rufo-vim";
   "ciaranm/securemodelines";
   "keith/swift.vim";
@@ -28,7 +28,7 @@ local PKGS = {
   "justinmk/vim-dirvish";
   "tpope/vim-abolish";
   "tpope/vim-commentary";
-  "tpope/vim-endwise"; -- TODO can I get rid of this in favor of nvim-treesitter-endwise?
+  -- "tpope/vim-endwise"; -- TODO can I get rid of this in favor of nvim-treesitter-endwise?
   "tpope/vim-eunuch";
   "zchee/vim-flatbuffers";
   "fatih/vim-go";
@@ -46,13 +46,14 @@ local PKGS = {
   "tpope/vim-surround";
   "wellle/targets.vim";
   "kana/vim-textobj-user";
-  "nelstrom/vim-textobj-rubyblock";
+  -- "nelstrom/vim-textobj-rubyblock";
   "christoomey/vim-tmux-navigator";
   "cespare/vim-toml";
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
   { "nvim-treesitter/nvim-treesitter", run=function() vim.cmd('TSUpdate') end };
   "nvim-treesitter/playground";
+  "nvim-treesitter/nvim-treesitter-context";
   "RRethy/nvim-treesitter-endwise";
   "nvim-lua/popup.nvim";
   "nvim-lua/plenary.nvim";
@@ -68,11 +69,9 @@ local PKGS = {
   { upstream = "https://github.com/tpope/vim-rails.git" };
   -- { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
   { upstream = "https://github.com/chrisbra/vim-sh-indent.git" };
-  -- 'norcalli/nvim-colorizer.lua';
+  'norcalli/nvim-colorizer.lua';
   -- 'rust-lang/rust.vim';
-  -- 'ervandew/supertab';
   -- 'tpope/vim-fugitive';
-  -- 'lifepillar/vim-mucomplete';
   -- 'tpope/vim-rails';
   -- 'jlcrochet/vim-ruby';
   -- 'iCyMind/NeoSolarized';
