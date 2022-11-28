@@ -267,6 +267,7 @@ end
 
 local actions = require("telescope.actions")
 local action_state = require("telescope.actions.state")
+local lga_actions = require("telescope-live-grep-args.actions")
 
 function M.telescope_live_grep(args)
   local current_word
@@ -315,6 +316,7 @@ function M.telescope_live_grep(args)
       ["<C-w>"] = insert_current_word,
       ["<C-a>"] = insert_current_WORD,
       ["<C-b>"] = quote_boundary,
+      ["<C-k>"] = lga_actions.quote_prompt(),
     }
   }
   local attach_mappings = function(prompt_bufnr, map)
