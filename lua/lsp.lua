@@ -16,7 +16,7 @@ local on_attach = function(_, _bufnr)
 end
 
 -- local servers = {'gopls', 'tsserver', 'vimls', 'jsonls'}
-local servers = {'solargraph', 'tsserver', 'vimls', 'jsonls', 'sumneko_lua'}
+local servers = {'tsserver', 'vimls', 'jsonls', 'lua_ls' } -- , 'ruby_ls'}
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -51,14 +51,14 @@ if vim.fn.getcwd():match("nvim") then
 else
   version = "Lua 5.4"
 end
-lspconfig.sumneko_lua.setup {
+lspconfig.lua_ls.setup {
   settings = {
     Lua = {
       runtime = {
         version = version,
       },
       diagnostics = {
-        globals = { 'vim' },
+        globals = { 'vim', 'hs', 'spoon' },
       },
       workspace = {
         library = {
@@ -71,6 +71,17 @@ lspconfig.sumneko_lua.setup {
   }
 }
 
+lspconfig.solargraph.setup {
+  on_attach = on_attach,
+  init_options = { formatting = false },
+  root_dir = lsputil.root_pattern(".git"),
+}
+
+lspconfig.syntax_tree.setup {
+  -- cmd = { vim.env.HOME.."/dev/ruby-syntax_tree/exe/stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" }
+  cmd = { "stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" }
+}
+
 lspconfig.java_language_server.setup {
   on_attach = on_attach,
   cmd = {"/Users/lazarus/dev/java-language-server/dist/lang_server_mac.sh"},
@@ -79,3 +90,5 @@ lspconfig.java_language_server.setup {
   root_dir = lsputil.root_pattern("BUILD", ".git"),
   -- autostart = false,
 }
+
+require("fidget").setup{}

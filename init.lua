@@ -93,8 +93,8 @@ vim.opt.backspace = "indent,eol,start"
 vim.opt.backupdir = { ".", vim.env.TMPDIR }
 vim.opt.completeopt = "menuone,noinsert"
 vim.opt.copyindent = true
-vim.opt.cscopequickfix = "s-,c-,d-,i-,t-,e-"
-vim.opt.cst = true
+-- vim.opt.cscopequickfix = "s-,c-,d-,i-,t-,e-"
+-- vim.opt.cst = true
 vim.opt.expandtab = true
 vim.opt.sw = 2
 vim.opt.ts = 2
@@ -129,6 +129,9 @@ vim.opt.undofile = true
 vim.opt.wildignore = "*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg"
 vim.opt.wildmenu = true -- better tab completion for files
 vim.opt.wildmode = "list:longest"
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'nvim_treesitter#foldexpr()'
+vim.opt.foldenable = false
 
 vim.opt.statusline = "%!v:lua.StatusLine()"
 
@@ -137,7 +140,13 @@ if git_root ~= nil and git_root ~= "" then
   vim.opt.tags:append(git_root .. "/.git/tags")
 end
 
-vim.cmd("colorscheme solarized8_flat")
+vim.cmd('colorscheme solarized-flat')
+-- vim.cmd("colorscheme solarized8_flat")
+
+-- vim.g.solarized_contrast = true
+-- vim.g.solarized_borders = false
+-- vim.g.solarized_disable_background = true
+-- require('solarized').set()
 
 vim.g.mapleader = " "
 
@@ -269,7 +278,7 @@ vim.api.nvim_create_user_command("LargeFile", functions.large_file, {})
 vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
 vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = true })
 vim.api.nvim_create_user_command("ToggleErrorLoclist", functions.toggle_error_loclist, {})
-vim.api.nvim_create_user_command("CI", function() vim.cmd("!"..vim.env.CI_COMMAND) end, {})
+vim.api.nvim_create_user_command("CI", function(args) vim.cmd("!"..vim.env.CI_COMMAND.." "..args.args) end, { nargs = "*"})
 vim.api.nvim_create_user_command("StripTrailingWhitespace", functions.strip_trailing_whitespace, { range = true })
 
 
@@ -369,6 +378,8 @@ cmp.setup({
     end), -- {"i","s","c",}),
     ["<CR>"] = cmp.mapping.confirm({ select = true }),
     ["<C-CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<C-n>"] = cmp.config.disable,
+    ["<C-p>"] = cmp.config.disable,
 	}),
 	snippet = {
 		expand = function(args)
@@ -390,7 +401,7 @@ cmp.setup({
 
 local rt = require("rust-tools")
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-local lsp_attach = function(client, buf)
+local lsp_attach = function(_client, buf)
   vim.keymap.set("", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
 	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
 	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -419,9 +430,9 @@ require'nvim-treesitter.configs'.setup({
       node_decremental = "gsd",
     },
   },
-  indent = {
-    enable = true,
-  },
+  -- indent = {
+  --   enable = true,
+  -- },
 
   endwise = {
     enable = true,
@@ -467,6 +478,8 @@ telescope.setup({
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
         ["œ"] = functions.telescope_send_and_open_qflist,
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
+        ["<C-n>"] = actions.move_selection_next,
+        ["<C-p>"] = actions.move_selection_previous,
       },
       i = {
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
@@ -474,8 +487,10 @@ telescope.setup({
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
         ["<C-s>"] = actions.cycle_history_prev,
         ["<C-e>"] = actions.cycle_history_next,
-        ["<Down>"] = false,
-        ["<Up>"] = false,
+        -- ["<Down>"] = false,
+        -- ["<Up>"] = false,
+        ["<C-n>"] = actions.move_selection_next,
+        ["<C-p>"] = actions.move_selection_previous,
       }
     },
   },
@@ -507,4 +522,8 @@ cmp.setup.filetype('TelescopePrompt', {
       end,
     },
   },
+  mapping = {
+    ['<C-n>'] = cmp.config.disable,
+    ['<C-p>'] = cmp.config.disable,
+  }
 })

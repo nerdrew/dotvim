@@ -2,10 +2,10 @@
 
 local PKGS = {
   { upstream = "https://github.com/savq/paq-nvim.git", opt = true };
-  "chrisbra/Colorizer";
   "vim-scripts/YankRing.vim";
   "skywind3000/asyncrun.vim";
   "chrisbra/csv.vim";
+  -- "rickhowe/diffchar.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
   { "iamcco/markdown-preview.nvim", run = "cd app && yarn install"  };
@@ -28,7 +28,6 @@ local PKGS = {
   "justinmk/vim-dirvish";
   "tpope/vim-abolish";
   "tpope/vim-commentary";
-  -- "tpope/vim-endwise"; -- TODO can I get rid of this in favor of nvim-treesitter-endwise?
   "tpope/vim-eunuch";
   "zchee/vim-flatbuffers";
   "fatih/vim-go";
@@ -40,7 +39,6 @@ local PKGS = {
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
   { "prettier/vim-prettier", run = "yarn install" };
-  -- "racer-rust/vim-racer";
   "tpope/vim-repeat";
   "airblade/vim-rooter";
   "tpope/vim-surround";
@@ -61,7 +59,8 @@ local PKGS = {
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
-  "lifepillar/vim-solarized8";
+  "j-hui/fidget.nvim";
+  "ishan9299/nvim-solarized-lua";
   { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
   { upstream = "https://github.com/rust-lang/rust.vim.git" };

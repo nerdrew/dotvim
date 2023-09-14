@@ -101,8 +101,8 @@ local function rubocop(args)
     errorformat = '%f:%l:%c: %m',
     strip = true,
     cwd = root,
+    save = 1,
   }
-  vim.cmd("update")
   vim.fn["asyncrun#run"]("", opts, cmd)
   print("running: "..cmd)
 end
