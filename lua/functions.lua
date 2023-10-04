@@ -36,7 +36,6 @@ function STabComplete()
   end
 end
 
-
 local function visual_selection_range()
   local _, csrow, cscol, _ = unpack(vim.fn.getpos "'<")
   local _, cerow, cecol, _ = unpack(vim.fn.getpos "'>")
@@ -216,17 +215,15 @@ end
 function M.strip_trailing_whitespace(args)
   local target
   if not args.range or args.range == 0 or args.target == 1 then
-    target = "."
+    target = "%"
   elseif args.range == 2 then
     target = "'<,'>"
   end
 
   local search_reg = vim.fn.getreg("@")
-  vim.cmd("keepj normal! msHmt")
-  vim.cmd("keepj "..target.."s/\\s\\+$//e")
+  M.keep_jumps(target.."s/\\s\\+$//e")
   vim.fn.setreg("@", search_reg)
   vim.cmd("nohl")
-  vim.cmd("keepj normal! 'tzt`s")
 end
 
 local next_error_loclist = false
@@ -375,6 +372,62 @@ end
 function M.telescope_send_and_open_qflist(prompt_bufnr)
   actions.smart_send_to_qflist(prompt_bufnr)
   actions.open_qflist(prompt_bufnr)
+end
+
+function M.keep_jumps(cmd)
+  vim.cmd("keepjumps normal! msHmt")
+  vim.cmd("keepjumps "..cmd)
+  vim.cmd("keepjumps normal! 'tzt`s")
+end
+
+local Job = require('plenary/job')
+local jobs = {}
+
+local function clear_dead_job(j)
+  jobs[j.pid] = nil
+end
+
+function M.job_start(args)
+  local on_exit = args.on_exit
+  args.on_exit = function(j, code, signal)
+    clear_dead_job(j)
+    local _ = on_exit and on_exit(j, code, signal)
+  end
+  local job = Job:new(args)
+  job:start()
+  jobs[job.pid] = job
+end
+
+function M.list_jobs()
+  local out = { "Jobs:" }
+  for pid, job in pairs(jobs) do
+    table.insert(out, pid..": "..job.command.." "..table.concat(job.args, " "))
+  end
+
+  print(table.concat(out, "\n"))
+end
+
+function M.kill_job(args)
+  if args.args and args.args ~= "" then
+    local pid = tonumber(args.args)
+    if pid == nil then
+      error("Pid must be a number: "..vim.inspect(args.args))
+    end
+
+    local job = jobs[pid]
+
+    if job == nil then
+      error("Cannot find job with pid="..vim.inspect(pid))
+    end
+
+    print("Killing "..pid.."="..job.command.." "..table.concat(job.args, " "))
+    vim.loop.process_kill(job.handle, "sigterm")
+  else
+    for _, job in pairs(jobs) do
+      print("Killing "..job.pid.."="..job.command.." "..table.concat(job.args, " "))
+      vim.loop.process_kill(job.handle, "sigterm")
+    end
+  end
 end
 
 return M

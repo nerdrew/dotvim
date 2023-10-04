@@ -280,11 +280,13 @@ vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = 
 vim.api.nvim_create_user_command("ToggleErrorLoclist", functions.toggle_error_loclist, {})
 vim.api.nvim_create_user_command("CI", function(args) vim.cmd("!"..vim.env.CI_COMMAND.." "..args.args) end, { nargs = "*"})
 vim.api.nvim_create_user_command("StripTrailingWhitespace", functions.strip_trailing_whitespace, { range = true })
+vim.api.nvim_create_user_command("Jobs", functions.list_jobs, {})
+vim.api.nvim_create_user_command("JobsKill", functions.kill_job, { nargs = "?" })
 
 
 vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
 vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call fugitive#detect(@%)" })
-vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "expandtab sw=4 ts=4 sts=4" })
+vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "set expandtab sw=4 ts=4 sts=4" })
 vim.api.nvim_create_autocmd("BufRead", { callback = functions.last_position_jump, once = true, buffer = 0 })
 vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
 vim.api.nvim_create_autocmd("TermClose", { command = "if !v:event.status | exe 'bdelete! '..expand('<abuf>') | endif" })
