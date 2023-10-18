@@ -1,40 +1,40 @@
 local M = {}
 
--- Helpers for Tab / S-Tab completion
-local function t(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
+-- -- Helpers for Tab / S-Tab completion
+-- local function t(str)
+--   return vim.api.nvim_replace_termcodes(str, true, true, true)
+-- end
 
-local function check_back_space()
-  local col = vim.fn.col('.') - 1
-  if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-    return true
-  else
-    return false
-  end
-end
+-- local function check_back_space()
+--   local col = vim.fn.col('.') - 1
+--   if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+--     return true
+--   else
+--     return false
+--   end
+-- end
 
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
-function TabComplete()
-  if vim.fn.pumvisible() == 1 then
-    return t("<C-n>")
-  elseif check_back_space() then
-    return t("<Tab>")
-  else
-    return vim.fn['compe#complete']()
-  end
-end
+-- -- Use (s-)tab to:
+-- --- move to prev/next item in completion menuone
+-- --- jump to prev/next snippet's placeholder
+-- function TabComplete()
+--   if vim.fn.pumvisible() == 1 then
+--     return t("<C-n>")
+--   elseif check_back_space() then
+--     return t("<Tab>")
+--   else
+--     return vim.fn['compe#complete']()
+--   end
+-- end
 
-function STabComplete()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  else
-    -- If <S-Tab> is not working in your terminal, change it to <C-h>
-    return t "<S-Tab>"
-  end
-end
+-- function STabComplete()
+--   if vim.fn.pumvisible() == 1 then
+--     return t "<C-p>"
+--   else
+--     -- If <S-Tab> is not working in your terminal, change it to <C-h>
+--     return t "<S-Tab>"
+--   end
+-- end
 
 local function visual_selection_range()
   local _, csrow, cscol, _ = unpack(vim.fn.getpos "'<")

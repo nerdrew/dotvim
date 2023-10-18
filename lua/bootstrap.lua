@@ -61,6 +61,7 @@ local PKGS = {
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
   "j-hui/fidget.nvim";
   "ishan9299/nvim-solarized-lua";
+  "folke/noice.nvim"; "MunifTanjim/nui.nvim";
   { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
   { upstream = "https://github.com/rust-lang/rust.vim.git" };

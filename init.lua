@@ -124,6 +124,7 @@ vim.opt.ssop:remove("options")
 vim.opt.textwidth = 120
 vim.opt.tildeop = true
 vim.opt.title = true
+vim.opt.titlelen = 30
 vim.opt.undodir = vim.env.HOME.."/.cache/nvim/undo"
 vim.opt.undofile = true
 vim.opt.wildignore = "*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg"
@@ -164,43 +165,43 @@ vim.keymap.set("", "+", "<C-W>+", { unique = true })
 vim.keymap.set("", "<bar>", "<C-W><", { unique = true })
 vim.keymap.set("", "\\", "<C-W>>", { unique = true })
 -- option-[
-vim.keymap.set("", "“", ":tabp<cr>", { unique = true })
-vim.keymap.set("i", "“", "<ESC>:tabp<cr>", { unique = true })
-vim.keymap.set("t", "“", "<C-\\><C-N>:tabp<cr>", { unique = true })
-vim.keymap.set("", "<A-[>", ":tabp<cr>", { unique = true })
-vim.keymap.set("i", "<A-[>", "<ESC>:tabp<cr>", { unique = true })
-vim.keymap.set("t", "<A-[>", "<C-\\><C-N>:tabp<cr>", { unique = true })
+vim.keymap.set("", "“", ":tabp<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "“", "<ESC>:tabp<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "“", "<C-\\><C-N>:tabp<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<A-[>", ":tabp<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<A-[>", "<ESC>:tabp<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<A-[>", "<C-\\><C-N>:tabp<cr>", { unique = true, silent = true })
 vim.keymap.set("", "[w", ":tabp<cr>", { unique = true })
 -- option-]
-vim.keymap.set("", "‘", ":tabn<cr>", { unique = true })
-vim.keymap.set("i", "‘", "<ESC>:tabn<cr>", { unique = true })
-vim.keymap.set("t", "‘", "<C-\\><C-N>:tabn<cr>", { unique = true })
-vim.keymap.set("", "<A-]>", ":tabn<cr>", { unique = true })
-vim.keymap.set("i", "<A-]>", "<ESC>:tabn<cr>", { unique = true })
-vim.keymap.set("t", "<A-]>", "<C-\\><C-N>:tabn<cr>", { unique = true })
+vim.keymap.set("", "‘", ":tabn<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "‘", "<ESC>:tabn<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "‘", "<C-\\><C-N>:tabn<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<A-]>", ":tabn<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<A-]>", "<ESC>:tabn<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<A-]>", "<C-\\><C-N>:tabn<cr>", { unique = true, silent = true })
 vim.keymap.set("", "]w", ":tabn<cr>", { unique = true })
 -- option-shift-[
-vim.keymap.set("", "”", ":tabm -1<cr>", { unique = true })
-vim.keymap.set("i", "”", "<ESC>:tabm -1<cr>", { unique = true })
-vim.keymap.set("t", "”", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
-vim.keymap.set("", "<A-{>", ":tabm -1<cr>", { unique = true })
-vim.keymap.set("", "<M-S-[>", ":tabm -1<cr>", { unique = true })
-vim.keymap.set("", "[W", ":tabm -1<cr>", { unique = true })
-vim.keymap.set("i", "<A-{>", "<ESC>:tabm -1<cr>", { unique = true })
-vim.keymap.set("i", "<M-S-{>", "<ESC>:tabm -1<cr>", { unique = true })
-vim.keymap.set("t", "<A-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
-vim.keymap.set("t", "<M-S-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true })
+vim.keymap.set("", "”", ":tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "”", "<ESC>:tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "”", "<C-\\><C-N>:tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<A-{>", ":tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<M-S-[>", ":tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "[W", ":tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<A-{>", "<ESC>:tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<M-S-{>", "<ESC>:tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<A-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<M-S-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true, silent = true })
 -- option-shift-]
-vim.keymap.set("", "’", ":tabm +1<cr>", { unique = true })
-vim.keymap.set("i", "’", "<ESC>:tabm +1<cr>", { unique = true })
-vim.keymap.set("t", "’", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
-vim.keymap.set("", "<A-}>", ":tabm +1<cr>", { unique = true })
-vim.keymap.set("", "<M-S-]>", ":tabm +1<cr>", { unique = true })
-vim.keymap.set("", "]W", ":tabm +1<cr>", { unique = true })
-vim.keymap.set("i", "<A-}>", "<ESC>:tabm +1<cr>", { unique = true })
-vim.keymap.set("i", "<M-S-}>", "<ESC>:tabm +1<cr>", { unique = true })
-vim.keymap.set("t", "<A-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
-vim.keymap.set("t", "<M-S-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true })
+vim.keymap.set("", "’", ":tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "’", "<ESC>:tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "’", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<A-}>", ":tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<M-S-]>", ":tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("", "]W", ":tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<A-}>", "<ESC>:tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("i", "<M-S-}>", "<ESC>:tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<A-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silent = true })
+vim.keymap.set("t", "<M-S-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silent = true })
 
 vim.keymap.set("", "Q", "@@", { unique = true })
 vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true })
@@ -218,7 +219,7 @@ vim.keymap.set("v", "<A-M>", ":MultipleCursorsFind <C-R>/<CR>", { silent = true 
 
 vim.keymap.set("", "<leader>w", ":set wrap! wrap?<cr>", { unique = true })
 vim.keymap.set("", "<leader>l", ":set list! list?<cr>", { unique = true })
-vim.keymap.set("", "<leader>", ":nohls<cr>", { unique = true })
+vim.keymap.set("", "<leader>", ":nohls<cr>", { unique = true, silent = true })
 vim.keymap.set("", "<leader>ew", ":e <C-R>=expand('%:h').'/'<cr>", { unique = true })
 vim.keymap.set("", "<leader>es", ":sp <C-R>=expand('%:h').'/'<cr>", { unique = true })
 vim.keymap.set("", "<leader>ev", ":vsp <C-R>=expand('%:h').'/'<cr>", { unique = true })
@@ -230,9 +231,11 @@ vim.keymap.set("", "<leader>o", '"*p', { unique = true })
 vim.keymap.set("", "<leader>O", '"*P', { unique = true })
 vim.keymap.set("", "gn", "<ESC>/\\v^[<=>|]{7}( .*|$)<cr>", { unique = true })
 
-vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true })
-vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true })
-vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true })
+vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true, silent = true })
+vim.keymap.set("n", "<leader>nl", function() require("noice").cmd("last") end, { unique = true })
+vim.keymap.set("n", "<leader>nh", function() require("noice").cmd("history") end, { unique = true })
 vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = true })
 vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
 vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
@@ -242,8 +245,8 @@ vim.keymap.set("n", "<leader>J", "<cmd>RgLive<cr>", { unique = true })
 -- vim.keymap.set("n", "<leader>K", "<cmd>RgLive!<cr>", { unique = true })
 vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
 vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
-vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true })
-vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true })
+vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true, silent = true })
 
 vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
 vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
@@ -260,12 +263,12 @@ vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 vim.keymap.set("", "gQ", vim.lsp.buf.format, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
-vim.cmd("cnoreabbrev <expr> GT ((getcmdtype() is# ':' && getcmdline() is# 'GT')?('Gtabedit :'):('GT'))")
+vim.api.nvim_create_user_command("GT", function(args) vim.cmd("Gtabedit "..((args.args ~= "" and args.args) or ":")) end, { nargs = "*"})
 
 -- vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
 -- vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
 -- vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
-vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true })
+vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = true })
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
 vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { range = true })
@@ -528,4 +531,67 @@ cmp.setup.filetype('TelescopePrompt', {
     ['<C-n>'] = cmp.config.disable,
     ['<C-p>'] = cmp.config.disable,
   }
+})
+
+require("noice").setup({
+  cmdline = {
+    format = {
+      cmdline = { icon = '', title = '' },
+      help = { icon = '?', title = '' },
+      search_down = { icon = ' ↘', title = '' },
+      search_up = { icon = ' ↖', title = '' },
+    },
+  },
+  lsp = {
+    override = {
+      ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+      ['vim.lsp.util.stylize_markdown'] = true,
+      ['cmp.entry.get_documentation'] = true,
+    },
+  },
+  messages = {
+    view = 'mini',
+    view_error = 'mini',
+    view_warn = 'mini',
+    view_search = 'virtualtext',
+  },
+  presets = {
+    long_message_to_split = true,
+    inc_rename = true,
+    lsp_doc_border = true,
+  },
+  views = {
+    mini = {
+      timeout = 3000,
+      position = { row = -2, col = -2 },
+      win_options = { winblend = 100 },
+    },
+  },
+  routes = {
+    {
+      filter = {
+        event = 'msg_show',
+        any = {
+          { cmdline = 'Inspect' },
+          { cmdline = 'Git' },
+        },
+      },
+      view = 'popup',
+    },
+    {
+      filter = {
+        event = 'msg_show',
+        find = 'COMMIT_EDITMSG',
+      },
+      opts = { skip = true },
+    },
+  },
+  commands = {
+    rubocop = {
+      view = 'popup',
+      opts = { enter = true, format = 'details' },
+      filter = { find = 'Rubocop' },
+      filter_opts = { count = 1 },
+    },
+  },
 })
