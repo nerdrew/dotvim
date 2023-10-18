@@ -90,5 +90,3 @@ lspconfig.java_language_server.setup {
   root_dir = lsputil.root_pattern("BUILD", ".git"),
   -- autostart = false,
 }
-
-require("fidget").setup{}

@@ -104,7 +104,7 @@ vim.opt.grepprg = "rg"
 vim.opt.hidden = true
 vim.opt.history = 1000
 vim.opt.inccommand = "nosplit"
-vim.opt.lazyredraw = true
+-- vim.opt.lazyredraw = true
 vim.opt.listchars = "tab:> ,trail:·,nbsp:·,extends:>,precedes:<"
 vim.opt.mouse = "a"
 vim.opt.joinspaces = false
@@ -234,8 +234,6 @@ vim.keymap.set("", "gn", "<ESC>/\\v^[<=>|]{7}( .*|$)<cr>", { unique = true })
 vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true, silent = true })
 vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true, silent = true })
 vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true, silent = true })
-vim.keymap.set("n", "<leader>nl", function() require("noice").cmd("last") end, { unique = true })
-vim.keymap.set("n", "<leader>nh", function() require("noice").cmd("history") end, { unique = true })
 vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = true })
 vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
 vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
@@ -263,11 +261,10 @@ vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 vim.keymap.set("", "gQ", vim.lsp.buf.format, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
+
+vim.cmd("cnoreabbrev <expr> N ((getcmdtype() is# ':' && getcmdline() is# 'N')?('Noice '):('N'))")
 vim.api.nvim_create_user_command("GT", function(args) vim.cmd("Gtabedit "..((args.args ~= "" and args.args) or ":")) end, { nargs = "*"})
 
--- vim.keymap.set("i", "<Tab>", "v:lua.TabComplete()", { silent = true, expr = true })
--- vim.keymap.set("i", "<S-Tab>", "v:lua.STabComplete()", { silent = true, expr = true })
--- vim.keymap.set("i", "<CR>", "compe#confirm('<CR>')", { silent = true, expr = true })
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = true })
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
@@ -313,25 +310,6 @@ command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
 ]], false)
 
 
--- require("compe").setup {
---   enabled = true;
---   autocomplete = false;
---   debug = true;
---   throttle_time = 80;
---   source_timeout = 200;
---   incomplete_delay = 400;
---   max_abbr_width = 100;
---   max_kind_width = 100;
---   max_menu_width = 100;
---   documentation = true;
-
---   source = {
---     path = true;
---     nvim_lsp = true;
---     buffer = true;
---   };
--- }
-
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
@@ -340,7 +318,7 @@ end
 -- Setup cmp
 local cmp = require("cmp")
 cmp.setup({
-	mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
+  mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
     -- ["<C-Space>"] = cmp.mapping.complete(),
     ["<C-Space>"] = cmp.mapping(function(fallback)
       if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
@@ -385,21 +363,21 @@ cmp.setup({
     ["<C-CR>"] = cmp.mapping.confirm({ select = true }),
     ["<C-n>"] = cmp.config.disable,
     ["<C-p>"] = cmp.config.disable,
-	}),
-	snippet = {
-		expand = function(args)
-			require("luasnip").lsp_expand(args.body)
-		end,
-	},
-	sources = cmp.config.sources({
-		{ name = "nvim_lsp" },
-		{ name = "nvim_lsp_signature_help" },
-		{ name = "nvim_lua" },
-		{ name = "path" },
-	}, {
-		{ name = "buffer", keyword_length = 3 },
-	}),
-	completion = {
+  }),
+  snippet = {
+    expand = function(args)
+      require("luasnip").lsp_expand(args.body)
+    end,
+  },
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "nvim_lsp_signature_help" },
+    { name = "nvim_lua" },
+    { name = "path" },
+  }, {
+      { name = "buffer", keyword_length = 3 },
+    }),
+  completion = {
     autocomplete = false,
   },
 })
@@ -407,18 +385,21 @@ cmp.setup({
 local rt = require("rust-tools")
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(_client, buf)
-  vim.keymap.set("", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
-	vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
-	vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
-	vim.api.nvim_buf_set_option(buf, "tagfunc", "v:lua.vim.lsp.tagfunc")
+  local success, err = pcall(vim.keymap.set, "", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
+  if not success then
+    print("Could not set <leader>h=rt.hover_actions.hover_actions map, err="..vim.inspect(err))
+  end
+  vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+  vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
+  vim.api.nvim_buf_set_option(buf, "tagfunc", "v:lua.vim.lsp.tagfunc")
 end
 
 -- Setup rust_analyzer via rust-tools.nvim
 rt.setup({
-	server = {
-		capabilities = capabilities,
-		on_attach = lsp_attach,
-	}
+  server = {
+    capabilities = capabilities,
+    on_attach = lsp_attach,
+  }
 })
 
 require'nvim-treesitter.configs'.setup({
@@ -535,11 +516,12 @@ cmp.setup.filetype('TelescopePrompt', {
 
 require("noice").setup({
   cmdline = {
+    view = "cmdline",
     format = {
-      cmdline = { icon = '', title = '' },
-      help = { icon = '?', title = '' },
-      search_down = { icon = ' ↘', title = '' },
-      search_up = { icon = ' ↖', title = '' },
+      lua = false,
+    },
+    opts = {
+      conceal = false,
     },
   },
   lsp = {
@@ -556,8 +538,8 @@ require("noice").setup({
     view_search = 'virtualtext',
   },
   presets = {
-    long_message_to_split = true,
     inc_rename = true,
+    long_message_to_split = true,
     lsp_doc_border = true,
   },
   views = {
@@ -595,3 +577,7 @@ require("noice").setup({
     },
   },
 })
+
+-- require("fidget").setup{}
+
+require("neogit").setup({})

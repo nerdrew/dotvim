@@ -186,9 +186,25 @@ function StatusLine()
 
   local tag = ""
   if bufnr == vim.fn.bufnr("%") and vim.opt.filetype ~= "text" then
-    tag = vim.fn["tagbar#currenttag"](' %s', '', 'f')
+    -- tag = vim.fn["tagbar#currenttag"](' %s', '', 'f')
+    tag = require("nvim-treesitter").statusline() or ""
+    if tag ~= "" then
+      tag = " "..tag
+    end
   end
-  return "%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"..tag..diagnostics
+
+  local mode = vim.fn.mode()
+  if mode == "n" or mode == "i" then
+    mode = ""
+  else
+    mode = " "..mode
+  end
+
+  local recording = vim.fn.reg_recording()
+  if recording ~= "" then
+    recording = " @"..recording
+  end
+  return "%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"..mode..recording..tag..diagnostics
 end
 
 function M.run_command(args)

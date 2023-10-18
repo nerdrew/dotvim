@@ -38,6 +38,7 @@ local PKGS = {
   "terryma/vim-multiple-cursors";
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
+  "NeogitOrg/neogit"; "sindrets/diffview.nvim"; "sindrets/diffview.nvim";
   { "prettier/vim-prettier", run = "yarn install" };
   "tpope/vim-repeat";
   "airblade/vim-rooter";
@@ -59,9 +60,9 @@ local PKGS = {
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
-  "j-hui/fidget.nvim";
+  -- "j-hui/fidget.nvim"; -- 89b633f3bd0b7187f070236b348697de176860e2 is a good sha in case they break things
   "ishan9299/nvim-solarized-lua";
-  "folke/noice.nvim"; "MunifTanjim/nui.nvim";
+  "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
   { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
   { upstream = "https://github.com/rust-lang/rust.vim.git" };
