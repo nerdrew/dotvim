@@ -74,7 +74,6 @@ local PKGS = {
   -- 'tpope/vim-fugitive';
   -- 'tpope/vim-rails';
   -- 'jlcrochet/vim-ruby';
-  -- 'ayu-theme/ayu-vim';
 }
 
 local function system(cmd)

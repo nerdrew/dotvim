@@ -153,7 +153,7 @@ vim.keymap.set("t", "<C-l>", "<C-\\><C-N><C-w>l", { unique = true })
 vim.keymap.set("t", "<C-r>", "'<C-\\><C-N><C-w>l\"'.nr2char(getchar()).'pi'", { unique = true, expr = true })
 
 vim.keymap.set("", "/", "/\\v", { unique = true })
--- vim.keymap.set("", "?", "/\\v\\c", { unique = true })
+vim.keymap.set("", "?", "/\\v\\c", { unique = true })
 vim.keymap.set("", "-", "<C-W>-", { unique = true })
 vim.keymap.set("", "+", "<C-W>+", { unique = true })
 vim.keymap.set("", "<bar>", "<C-W><", { unique = true })
