@@ -141,13 +141,7 @@ if git_root ~= nil and git_root ~= "" then
   vim.opt.tags:append(git_root .. "/.git/tags")
 end
 
-vim.cmd('colorscheme solarized-flat')
--- vim.cmd("colorscheme solarized8_flat")
-
--- vim.g.solarized_contrast = true
--- vim.g.solarized_borders = false
--- vim.g.solarized_disable_background = true
--- require('solarized').set()
+vim.cmd.colorscheme("solarized-flat")
 
 vim.g.mapleader = " "
 
@@ -208,14 +202,15 @@ vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true
 vim.keymap.set("", "<C-p>", functions.previous_error, { unique = true, silent = true })
 vim.keymap.set("", "<leader>q", ":cope<cr>", { unique = true, silent = true })
 
--- option-y = ¥ yankring show
-vim.keymap.set("", "¥", ":YRShow<CR>", { silent = true })
-vim.keymap.set("", "<A-y>", ":YRShow<CR>", { silent = true })
+-- option-y = ¥
+vim.keymap.set("", "¥", ":Telescope yank_history<cr>", { silent = true })
+vim.keymap.set("", "<A-y>", ":Telescope yank_history<cr>", { silent = true })
+
 -- option-shift-m = Â
-vim.keymap.set("", "Â", ":MultipleCursorsFind <C-R>/<CR>", { silent = true })
-vim.keymap.set("v", "Â", ":MultipleCursorsFind <C-R>/<CR>", { silent = true })
-vim.keymap.set("", "<A-M>", ":MultipleCursorsFind <C-R>/<CR>", { silent = true })
-vim.keymap.set("v", "<A-M>", ":MultipleCursorsFind <C-R>/<CR>", { silent = true })
+vim.keymap.set("", "Â", ":MultipleCursorsFind <C-R>/<cr>", { silent = true })
+vim.keymap.set("v", "Â", ":MultipleCursorsFind <C-R>/<cr>", { silent = true })
+vim.keymap.set("", "<A-M>", ":MultipleCursorsFind <C-R>/<cr>", { silent = true })
+vim.keymap.set("v", "<A-M>", ":MultipleCursorsFind <C-R>/<cr>", { silent = true })
 
 vim.keymap.set("", "<leader>w", ":set wrap! wrap?<cr>", { unique = true })
 vim.keymap.set("", "<leader>l", ":set list! list?<cr>", { unique = true })
@@ -267,6 +262,17 @@ vim.api.nvim_create_user_command("GT", function(args) vim.cmd("Gtabedit "..((arg
 
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = true })
 
+vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
+
+if vim.fn.has('macunix') ~= 0 then
+  vim.keymap.set("n", "π", "<Plug>(YankyCycleForward)") -- option-p
+  vim.keymap.set("n", "ø", "<Plug>(YankyCycleBackward)") -- option-o
+else
+  vim.keymap.set("n", "<A-p>", "<Plug>(YankyCycleForward)") -- option-p
+  vim.keymap.set("n", "<A-o>", "<Plug>(YankyCycleBackward)") -- option-o
+end
+
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
 vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { range = true })
 vim.api.nvim_create_user_command("RgFilesContaining", functions.rg_files_containing, { nargs = "*", complete = "file" })
@@ -291,23 +297,12 @@ vim.api.nvim_create_autocmd("BufRead", { callback = functions.last_position_jump
 vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
 vim.api.nvim_create_autocmd("TermClose", { command = "if !v:event.status | exe 'bdelete! '..expand('<abuf>') | endif" })
 
-
-vim.api.nvim_exec([[
-" See yankring-custom-maps
-function! YRRunAfterMaps()
-  noremap Y :<C-U>YRYankCount 'y$'<cr>
-endfunction
-
-function! s:TabMessage(cmd)
-  redir => message
-  silent execute a:cmd
-  redir END
-  tabnew
-  silent put=message
-  set nomodified
-endfunction
-command! -nargs=+ -complete=command TabMessage call s:TabMessage(<q-args>)
-]], false)
+vim.api.nvim_create_user_command('TabMessage', function(ctx)
+  local lines = vim.split(vim.api.nvim_exec(ctx.args, true), '\n', { plain = true })
+  vim.cmd('tabnew')
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+  vim.opt_local.modified = false
+end, { nargs = '+', complete = 'command' })
 
 
 local has_words_before = function()
@@ -495,6 +490,7 @@ telescope.setup({
 })
 telescope.load_extension("fzy_native")
 telescope.load_extension("live_grep_args")
+telescope.load_extension("yank_history")
 
 local lsp_kinds = require('cmp.types').lsp.CompletionItemKind
 cmp.setup.filetype('TelescopePrompt', {
@@ -578,6 +574,21 @@ require("noice").setup({
   },
 })
 
--- require("fidget").setup{}
+require("yanky").setup({
+  ring = {
+    sync_with_numbered_registers = true,
+    ignore_registers = { "_", "+", "*" },
+  },
+  system_clipboard = {
+    sync_with_ring = false,
+  },
+  highlight = {
+    on_put = true,
+    on_yank = false,
+    timer = 500,
+  },
+})
 
-require("neogit").setup({})
+require("neogit").setup({
+  disable_context_highlighting = true,
+})

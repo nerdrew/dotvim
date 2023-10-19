@@ -2,7 +2,6 @@
 
 local PKGS = {
   { upstream = "https://github.com/savq/paq-nvim.git", opt = true };
-  "vim-scripts/YankRing.vim";
   "skywind3000/asyncrun.vim";
   "chrisbra/csv.vim";
   -- "rickhowe/diffchar.vim";
@@ -60,24 +59,22 @@ local PKGS = {
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
-  -- "j-hui/fidget.nvim"; -- 89b633f3bd0b7187f070236b348697de176860e2 is a good sha in case they break things
-  "ishan9299/nvim-solarized-lua";
   "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
+  "gbprod/yanky.nvim";
+  'norcalli/nvim-colorizer.lua';
   { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
-  { upstream = "https://github.com/rust-lang/rust.vim.git" };
+  -- { upstream = "https://github.com/rust-lang/rust.vim.git" };
   { upstream = "https://github.com/tpope/vim-fugitive.git" };
   { upstream = "https://github.com/tpope/vim-rails.git" };
   -- { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
   { upstream = "https://github.com/chrisbra/vim-sh-indent.git" };
-  'norcalli/nvim-colorizer.lua';
+  { upstream = "https://github.com/ishan9299/nvim-solarized-lua.git" };
   -- 'rust-lang/rust.vim';
   -- 'tpope/vim-fugitive';
   -- 'tpope/vim-rails';
   -- 'jlcrochet/vim-ruby';
-  -- 'iCyMind/NeoSolarized';
   -- 'ayu-theme/ayu-vim';
-  -- 'joshdick/onedark.vim';
 }
 
 local function system(cmd)
