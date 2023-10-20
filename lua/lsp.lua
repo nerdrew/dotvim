@@ -16,7 +16,7 @@ local on_attach = function(_, _bufnr)
 end
 
 -- local servers = {'gopls', 'tsserver', 'vimls', 'jsonls'}
-local servers = {'tsserver', 'vimls', 'jsonls', 'lua_ls' } -- , 'ruby_ls'}
+local servers = {'tsserver', 'vimls', 'jsonls', 'lua_ls', 'bashls' } -- , 'ruby_ls'}
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,

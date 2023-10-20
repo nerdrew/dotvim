@@ -62,7 +62,7 @@ local PKGS = {
   "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
   "gbprod/yanky.nvim";
   'norcalli/nvim-colorizer.lua';
-  { upstream = "https://github.com/w0rp/ale.git" };
+  -- { upstream = "https://github.com/w0rp/ale.git" };
   { upstream = "https://github.com/dart-lang/dart-vim-plugin.git" };
   -- { upstream = "https://github.com/rust-lang/rust.vim.git" };
   { upstream = "https://github.com/tpope/vim-fugitive.git" };
