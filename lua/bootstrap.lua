@@ -7,7 +7,7 @@ local PKGS = {
   -- "rickhowe/diffchar.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
-  { "iamcco/markdown-preview.nvim", run = "cd app && yarn install"  };
+  { "iamcco/markdown-preview.nvim", build = "cd app && yarn install"  };
   "mracos/mermaid.vim";
   "scrooloose/nerdtree";
   "chr4/nginx.vim";
@@ -38,7 +38,7 @@ local PKGS = {
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
   "NeogitOrg/neogit"; "sindrets/diffview.nvim"; "sindrets/diffview.nvim";
-  { "prettier/vim-prettier", run = "yarn install" };
+  { "prettier/vim-prettier", build = "yarn install" };
   "tpope/vim-repeat";
   "airblade/vim-rooter";
   "tpope/vim-surround";
@@ -49,7 +49,7 @@ local PKGS = {
   "cespare/vim-toml";
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
-  { "nvim-treesitter/nvim-treesitter", run=function() vim.cmd('TSUpdate') end };
+  { "nvim-treesitter/nvim-treesitter", build=function() vim.cmd('TSUpdateSync') end };
   "nvim-treesitter/playground";
   "nvim-treesitter/nvim-treesitter-context";
   "RRethy/nvim-treesitter-endwise";
@@ -58,8 +58,9 @@ local PKGS = {
   "nvim-telescope/telescope.nvim";
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
-  "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip";
-  "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
+  "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip"; "hrsh7th/cmp-cmdline";
+  -- "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
+  { "j-hui/fidget.nvim", pin = true, branch = "legacy" };
   "gbprod/yanky.nvim";
   'norcalli/nvim-colorizer.lua';
   -- { upstream = "https://github.com/w0rp/ale.git" };

@@ -171,8 +171,30 @@ function M.large_file_off(_)
 end
 
 function StatusLine()
+  local status = "%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
+
+  -- local mode = vim.fn.mode()
+  -- if mode ~= "n" and mode ~= "i" then
+  --   status = status.." "..mode
+  -- end
+
+  -- if vim.v.hlsearch == 1 then
+  --   local searchcount = vim.fn.searchcount({maxcount = 98})
+  --   local total = searchcount.incomplete > 0 and ">"..searchcount.total or searchcount.total
+  --   local current = searchcount.current > 98 and  ">"..searchcount.current or searchcount.current
+  --   local slash = vim.fn.getreg("/")
+  --   if slash:sub(1, 2) == "\\v" then
+  --     slash = slash:sub(3)
+  --   end
+  --   status = status.." ["..slash.."="..current.."/"..total.."]"
+  -- end
+
+  -- local recording = vim.fn.reg_recording()
+  -- if recording ~= "" then
+  --   status = status.." @"..recording
+  -- end
+
   local bufnr = vim.fn.winbufnr(vim.g.statusline_winid)
-  local diagnostics = ""
   for _, v in ipairs({
     { "E", #vim.diagnostic.get(bufnr, { severity = vim.diagnostic.severity.ERROR }) },
     { "W", #vim.diagnostic.get(bufnr, { severity = vim.diagnostic.severity.WARN }) },
@@ -180,31 +202,22 @@ function StatusLine()
     { "H", #vim.diagnostic.get(bufnr, { severity = vim.diagnostic.severity.HINT }) },
   }) do
     if v[2] > 0 then
-      diagnostics = diagnostics .. " "..v[1].."="..v[2]
+      status = status .. " "..v[1].."="..v[2]
     end
   end
 
-  local tag = ""
-  if bufnr == vim.fn.bufnr("%") and vim.opt.filetype ~= "text" then
-    -- tag = vim.fn["tagbar#currenttag"](' %s', '', 'f')
-    tag = require("nvim-treesitter").statusline() or ""
-    if tag ~= "" then
-      tag = " "..tag
-    end
-  end
+  -- treesitter-context already shows this pretty well on the screen
+  -- if bufnr == vim.fn.bufnr("%") and vim.opt.filetype ~= "text" then
+  --   local tag = require("nvim-treesitter").statusline({
+  --     separator = "->",
+  --     indicator_size = vim.fn.winwidth(0) - status:len() - 10,
+  --   }) or ""
+  --   if tag ~= "" then
+  --     status = status.." "..tag
+  --   end
+  -- end
 
-  local mode = vim.fn.mode()
-  if mode == "n" or mode == "i" then
-    mode = ""
-  else
-    mode = " "..mode
-  end
-
-  local recording = vim.fn.reg_recording()
-  if recording ~= "" then
-    recording = " @"..recording
-  end
-  return "%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"..mode..recording..tag..diagnostics
+  return status
 end
 
 function M.run_command(args)

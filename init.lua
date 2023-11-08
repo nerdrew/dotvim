@@ -377,6 +377,22 @@ cmp.setup({
   },
 })
 
+cmp.setup.cmdline('/', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = {
+    { name = 'buffer' }
+  }
+})
+
+cmp.setup.cmdline(':', {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({
+    { name = 'path' }
+  }, {
+    { name = 'cmdline' }
+  })
+})
+
 local rt = require("rust-tools")
 local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
 local lsp_attach = function(_client, buf)
@@ -510,69 +526,7 @@ cmp.setup.filetype('TelescopePrompt', {
   }
 })
 
-require("noice").setup({
-  cmdline = {
-    view = "cmdline",
-    format = {
-      lua = false,
-    },
-    opts = {
-      conceal = false,
-    },
-  },
-  lsp = {
-    override = {
-      ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
-      ['vim.lsp.util.stylize_markdown'] = true,
-      ['cmp.entry.get_documentation'] = true,
-    },
-  },
-  messages = {
-    view = 'mini',
-    view_error = 'mini',
-    view_warn = 'mini',
-    view_search = 'virtualtext',
-  },
-  presets = {
-    inc_rename = true,
-    long_message_to_split = true,
-    lsp_doc_border = true,
-  },
-  views = {
-    mini = {
-      timeout = 3000,
-      position = { row = -2, col = -2 },
-      win_options = { winblend = 100 },
-    },
-  },
-  routes = {
-    {
-      filter = {
-        event = 'msg_show',
-        any = {
-          { cmdline = 'Inspect' },
-          { cmdline = 'Git' },
-        },
-      },
-      view = 'popup',
-    },
-    {
-      filter = {
-        event = 'msg_show',
-        find = 'COMMIT_EDITMSG',
-      },
-      opts = { skip = true },
-    },
-  },
-  commands = {
-    rubocop = {
-      view = 'popup',
-      opts = { enter = true, format = 'details' },
-      filter = { find = 'Rubocop' },
-      filter_opts = { count = 1 },
-    },
-  },
-})
+require("fidget").setup({})
 
 require("yanky").setup({
   ring = {

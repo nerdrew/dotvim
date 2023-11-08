@@ -79,7 +79,8 @@ lspconfig.solargraph.setup {
 
 lspconfig.syntax_tree.setup {
   -- cmd = { vim.env.HOME.."/dev/ruby-syntax_tree/exe/stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" }
-  cmd = { "stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" }
+  cmd = { "stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" },
+  root_dir = lsputil.root_pattern(".git", "."),
 }
 
 lspconfig.java_language_server.setup {
