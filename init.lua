@@ -370,27 +370,59 @@ cmp.setup({
     { name = "nvim_lua" },
     { name = "path" },
   }, {
-      { name = "buffer", keyword_length = 3 },
-    }),
+    { name = "buffer" },
+  }),
   completion = {
     autocomplete = false,
   },
 })
 
-cmp.setup.cmdline('/', {
+cmp.setup.cmdline("/", {
   mapping = cmp.mapping.preset.cmdline(),
   sources = {
-    { name = 'buffer' }
+    { name = "buffer" }
   }
 })
 
-cmp.setup.cmdline(':', {
-  mapping = cmp.mapping.preset.cmdline(),
+local function handle_tab_complete(direction)
+  return function()
+    if vim.api.nvim_get_mode().mode == "c" and cmp.get_selected_entry() == nil then
+      local text = vim.fn.getcmdline()
+      ---@diagnostic disable-next-line: param-type-mismatch
+      local expanded = vim.fn.expandcmd(text)
+      if expanded ~= text then
+        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-U>", true, true, true) .. expanded, 'n', false)
+        cmp.abort()
+      elseif cmp.visible() then
+        direction()
+      else
+        cmp.complete()
+      end
+    else
+      if cmp.visible() then
+        direction()
+      else
+        cmp.complete()
+      end
+    end
+  end
+end
+
+cmp.setup.cmdline(":", {
+  mapping = cmp.mapping.preset.cmdline({
+    ["<Tab>"] = { c = handle_tab_complete(cmp.select_next_item) },
+    ["<S-Tab>"] = { c = handle_tab_complete(cmp.select_prev_item) },
+  }),
   sources = cmp.config.sources({
-    { name = 'path' }
+    { name = "path" }
   }, {
-    { name = 'cmdline' }
-  })
+    {
+      name = "cmdline",
+      option = {
+        ignore_cmds = { "Man", }
+      }
+    }
+  }),
 })
 
 local rt = require("rust-tools")
@@ -426,6 +458,14 @@ require'nvim-treesitter.configs'.setup({
       scope_incremental = "gss",
       node_decremental = "gsd",
     },
+    -- Stop errors when opening q: command-line-window
+    is_supported = function ()
+      local mode = vim.api.nvim_get_mode().mode
+      if mode == "c" then
+        return false
+      end
+      return true
+    end
   },
   -- indent = {
   --   enable = true,

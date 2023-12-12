@@ -49,7 +49,7 @@ local PKGS = {
   "cespare/vim-toml";
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
-  { "nvim-treesitter/nvim-treesitter", build=function() vim.cmd('TSUpdateSync') end };
+  { "nvim-treesitter/nvim-treesitter", build=function() vim.cmd('TSUpdate') end };
   "nvim-treesitter/playground";
   "nvim-treesitter/nvim-treesitter-context";
   "RRethy/nvim-treesitter-endwise";
@@ -59,8 +59,9 @@ local PKGS = {
   "nvim-telescope/telescope-fzy-native.nvim";
   "nvim-telescope/telescope-rg.nvim";
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip"; "hrsh7th/cmp-cmdline";
-  -- "folke/noice.nvim"; "MunifTanjim/nui.nvim"; "rcarriga/nvim-notify";
-  { "j-hui/fidget.nvim", pin = true, branch = "legacy" };
+  -- "folke/noice.nvim"; "MunifTanjim/nui.nvim";
+  "rcarriga/nvim-notify";
+  { "j-hui/fidget.nvim", branch = "legacy" };
   "gbprod/yanky.nvim";
   'norcalli/nvim-colorizer.lua';
   -- { upstream = "https://github.com/w0rp/ale.git" };
