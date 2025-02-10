@@ -2,17 +2,23 @@
 
 local PKGS = {
   { upstream = "https://github.com/savq/paq-nvim.git", opt = true };
+
+  -- "rickhowe/diffchar.vim";
+  -- "tpope/vim-commentary";
+  -- "keith/rspec.vim";
+  -- "mracos/mermaid.vim";
+  -- "nelstrom/vim-textobj-rubyblock";
+  -- "nvim-treesitter/playground";
+  -- "folke/noice.nvim"; "MunifTanjim/nui.nvim";
+
   "skywind3000/asyncrun.vim";
   "chrisbra/csv.vim";
-  -- "rickhowe/diffchar.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
   { "iamcco/markdown-preview.nvim", build = "cd app && yarn install"  };
-  "mracos/mermaid.vim";
   "scrooloose/nerdtree";
   "chr4/nginx.vim";
   "neovim/nvim-lspconfig";
-  -- "keith/rspec.vim";
   "ruby-formatter/rufo-vim";
   "ciaranm/securemodelines";
   "keith/swift.vim";
@@ -26,7 +32,6 @@ local PKGS = {
   "sebdah/vim-delve";
   "justinmk/vim-dirvish";
   "tpope/vim-abolish";
-  "tpope/vim-commentary";
   "tpope/vim-eunuch";
   "zchee/vim-flatbuffers";
   "fatih/vim-go";
@@ -37,29 +42,29 @@ local PKGS = {
   "terryma/vim-multiple-cursors";
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
-  "NeogitOrg/neogit"; "sindrets/diffview.nvim"; "sindrets/diffview.nvim";
+  "NeogitOrg/neogit"; "sindrets/diffview.nvim";
   { "prettier/vim-prettier", build = "yarn install" };
   "tpope/vim-repeat";
   "airblade/vim-rooter";
   "tpope/vim-surround";
   "wellle/targets.vim";
   "kana/vim-textobj-user";
-  -- "nelstrom/vim-textobj-rubyblock";
   "christoomey/vim-tmux-navigator";
   "cespare/vim-toml";
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
+  "pedrohdz/vim-yaml-folds";
   { "nvim-treesitter/nvim-treesitter", build=function() vim.cmd('TSUpdate') end };
-  "nvim-treesitter/playground";
   "nvim-treesitter/nvim-treesitter-context";
   "RRethy/nvim-treesitter-endwise";
   "nvim-lua/popup.nvim";
   "nvim-lua/plenary.nvim";
   "nvim-telescope/telescope.nvim";
   "nvim-telescope/telescope-fzy-native.nvim";
-  "nvim-telescope/telescope-rg.nvim";
+  -- "nvim-telescope/telescope-rg.nvim";
+  "nvim-telescope/telescope-live-grep-args.nvim";
   "hrsh7th/nvim-cmp"; "hrsh7th/cmp-buffer"; "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp"; "hrsh7th/cmp-nvim-lsp-signature-help"; "hrsh7th/cmp-path"; "simrat39/rust-tools.nvim"; "L3MON4D3/LuaSnip"; "saadparwaiz1/cmp_luasnip"; "hrsh7th/cmp-cmdline";
-  -- "folke/noice.nvim"; "MunifTanjim/nui.nvim";
+  -- "hrsh7th/cmp-nvim-lua"; "hrsh7th/cmp-nvim-lsp-signature-help"; "simrat39/rust-tools.nvim";
   "rcarriga/nvim-notify";
   { "j-hui/fidget.nvim", branch = "legacy" };
   "gbprod/yanky.nvim";
@@ -72,6 +77,18 @@ local PKGS = {
   -- { upstream = "https://github.com/vim-ruby/vim-ruby.git" };
   { upstream = "https://github.com/chrisbra/vim-sh-indent.git" };
   { upstream = "https://github.com/ishan9299/nvim-solarized-lua.git" };
+  -- "shaunsingh/solarized.nvim";
+  "sainnhe/sonokai";
+  "sainnhe/everforest";
+  "sainnhe/edge";
+  "ellisonleao/gruvbox.nvim";
+  "savq/melange-nvim";
+  "marko-cerovac/material.nvim";
+  "RRethy/nvim-base16";
+
+  -- { "rest-nvim/rest.nvim", ref = "91badd46c60df6bd9800c809056af2d80d33da4c" };
+  -- "vhyrro/luarocks.nvim"; "squareup/sq-connect-repl.nvim";
+
   -- 'rust-lang/rust.vim';
   -- 'tpope/vim-fugitive';
   -- 'tpope/vim-rails';

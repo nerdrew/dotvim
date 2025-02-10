@@ -16,7 +16,7 @@ local on_attach = function(_, _bufnr)
 end
 
 -- local servers = {'gopls', 'tsserver', 'vimls', 'jsonls'}
-local servers = {'tsserver', 'vimls', 'jsonls', 'lua_ls', 'bashls' } -- , 'ruby_ls'}
+local servers = {'ts_ls', 'vimls', 'jsonls', 'lua_ls', 'bashls', 'ruby_lsp' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -71,16 +71,22 @@ lspconfig.lua_ls.setup {
   }
 }
 
-lspconfig.solargraph.setup {
-  on_attach = on_attach,
-  init_options = { formatting = false },
-  root_dir = lsputil.root_pattern(".git"),
-}
+-- lspconfig.solargraph.setup {
+--   on_attach = on_attach,
+--   init_options = { formatting = false },
+--   root_dir = lsputil.root_pattern(".git", "."),
+-- }
 
 lspconfig.syntax_tree.setup {
   -- cmd = { vim.env.HOME.."/dev/ruby-syntax_tree/exe/stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" }
   cmd = { "stree", "lsp", "--print-width=120", "--plugins=plugin/trailing_comma" },
   root_dir = lsputil.root_pattern(".git", "."),
+  on_attach = on_attach,
+}
+
+lspconfig.steep.setup {
+  root_dir = lsputil.root_pattern("Steepfile"),
+  on_attach = on_attach,
 }
 
 lspconfig.java_language_server.setup {
@@ -91,3 +97,28 @@ lspconfig.java_language_server.setup {
   root_dir = lsputil.root_pattern("BUILD", ".git"),
   -- autostart = false,
 }
+
+local rt = require("rust-tools")
+local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
+local lsp_attach = function(_client, buf)
+  local success, err = pcall(vim.keymap.del, "", "<leader>h", { buffer = buf })
+  if not success then
+    print("Could not delete <leader>h=rt.hover_actions.hover_actions map, err="..vim.inspect(err))
+  end
+  success, err = pcall(vim.keymap.set, "", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
+  if not success then
+    print("Could not set <leader>h=rt.hover_actions.hover_actions map, err="..vim.inspect(err))
+  end
+  vim.api.nvim_set_option_value("formatexpr", "v:lua.vim.lsp.formatexpr()", { buf = 0 })
+  vim.api.nvim_set_option_value("omnifunc", "v:lua.vim.lsp.omnifunc", { buf = 0 })
+  vim.api.nvim_set_option_value("tagfunc", "v:lua.vim.lsp.tagfunc", { buf = 0 })
+end
+
+-- Setup rust_analyzer via rust-tools.nvim
+rt.setup({
+  server = {
+    capabilities = capabilities,
+    on_attach = lsp_attach,
+  }
+})
+

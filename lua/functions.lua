@@ -170,6 +170,8 @@ function M.large_file_off(_)
     vim.opt.filetype:get(), vim.opt.inccommand:get(), vim.opt.incsearch:get(), vim.opt.number:get()))
 end
 
+local show_syn_stack = false
+
 function StatusLine()
   local status = "%f%-m%-r %p%%:%l/%L Col:%vBuf:#%n Char:%b,0x%B"
 
@@ -206,6 +208,15 @@ function StatusLine()
     end
   end
 
+  if show_syn_stack then
+    local syn_stack = ""
+    for _, id in ipairs(vim.fn.synstack(vim.fn.line("."), vim.fn.col("."))) do
+      syn_stack = syn_stack .. " > " .. vim.fn.synIDattr(id, "name")
+    end
+    print(vim.inspect(syn_stack))
+    status = status .. " " .. syn_stack
+  end
+
   -- treesitter-context already shows this pretty well on the screen
   -- if bufnr == vim.fn.bufnr("%") and vim.opt.filetype ~= "text" then
   --   local tag = require("nvim-treesitter").statusline({
@@ -218,6 +229,15 @@ function StatusLine()
   -- end
 
   return status
+end
+
+function M.show_syn_stack()
+  show_syn_stack = true
+  vim.o.laststatus = 2
+end
+
+function M.hide_syn_stack()
+  show_syn_stack = false
 end
 
 function M.run_command(args)
@@ -376,7 +396,12 @@ function M.telescope_live_grep(args)
     return true
   end
   -- require("telescope.builtin").live_grep({ attach_mappings = attach_mappings, default_text = default })
-  require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, mappings = mappings })
+  -- require("telescope").extensions.live_grep_args.live_grep_args({ attach_mappings = attach_mappings, default_text = needle })
+  require("telescope").extensions.live_grep_args.live_grep_args({
+    attach_mappings = attach_mappings,
+    mappings = mappings,
+    -- additional_args = { "--sort=path" },
+  })
 end
 
 function M.telescope_delete_buffer(prompt_bufnr, force)

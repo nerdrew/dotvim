@@ -91,7 +91,7 @@ vim.opt.background = "light"
 vim.opt.autoread = true
 vim.opt.backspace = "indent,eol,start"
 vim.opt.backupdir = { ".", vim.env.TMPDIR }
-vim.opt.completeopt = "menuone,noinsert"
+vim.opt.completeopt = "menu,menuone,noinsert"
 vim.opt.copyindent = true
 -- vim.opt.cscopequickfix = "s-,c-,d-,i-,t-,e-"
 -- vim.opt.cst = true
@@ -141,7 +141,9 @@ if git_root ~= nil and git_root ~= "" then
   vim.opt.tags:append(git_root .. "/.git/tags")
 end
 
-vim.cmd.colorscheme("solarized-flat")
+-- vim.cmd.colorscheme("solarized-flat")
+vim.cmd.colorscheme("everforest")
+-- require('solarized').set()
 
 vim.g.mapleader = " "
 
@@ -197,7 +199,7 @@ vim.keymap.set("i", "<M-S-}>", "<ESC>:tabm +1<cr>", { unique = true, silent = tr
 vim.keymap.set("t", "<A-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silent = true })
 vim.keymap.set("t", "<M-S-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silent = true })
 
-vim.keymap.set("", "Q", "@@", { unique = true })
+-- vim.keymap.set("", "Q", "@@", { unique = true })
 vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true })
 vim.keymap.set("", "<C-p>", functions.previous_error, { unique = true, silent = true })
 vim.keymap.set("", "<leader>q", ":cope<cr>", { unique = true, silent = true })
@@ -238,12 +240,12 @@ vim.keymap.set("n", "<leader>J", "<cmd>RgLive<cr>", { unique = true })
 -- vim.keymap.set("n", "<leader>K", "<cmd>RgLive!<cr>", { unique = true })
 vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
 vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
-vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>", { unique = true, silent = true })
-vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
 
 vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
 vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
-vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
+-- vim.keymap.set("", "K",  vim.lsp.buf.hover, { unique = true })
 vim.keymap.set("", "gi", vim.lsp.buf.implementation, { unique = true })
 vim.keymap.set("", "<leader>a", vim.lsp.buf.code_action, { unique = true })
 vim.keymap.set("", "gk", vim.lsp.buf.signature_help, { unique = true })
@@ -251,8 +253,8 @@ vim.keymap.set("", "gt", vim.lsp.buf.type_definition, { unique = true })
 vim.keymap.set("", "gR", vim.lsp.buf.rename, { unique = true })
 vim.keymap.set("", "gr", vim.lsp.buf.references, { unique = true })
 vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
-vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
-vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
+-- vim.keymap.set("", "]d", vim.diagnostic.goto_next, { unique = true })
+-- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 vim.keymap.set("", "gQ", vim.lsp.buf.format, { unique = true })
 
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
@@ -280,6 +282,7 @@ vim.api.nvim_create_user_command("RgFiles", functions.rg_files, { nargs = "*", c
 vim.api.nvim_create_user_command("XMLLint", functions.xml_lint, { range = "%" })
 vim.api.nvim_create_user_command("JSONLint", functions.json_lint, { range = "%" })
 vim.api.nvim_create_user_command("Tabs", functions.tabs, { nargs = "?" })
+vim.api.nvim_create_user_command("TabCloseRight", ":.+1,$tabdo :tabc", {})
 vim.api.nvim_create_user_command("LargeFile", functions.large_file, {})
 vim.api.nvim_create_user_command("LargeFileOff", functions.large_file_off, {})
 vim.api.nvim_create_user_command("RunCommand", functions.run_command, { range = true })
@@ -288,6 +291,8 @@ vim.api.nvim_create_user_command("CI", function(args) vim.cmd("!"..vim.env.CI_CO
 vim.api.nvim_create_user_command("StripTrailingWhitespace", functions.strip_trailing_whitespace, { range = true })
 vim.api.nvim_create_user_command("Jobs", functions.list_jobs, {})
 vim.api.nvim_create_user_command("JobsKill", functions.kill_job, { nargs = "?" })
+vim.api.nvim_create_user_command("ShowSynStack", functions.show_syn_stack, {})
+vim.api.nvim_create_user_command("HideSynStack", functions.hide_syn_stack, {})
 
 
 vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
@@ -338,6 +343,7 @@ cmp.setup({
     ["<C-e>"] = cmp.mapping.abort(),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_next_item() then
+        -- buftype = prompt in telescope prompts
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
           cmp.complete()
         else
@@ -347,6 +353,7 @@ cmp.setup({
     end), --, {"i","s","c",}),
     ["<S-Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_prev_item() then
+        -- buftype = prompt in telescope prompts
         if vim.bo.buftype ~= 'prompt' and has_words_before() then
           cmp.complete()
         else
@@ -393,15 +400,11 @@ local function handle_tab_complete(direction)
       if expanded ~= text then
         vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-U>", true, true, true) .. expanded, 'n', false)
         cmp.abort()
-      elseif cmp.visible() then
-        direction()
-      else
+      elseif not direction() then
         cmp.complete()
       end
     else
-      if cmp.visible() then
-        direction()
-      else
+      if not direction() then
         cmp.complete()
       end
     end
@@ -423,26 +426,6 @@ cmp.setup.cmdline(":", {
       }
     }
   }),
-})
-
-local rt = require("rust-tools")
-local capabilities = require("cmp_nvim_lsp").default_capabilities(vim.lsp.protocol.make_client_capabilities())
-local lsp_attach = function(_client, buf)
-  local success, err = pcall(vim.keymap.set, "", "<leader>h", rt.hover_actions.hover_actions, { unique = true, buffer = buf })
-  if not success then
-    print("Could not set <leader>h=rt.hover_actions.hover_actions map, err="..vim.inspect(err))
-  end
-  vim.api.nvim_buf_set_option(buf, "formatexpr", "v:lua.vim.lsp.formatexpr()")
-  vim.api.nvim_buf_set_option(buf, "omnifunc", "v:lua.vim.lsp.omnifunc")
-  vim.api.nvim_buf_set_option(buf, "tagfunc", "v:lua.vim.lsp.tagfunc")
-end
-
--- Setup rust_analyzer via rust-tools.nvim
-rt.setup({
-  server = {
-    capabilities = capabilities,
-    on_attach = lsp_attach,
-  }
 })
 
 require'nvim-treesitter.configs'.setup({
