@@ -35,7 +35,7 @@ function M.get_current_file(path)
     path = vim.fn.expand("%")
   end
 
-  local relative, package = path:match("^(.*)/src/test/java/(.+)%.java$")
+  local relative, package = path:match("^(.*)/src/%w+/java/(.+)%.java$")
 
   if relative == nil then
     return current_file
@@ -97,18 +97,20 @@ function BazelTest(single_file, single_test, debug)
   local test = M.get_current_test()
   local args = { "test" }
 
+  table.insert(args, "//" .. test.root .. test.relative .. "/src/test/java:test")
+
   if single_file then
-    table.insert(args, "//" .. test.root .. test.relative .. "/src/test/java:" .. test.package:gsub("%.", "/"))
+    local test_filter = test.package
 
     if single_test then
       if test.test_function == nil or test.test_function == "" then
         error("no test_function")
       end
 
-      table.insert(args, "--test_filter="..test.test_function)
+      test_filter = test_filter .. "." .. test.test_function .. "$"
     end
-  else
-    table.insert(args, "...")
+
+    table.insert(args, "--test_filter=" .. test_filter)
   end
 
   if debug then
@@ -347,7 +349,7 @@ function BazelParser:add(line)
     return
   end
 
-  local meth, package = line:match("%d+%) (%w+)%((.+)%)")
+  local meth, package = line:match("%d+%) ([_%w]+)%((.+)%)")
 
   if meth then
     self.last_test_failure = BazelLastTestFailure:new(self.relative_root, package, meth)
@@ -372,7 +374,7 @@ function BazelParser:validate(code)
   end
 
   if not self.found_error then
-    print("WARNING: Test runner returned 0, but the parser found errors")
+    print("WARNING: Test runner returned code=" .. vim.inspect(code) .. ", but the parser didn't find errors")
   end
 
   if self.last_compile_error then
