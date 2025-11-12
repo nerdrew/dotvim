@@ -11,12 +11,13 @@ local PKGS = {
   -- "nvim-treesitter/playground";
   -- "folke/noice.nvim"; "MunifTanjim/nui.nvim";
 
+  "nvim-tree/nvim-web-devicons"; "nvim-mini/mini.icons"; "folke/snacks.nvim";
   "skywind3000/asyncrun.vim";
   "chrisbra/csv.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
   { "iamcco/markdown-preview.nvim", build = "cd app && yarn install"  };
-  "scrooloose/nerdtree";
+  -- "scrooloose/nerdtree";
   "chr4/nginx.vim";
   "neovim/nvim-lspconfig";
   "ruby-formatter/rufo-vim";
@@ -30,7 +31,7 @@ local PKGS = {
   "cstrahan/vim-capnp";
   "kchmck/vim-coffee-script";
   "sebdah/vim-delve";
-  "justinmk/vim-dirvish";
+  -- "justinmk/vim-dirvish";
   "tpope/vim-abolish";
   "tpope/vim-eunuch";
   "zchee/vim-flatbuffers";
@@ -85,6 +86,18 @@ local PKGS = {
   "savq/melange-nvim";
   "marko-cerovac/material.nvim";
   "RRethy/nvim-base16";
+  "vim-scripts/ebnf.vim";
+  "junegunn/vim-easy-align";
+  "airblade/vim-gitgutter";
+  "lukas-reineke/indent-blankline.nvim";
+
+  -- "github/copilot.vim";
+  "zbirenbaum/copilot.lua";
+  -- "zbirenbaum/copilot-cmp";
+
+  -- TODO try blink.cmp
+  -- "saghen/blink.cmp";
+  { "yetone/avante.nvim", build = "make" }; "MunifTanjim/nui.nvim";
 
   -- { "rest-nvim/rest.nvim", ref = "91badd46c60df6bd9800c809056af2d80d33da4c" };
   -- "vhyrro/luarocks.nvim"; "squareup/sq-connect-repl.nvim";

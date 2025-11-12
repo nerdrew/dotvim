@@ -10,8 +10,8 @@ vim.g.rooter_resolve_links = 1
 vim.g.rooter_cd_cmd = "lcd"
 vim.g.ruby_indent_assignment_style = "variable"
 vim.g.ruby_indent_block_style = "do"
-vim.g.yankring_clipboard_monitor = 0
-vim.g.yankring_history_file = ".cache/nvim/yankring_history"
+-- vim.g.yankring_clipboard_monitor = 0
+-- vim.g.yankring_history_file = ".cache/nvim/yankring_history"
 if vim.env.HOMEBREW_PREFIX then
   vim.g.python_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python"
   vim.g.python3_host_prog = vim.env.HOMEBREW_PREFIX .. "/bin/python3"
@@ -66,13 +66,13 @@ vim.g.rust_fold = 1
 vim.g.rustfmt_options = "--edition 2018"
 vim.g.surround_no_insert_mappings = 1
 
-if vim.fn.has('macunix') ~= 0 then
-  vim.g.yankring_replace_n_pkey = "π" -- option-p
-  vim.g.yankring_replace_n_nkey = "ø" -- option-o
-else
-  vim.g.yankring_replace_n_pkey = "<A-p>" -- option-p
-  vim.g.yankring_replace_n_nkey = "<A-o>" -- option-o
-end
+-- if vim.fn.has('macunix') ~= 0 then
+--   vim.g.yankring_replace_n_pkey = "π" -- option-p
+--   vim.g.yankring_replace_n_nkey = "ø" -- option-o
+-- else
+--   vim.g.yankring_replace_n_pkey = "<A-p>" -- option-p
+--   vim.g.yankring_replace_n_nkey = "<A-o>" -- option-o
+-- end
 
 vim.g.multi_cursor_use_default_mapping = 0
 vim.g.multi_cursor_start_word_key      = "≥"  -- option->
@@ -86,6 +86,8 @@ vim.g.multi_cursor_quit_key            = "<Esc>"
 
 vim.g.markdown_fenced_languages = {"html", "python", "ruby", "vim", "mermaid"}
 
+vim.g.gitgutter_enabled = 0
+vim.g.gitgutter_map_keys = 0
 vim.opt.termguicolors = true
 vim.opt.background = "light"
 vim.opt.autoread = true
@@ -124,7 +126,8 @@ vim.opt.ssop:remove("options")
 vim.opt.textwidth = 120
 vim.opt.tildeop = true
 vim.opt.title = true
-vim.opt.titlelen = 30
+-- vim.opt.titlelen = 30
+vim.opt.titlestring = '%<%f:vi'
 vim.opt.undodir = vim.env.HOME.."/.cache/nvim/undo"
 vim.opt.undofile = true
 vim.opt.wildignore = "*.swp,*.bak,*.pyc,*.class,*.png,*.o,*.jpg"
@@ -187,6 +190,7 @@ vim.keymap.set("i", "<A-{>", "<ESC>:tabm -1<cr>", { unique = true, silent = true
 vim.keymap.set("i", "<M-S-{>", "<ESC>:tabm -1<cr>", { unique = true, silent = true })
 vim.keymap.set("t", "<A-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true, silent = true })
 vim.keymap.set("t", "<M-S-{>", "<C-\\><C-N>:tabm -1<cr>", { unique = true, silent = true })
+
 -- option-shift-]
 vim.keymap.set("", "’", ":tabm +1<cr>", { unique = true, silent = true })
 vim.keymap.set("i", "’", "<ESC>:tabm +1<cr>", { unique = true, silent = true })
@@ -202,7 +206,7 @@ vim.keymap.set("t", "<M-S-}>", "<C-\\><C-N>:tabm +1<cr>", { unique = true, silen
 -- vim.keymap.set("", "Q", "@@", { unique = true })
 vim.keymap.set("", "<C-n>", functions.next_error, { unique = true, silent = true })
 vim.keymap.set("", "<C-p>", functions.previous_error, { unique = true, silent = true })
-vim.keymap.set("", "<leader>q", ":cope<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>q", ":Telescope quickfix<cr>", { unique = true, silent = true })
 
 -- option-y = ¥
 vim.keymap.set("", "¥", ":Telescope yank_history<cr>", { silent = true })
@@ -232,6 +236,7 @@ vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true, silent = t
 vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true, silent = true })
 vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true, silent = true })
 vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = true })
+vim.keymap.set("n", "<leader>F", "<cmd>Telescope find_files hidden=true<cr>", { unique = true })
 vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
 vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
 vim.keymap.set("n", "<leader>G", "<cmd>Rg!<cr>", { unique = true })
@@ -241,7 +246,7 @@ vim.keymap.set("n", "<leader>J", "<cmd>RgLive<cr>", { unique = true })
 vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
 vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
 vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
-vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>:echo @+<cr>", { unique = true, silent = true })
 
 vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
 vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
@@ -257,6 +262,16 @@ vim.keymap.set("", "gh", vim.diagnostic.open_float, { unique = true })
 -- vim.keymap.set("", "[d", vim.diagnostic.goto_prev, { unique = true })
 vim.keymap.set("", "gQ", vim.lsp.buf.format, { unique = true })
 
+vim.keymap.set("n", "[c", "<Plug>(GitGutterPrevHunk)")
+vim.keymap.set("n", "]c", "<Plug>(GitGutterNextHunk)")
+vim.keymap.set("n", "gp", "<Plug>(GitGutterPreviewHunk)")
+vim.keymap.set("n", "gs", "<Plug>(GitGutterStageHunk)")
+vim.keymap.set("n", "gu", "<Plug>(GitGutterUndoHunk)")
+vim.keymap.set("o", "ic", "<Plug>(GitGutterTextObjectInnerPending)")
+vim.keymap.set("o", "ac", "<Plug>(GitGutterTextObjectOuterPending)")
+vim.keymap.set("x", "ic", "<Plug>(GitGutterTextObjectInnerVisual)")
+vim.keymap.set("x", "ac", "<Plug>(GitGutterTextObjectOuterVisual)")
+
 vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { unique = true })
 
 vim.cmd("cnoreabbrev <expr> N ((getcmdtype() is# ':' && getcmdline() is# 'N')?('Noice '):('N'))")
@@ -267,13 +282,24 @@ vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = tru
 vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
 vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
 
-if vim.fn.has('macunix') ~= 0 then
+-- if vim.fn.has('macunix') ~= 0 then
   vim.keymap.set("n", "π", "<Plug>(YankyCycleForward)") -- option-p
   vim.keymap.set("n", "ø", "<Plug>(YankyCycleBackward)") -- option-o
-else
+  vim.keymap.set("n", "<M-p>", "<Plug>(YankyCycleForward)") -- option-p
+  vim.keymap.set("n", "<M-o>", "<Plug>(YankyCycleBackward)") -- option-o
+-- else
   vim.keymap.set("n", "<A-p>", "<Plug>(YankyCycleForward)") -- option-p
   vim.keymap.set("n", "<A-o>", "<Plug>(YankyCycleBackward)") -- option-o
-end
+-- end
+
+vim.keymap.set({"n", "x"}, "<leader>A", "<Plug>(EasyAlign)")
+-- vim.keymap.set('i', '<C-L>', '<Plug>(copilot-accept-line)')
+-- vim.keymap.set('i', '<C-W>', '<Plug>(copilot-accept-word)')
+-- vim.keymap.set('i', '<C-L>', '<Plug>(copilot-accept-line)')
+-- vim.keymap.set('i', '<C-J>', 'copilot#Accept("\\<CR>")', {
+--   expr = true,
+--   replace_keycodes = false
+-- })
 
 vim.api.nvim_create_user_command("Rg", functions.rg, { nargs = "*", complete = "file", range = true, bang = true })
 vim.api.nvim_create_user_command("RgLive", functions.telescope_live_grep, { range = true })
@@ -296,14 +322,15 @@ vim.api.nvim_create_user_command("HideSynStack", functions.hide_syn_stack, {})
 
 
 vim.api.nvim_create_autocmd("User", { pattern = "AsyncRunStop", command = "cope" })
-vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call fugitive#detect(@%)" })
+-- vim.api.nvim_create_autocmd("FileType", { pattern = "dirvish", command = "call fugitive#detect(@%)" })
 vim.api.nvim_create_autocmd("FileType", { pattern = "python", command = "set expandtab sw=4 ts=4 sts=4" })
 vim.api.nvim_create_autocmd("BufRead", { callback = functions.last_position_jump, once = true, buffer = 0 })
 vim.api.nvim_create_autocmd("TermOpen", { command = "startinsert" })
 vim.api.nvim_create_autocmd("TermClose", { command = "if !v:event.status | exe 'bdelete! '..expand('<abuf>') | endif" })
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, { pattern = "*.yaml.template", command = "set ft=helm" })
 
 vim.api.nvim_create_user_command('TabMessage', function(ctx)
-  local lines = vim.split(vim.api.nvim_exec(ctx.args, true), '\n', { plain = true })
+  local lines = vim.split(vim.api.nvim_exec2(ctx.args, { output = true }).output, '\n', { plain = true })
   vim.cmd('tabnew')
   vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
   vim.opt_local.modified = false
@@ -315,31 +342,69 @@ local has_words_before = function()
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
+require("snacks").setup({
+  bigfile = { enabled = true },
+  -- dashboard = { enabled = true },
+  explorer = { enabled = true },
+  -- indent = { enabled = true },
+  image = { enabled = true },
+  input = { enabled = true },
+  -- picker = { enabled = true },
+  notifier = { enabled = true },
+  -- quickfile = { enabled = true },
+  scope = { enabled = true },
+  -- scroll = { enabled = true },
+  -- statuscolumn = { enabled = true },
+  -- words = { enabled = true },
+})
+
+-- local notify = require("notify")
+
+require("copilot").setup({
+  suggestion = {
+    enabled = true,
+    auto_trigger = true,
+    keymap = {
+      accept = "<C-l>",
+      next = "<C-;>",
+      prev = "<C-'>",
+      dismiss = "C-k",
+    },
+  },
+  panel = { enabled = false },
+  -- logger = {
+  --   file_log_level = vim.log.levels.TRACE,
+  -- },
+})
+-- vim.keymap.set("i", "<C-c>", require("copilot.suggestion").dismiss, { silent = true })
+
+-- require("copilot_cmp").setup()
+
 -- Setup cmp
 local cmp = require("cmp")
 cmp.setup({
   mapping = cmp.mapping.preset.insert({ -- Preset: ^n, ^p, ^y, ^e, you know the drill..
     -- ["<C-Space>"] = cmp.mapping.complete(),
-    ["<C-Space>"] = cmp.mapping(function(fallback)
-      if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
-        vim.api.nvim_input("<Down>")
-        return
-      end
-
-      if not cmp.select_next_item() then
-        cmp.complete()
-      end
-    end),
-    ["<C-S-Space>"] = cmp.mapping(function(fallback)
-      if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
-        vim.api.nvim_input("<Up>")
-        return
-      end
-
-      if not cmp.select_prev_item() then
-        fallback()
-      end
-    end),
+    -- ["<C-Space>"] = cmp.mapping(function(fallback)
+    --   if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
+    --     vim.api.nvim_input("<Down>")
+    --     return
+    --   end
+    --
+    --   if not cmp.select_next_item() then
+    --     cmp.complete()
+    --   end
+    -- end),
+    -- ["<C-S-Space>"] = cmp.mapping(function(fallback)
+    --   if vim.bo.buftype == 'prompt' and vim.bo.filetype == 'TelescopePrompt' and cmp.visible() then
+    --     vim.api.nvim_input("<Up>")
+    --     return
+    --   end
+    --
+    --   if not cmp.select_prev_item() then
+    --     fallback()
+    --   end
+    -- end),
     ["<C-e>"] = cmp.mapping.abort(),
     ["<Tab>"] = cmp.mapping(function(fallback)
       if not cmp.select_next_item() then
@@ -569,3 +634,5 @@ require("yanky").setup({
 require("neogit").setup({
   disable_context_highlighting = true,
 })
+
+require("ibl").setup()
