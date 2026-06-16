@@ -16,7 +16,7 @@ local PKGS = {
   "chrisbra/csv.vim";
   "skwp/greplace.vim";
   "udalov/kotlin-vim";
-  { "iamcco/markdown-preview.nvim", build = "cd app && yarn install"  };
+  { "iamcco/markdown-preview.nvim", build = function() vim.fn["mkdp#util#install"]() end  };
   -- "scrooloose/nerdtree";
   "chr4/nginx.vim";
   "neovim/nvim-lspconfig";
@@ -43,7 +43,7 @@ local PKGS = {
   "terryma/vim-multiple-cursors";
   "simnalamburt/vim-mundo";
   "mustache/vim-mustache-handlebars";
-  "NeogitOrg/neogit"; "sindrets/diffview.nvim";
+  "NeogitOrg/neogit";
   { "prettier/vim-prettier", build = "yarn install" };
   "tpope/vim-repeat";
   "airblade/vim-rooter";
@@ -55,7 +55,7 @@ local PKGS = {
   "tpope/vim-unimpaired";
   "HerringtonDarkholme/yats.vim";
   "pedrohdz/vim-yaml-folds";
-  { "nvim-treesitter/nvim-treesitter", build=function() vim.cmd('TSUpdate') end };
+  { "nvim-treesitter/nvim-treesitter", branch = "main", build=function() vim.cmd('TSUpdate') end };
   "nvim-treesitter/nvim-treesitter-context";
   "RRethy/nvim-treesitter-endwise";
   "nvim-lua/popup.nvim";
@@ -88,16 +88,16 @@ local PKGS = {
   "RRethy/nvim-base16";
   "vim-scripts/ebnf.vim";
   "junegunn/vim-easy-align";
-  "airblade/vim-gitgutter";
   "lukas-reineke/indent-blankline.nvim";
+  "kdheepak/lazygit.nvim";
+  "sindrets/diffview.nvim";
 
   -- "github/copilot.vim";
-  "zbirenbaum/copilot.lua";
   -- "zbirenbaum/copilot-cmp";
 
   -- TODO try blink.cmp
   -- "saghen/blink.cmp";
-  { "yetone/avante.nvim", build = "make" }; "MunifTanjim/nui.nvim";
+  "qvalentin/helm-ls.nvim";
 
   -- { "rest-nvim/rest.nvim", ref = "91badd46c60df6bd9800c809056af2d80d33da4c" };
   -- "vhyrro/luarocks.nvim"; "squareup/sq-connect-repl.nvim";

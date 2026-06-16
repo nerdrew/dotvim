@@ -15,10 +15,14 @@ end
 
 vim.g.lazarus_ruby = true
 
-local root = vim.g.ruby_project_root or vim.fn.FindRootDirectory()
 local spec_file, spec_line
 
+local function get_root()
+  return vim.g.ruby_project_root or vim.fn.FindRootDirectory()
+end
+
 function RSpec(line, debug)
+  local root = get_root()
   local rspec_cmd = vim.g.rspec
   local rspec_args = vim.g.rspec_args or "-f p"
 
@@ -36,7 +40,7 @@ function RSpec(line, debug)
   end
 
   if vim.fn.expand("%"):match("_spec%.rb$") then
-    spec_file = vim.fn.fnamemodify(vim.fn.expand("%"), ":p:s?"..root.."/??")
+    spec_file = vim.fn.fnamemodify(vim.fn.expand("%"), ":p:s?"..vim.fn.FindRootDirectory().."/??")
     spec_line = vim.fn.line(".")
   end
 
@@ -85,6 +89,7 @@ end
 
 local function rubocop(args)
   local cmd = "rubocop --format emacs "
+  local root = get_root()
 
   if args.bang then
     cmd = cmd.."--auto-correct "

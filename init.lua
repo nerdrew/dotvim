@@ -234,9 +234,9 @@ vim.keymap.set("", "gn", "<ESC>/\\v^[<=>|]{7}( .*|$)<cr>", { unique = true })
 
 vim.keymap.set("", "<leader>t", ":TagbarToggle<cr>", { unique = true, silent = true })
 vim.keymap.set("", "<leader>u", ":MundoToggle<cr>", { unique = true, silent = true })
-vim.keymap.set("", "<leader>n", ":NERDTreeToggle<cr>", { unique = true, silent = true })
+vim.keymap.set("n", "<leader>n", "<cmd>lua=require('snacks').notifier.get_history()<cr>", { unique = true, silent = true })
 vim.keymap.set("n", "<leader>f", "<cmd>Telescope find_files<cr>", { unique = true })
-vim.keymap.set("n", "<leader>F", "<cmd>Telescope find_files hidden=true<cr>", { unique = true })
+vim.keymap.set("n", "<leader>F", "<cmd>Telescope find_files hidden=true no_ignore=true no_ignore_parent=true follow=true<cr>", { unique = true })
 vim.keymap.set("n", "<leader>b", "<cmd>Telescope buffers<cr>", { unique = true })
 vim.keymap.set("n", "<leader>g", "<cmd>Rg<cr>", { unique = true })
 vim.keymap.set("n", "<leader>G", "<cmd>Rg!<cr>", { unique = true })
@@ -245,8 +245,8 @@ vim.keymap.set("n", "<leader>J", "<cmd>RgLive<cr>", { unique = true })
 -- vim.keymap.set("n", "<leader>K", "<cmd>RgLive!<cr>", { unique = true })
 vim.keymap.set("n", "<leader>d", "<cmd>Telescope diagnostics<cr>", { unique = true })
 vim.keymap.set("n", "<leader>?", "<cmd>Telescope help_tags<cr>", { unique = true })
-vim.keymap.set("", "<leader>x", ":let @+ = expand('%')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
-vim.keymap.set("", "<leader>X", ":let @+ = expand('%').':'.line('.')<cr>:echo @+<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>x", ":let @+ = fnamemodify(expand('%'), ':.')<cr>:echo 'copied: '.@+<cr>", { unique = true, silent = true })
+vim.keymap.set("", "<leader>X", ":let @+ = fnamemodify(expand('%'), ':.').':'.line('.')<cr>:echo @+<cr>", { unique = true, silent = true })
 
 vim.keymap.set("", "gD", vim.lsp.buf.declaration, { unique = true })
 vim.keymap.set("", "gd", vim.lsp.buf.definition, { unique = true })
@@ -276,6 +276,7 @@ vim.keymap.set("", "<leader>W", functions.toggle_diff_ignore_whitespace, { uniqu
 
 vim.cmd("cnoreabbrev <expr> N ((getcmdtype() is# ':' && getcmdline() is# 'N')?('Noice '):('N'))")
 vim.api.nvim_create_user_command("GT", function(args) vim.cmd("Gtabedit "..((args.args ~= "" and args.args) or ":")) end, { nargs = "*"})
+vim.api.nvim_create_user_command("DV", function(args) vim.cmd("DiffviewOpen  "..((args.args ~= "" and args.args) or "")) end, { nargs = "*"})
 
 vim.keymap.set("", "<leader>!", ":RunCommand<cr>", { unique = true, silent = true })
 
@@ -342,12 +343,32 @@ local has_words_before = function()
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
 end
 
-require("snacks").setup({
+local snacks = require("snacks")
+snacks.setup({
   bigfile = { enabled = true },
   -- dashboard = { enabled = true },
   explorer = { enabled = true },
   -- indent = { enabled = true },
-  image = { enabled = true },
+  image = {
+    enabled = true,
+    -- debug = {
+    --   request = true,
+    --   convert = true,
+    --   placement = true,
+    -- },
+    doc = {
+      max_width = 160,
+      max_height = 100,
+    },
+    convert = {
+      notify = true,
+      mermaid = function()
+        local theme = vim.o.background == "light" and "neutral" or "dark"
+        local scale = tostring((snacks.image.terminal.size().scale or 1) * 3)
+        return { "-i", "{src}", "-o", "{file}", "-b", "transparent", "-t", theme, "-s", scale }
+      end,
+    },
+  },
   input = { enabled = true },
   -- picker = { enabled = true },
   notifier = { enabled = true },
@@ -360,22 +381,6 @@ require("snacks").setup({
 
 -- local notify = require("notify")
 
-require("copilot").setup({
-  suggestion = {
-    enabled = true,
-    auto_trigger = true,
-    keymap = {
-      accept = "<C-l>",
-      next = "<C-;>",
-      prev = "<C-'>",
-      dismiss = "C-k",
-    },
-  },
-  panel = { enabled = false },
-  -- logger = {
-  --   file_log_level = vim.log.levels.TRACE,
-  -- },
-})
 -- vim.keymap.set("i", "<C-c>", require("copilot.suggestion").dismiss, { silent = true })
 
 -- require("copilot_cmp").setup()
@@ -493,89 +498,38 @@ cmp.setup.cmdline(":", {
   }),
 })
 
-require'nvim-treesitter.configs'.setup({
-  ensure_installed = "all",
-  highlight = {
-    enable = true, -- false will disable the whole extension
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = "gss",
-      node_incremental = "gsn",
-      scope_incremental = "gss",
-      node_decremental = "gsd",
-    },
-    -- Stop errors when opening q: command-line-window
-    is_supported = function ()
-      local mode = vim.api.nvim_get_mode().mode
-      if mode == "c" then
-        return false
-      end
-      return true
-    end
-  },
-  -- indent = {
-  --   enable = true,
-  -- },
 
-  endwise = {
-    enable = true,
-  },
-  matchup = {
-    enable = true,
-  },
-  playground = {
-    enable = true,
-    disable = {},
-    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
-    persist_queries = false, -- Whether the query persists across vim sessions
-    keybindings = {
-      toggle_query_editor = 'o',
-      toggle_hl_groups = 'i',
-      toggle_injected_languages = 't',
-      toggle_anonymous_nodes = 'a',
-      toggle_language_display = 'I',
-      focus_language = 'f',
-      unfocus_language = 'F',
-      update = 'R',
-      goto_node = '<cr>',
-      show_help = '?',
-    },
-  },
-})
-
-require'treesitter-context'.setup({
+require("treesitter-context").setup({
   patterns = {
     ruby = {
-      'block',
+      "block",
     },
   },
 })
 
 local telescope = require("telescope")
-local actions = require("telescope.actions")
+local telescope_actions = require("telescope.actions")
 telescope.setup({
   defaults = {
     mappings = {
       n = {
-        ["<C-c>"] = actions.close,
+        ["<C-c>"] = telescope_actions.close,
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
         ["œ"] = functions.telescope_send_and_open_qflist,
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
-        ["<C-n>"] = actions.move_selection_next,
-        ["<C-p>"] = actions.move_selection_previous,
+        ["<C-n>"] = telescope_actions.move_selection_next,
+        ["<C-p>"] = telescope_actions.move_selection_previous,
       },
       i = {
         ["<C-f>"] = functions.telescope_send_and_open_qflist,
         ["œ"] = functions.telescope_send_and_open_qflist,
         ["<A-q>"] = functions.telescope_send_and_open_qflist,
-        ["<C-s>"] = actions.cycle_history_prev,
-        ["<C-e>"] = actions.cycle_history_next,
+        ["<C-s>"] = telescope_actions.cycle_history_prev,
+        ["<C-e>"] = telescope_actions.cycle_history_next,
         -- ["<Down>"] = false,
         -- ["<Up>"] = false,
-        ["<C-n>"] = actions.move_selection_next,
-        ["<C-p>"] = actions.move_selection_previous,
+        ["<C-n>"] = telescope_actions.move_selection_next,
+        ["<C-p>"] = telescope_actions.move_selection_previous,
       }
     },
   },
@@ -632,7 +586,34 @@ require("yanky").setup({
 })
 
 require("neogit").setup({
-  disable_context_highlighting = true,
+  -- disable_context_highlighting = true,
+  integrations = {
+    telescope = true,
+    diffview = true,
+  },
+})
+
+local diffview_actions = require("diffview.actions")
+require("diffview").setup({
+  file_panel = {
+    win_config = {
+      width = 60,
+    },
+  },
+  default_args = {
+    DiffviewOpen = {'-uno'},
+  },
+  keymaps  = {
+    view = {
+      { "n", "q", "<Cmd>DiffviewClose<CR>", },
+      { "n", "-", diffview_actions.toggle_stage_entry, { desc = "Stage / unstage the selected entry" } },
+      { "n", "s", diffview_actions.toggle_stage_entry, { desc = "Stage / unstage the selected entry" } },
+
+    },
+    file_panel = {
+      { "n", "q", "<Cmd>DiffviewClose<CR>", },
+    },
+  },
 })
 
 require("ibl").setup()
